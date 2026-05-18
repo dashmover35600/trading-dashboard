@@ -77,7 +77,7 @@
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
 
     /* Nav */
-    nav { background: var(--accent); padding: 0 1.25rem; height: 58px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(24,71,212,0.18); }
+    nav { background: var(--accent); padding: 0 1.25rem; padding-top: env(safe-area-inset-top); height: calc(58px + env(safe-area-inset-top)); display: flex; align-items: flex-end; padding-bottom: 10px; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(24,71,212,0.18); }
     .logo { font-family: var(--mono); font-size: 1rem; color: #fff; letter-spacing: 0.18em; font-weight: 500; white-space: nowrap; }
     .logo span { display: none; }
     @media(min-width:500px){ .logo span { display: inline; opacity: 0.5; font-size: 0.75rem; margin-left: 8px; letter-spacing: 0.1em; } }
