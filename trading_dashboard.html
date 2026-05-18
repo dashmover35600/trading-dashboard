@@ -221,8 +221,8 @@
   <div class="stats">
     <div class="stat"><div class="sl2">Total Trades</div><div class="sv" id="s0">—</div><div class="ss">all time</div></div>
     <div class="stat"><div class="sl2">Win Rate</div><div class="sv g" id="s1">—</div><div class="ss" id="s1b">— / —</div></div>
-    <div class="stat"><div class="sl2">Total P&amp;L</div><div class="sv" id="s2">—</div><div class="ss">cumulative</div></div>
-    <div class="stat"><div class="sl2">Avg Win</div><div class="sv g" id="s3">—</div><div class="ss" id="s3b">avg loss: —</div></div>
+    <div class="stat"><div class="sl2">Total P&amp;L %</div><div class="sv" id="s2">—</div><div class="ss">cumulative</div></div>
+    <div class="stat"><div class="sl2">Total P&amp;L $</div><div class="sv" id="s2d">—</div><div class="ss">paper trading $500/trade</div></div>
     <div class="stat"><div class="sl2">Best Trade</div><div class="sv g" id="s4">—</div><div class="ss" id="s4b">—</div></div>
     <div class="stat"><div class="sl2">Worst Trade</div><div class="sv r" id="s5">—</div><div class="ss" id="s5b">—</div></div>
   </div>
@@ -280,12 +280,36 @@
             <th onclick="sortTable(3)">Entry <span class="sort-icon">↕</span></th>
             <th>Exit</th><th>Target</th><th>Stop</th>
             <th>Result</th>
-            <th onclick="sortTable(8)">P&amp;L <span class="sort-icon">↕</span></th>
+            <th onclick="sortTable(8)">P&amp;L % <span class="sort-icon">↕</span></th>
+            <th onclick="sortTable(9)">P&amp;L $ <span class="sort-icon">↕</span></th>
+            <th>Shares</th>
             <th>In</th><th>Out</th><th>RSI</th><th>Volume</th>
           </tr>
         </thead>
         <tbody id="tb"><tr><td colspan="13"><div class="es">Upload your <strong>trade_log.csv</strong> to see trades here.</div></td></tr></tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Strategy comparison -->
+  <div id="comparison-section" style="display:none;margin-bottom:2.5rem;">
+    <div class="sl">Strategy comparison</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+      <div class="card">
+        <div class="ct">Strategy A — RSI 55/45</div>
+        <div class="sv b" id="cmp-a-wr">—</div>
+        <div class="ss" id="cmp-a-trades">— trades</div>
+        <div class="ss" style="margin-top:0.5rem;color:var(--muted)">Current strategy</div>
+      </div>
+      <div class="card">
+        <div class="ct">Strategy B — RSI 60/40</div>
+        <div class="sv b" id="cmp-b-wr">—</div>
+        <div class="ss" id="cmp-b-trades">— trades</div>
+        <div class="ss" style="margin-top:0.5rem;color:var(--muted)">Stricter RSI filter</div>
+      </div>
+    </div>
+    <div class="card" style="text-align:center;padding:1rem;">
+      <div id="cmp-winner" style="font-family:var(--mono);font-size:0.8rem;color:var(--accent);"></div>
     </div>
   </div>
 
@@ -315,12 +339,13 @@ let calYear, calMonth;
 const now = new Date();
 calYear = now.getFullYear(); calMonth = now.getMonth();
 
-const LOCAL  = 'http://localhost:8765';
+const LOCAL      = 'http://localhost:8765';
 const GITHUB_CSV = 'https://raw.githubusercontent.com/dashmover35600/trading-dashboard/main/trade_log.csv';
+const GITHUB_CMP = 'https://raw.githubusercontent.com/dashmover35600/trading-dashboard/main/strategy_comparison.csv';
 
 // ── Auto-load ─────────────────────────────────────────────────────────────────
 async function tryAutoLoad() {
-  // 1. Try local agent first (when running on your Mac)
+  // 1. Try local agent first
   try {
     const res = await fetch(LOCAL + '/trade_log.csv');
     if (!res.ok) throw new Error();
@@ -328,15 +353,18 @@ async function tryAutoLoad() {
     const trades = parseCSV(text);
     render(trades);
     document.getElementById('ts').textContent = 'Auto-updated ' + new Date().toLocaleTimeString();
-    document.getElementById('upload-zone').style.borderColor = 'var(--green)';
+    document.getElementById('upload-zone').style.borderColor = 'var(--accent)';
     document.getElementById('upload-icon').textContent = '✅';
-    document.getElementById('upload-title').textContent = 'Connected to trading agent';
+    document.getElementById('upload-title').textContent = 'Connected to NYLO agent';
     document.getElementById('upload-desc').textContent = 'Data loads automatically every 60 seconds.';
+    // Fetch live trade and comparison
+    fetchLiveTrade();
+    fetchComparison(LOCAL + '/strategy_comparison.csv');
     setTimeout(tryAutoLoad, 60000);
     return;
   } catch(e) {}
 
-  // 2. Try GitHub (when viewed online by anyone)
+  // 2. Try GitHub
   try {
     const res = await fetch(GITHUB_CSV + '?t=' + Date.now());
     if (!res.ok) throw new Error();
@@ -344,15 +372,86 @@ async function tryAutoLoad() {
     const trades = parseCSV(text);
     render(trades);
     document.getElementById('ts').textContent = 'Loaded from GitHub · ' + new Date().toLocaleTimeString();
-    document.getElementById('upload-zone').style.borderColor = 'var(--blue)';
+    document.getElementById('upload-zone').style.borderColor = 'var(--accent)';
     document.getElementById('upload-icon').textContent = '📊';
     document.getElementById('upload-title').textContent = 'Loaded from GitHub';
-    document.getElementById('upload-desc').textContent = 'Showing latest trade_log.csv from GitHub. Click to load a local file instead.';
+    document.getElementById('upload-desc').textContent = 'Showing latest data from GitHub. Updates every 15 minutes.';
+    fetchComparison(GITHUB_CMP + '?t=' + Date.now());
     return;
   } catch(e) {}
 
-  // 3. Fall back to manual upload
-  document.getElementById('upload-desc').textContent = 'Click to upload trade_log.csv manually — or start trading_agent_7.py for auto-load.';
+  // 3. Manual upload fallback
+  document.getElementById('upload-desc').textContent = 'Click to upload trade_log.csv manually — or start trading_agent_8.py for auto-load.';
+}
+
+// ── Live trade P&L ────────────────────────────────────────────────────────────
+async function fetchLiveTrade() {
+  try {
+    const res  = await fetch(LOCAL + '/live_trade?t=' + Date.now());
+    const data = await res.json();
+    updateLivePnl(data);
+  } catch(e) {}
+  setTimeout(fetchLiveTrade, 15000); // refresh every 15 seconds
+}
+
+function updateLivePnl(data) {
+  const el = document.getElementById('open-trade');
+  if (!data || !data.active) { el.classList.remove('active'); return; }
+  el.classList.add('active');
+  setText('ot-ticker-dir', data.ticker + ' — ' + data.direction);
+  setText('ot-entry',  '$' + data.entry);
+  setText('ot-target', '$' + data.target);
+  setText('ot-stop',   '$' + data.stop);
+  setText('ot-time',   data.entry_time);
+  setText('ot-rsi',    data.rsi);
+  // Live P&L from current ticker price
+  const priceEl = document.getElementById('t-' + data.ticker.toLowerCase() + '-price');
+  if (priceEl && priceEl.textContent !== '—') {
+    const cur   = parseFloat(priceEl.textContent.replace('$',''));
+    const entry = parseFloat(data.entry);
+    const pnl   = data.direction === 'Long' ? (cur-entry)/entry*100 : (entry-cur)/entry*100;
+    const el2   = document.getElementById('ot-pnl');
+    el2.textContent = (pnl>=0?'+':'')+pnl.toFixed(2)+'%';
+    el2.className   = 'ot-val ' + (pnl>=0?'g':'r');
+    const range = Math.abs(data.target - entry);
+    const move  = data.direction==='Long' ? cur-entry : entry-cur;
+    const pct   = Math.max(0, Math.min(100, (move/range)*100));
+    const fill  = document.getElementById('ot-fill');
+    fill.style.width      = pct + '%';
+    fill.style.background = pnl>=0 ? 'var(--accent)' : 'var(--red)';
+  }
+}
+
+// ── Strategy comparison ───────────────────────────────────────────────────────
+async function fetchComparison(url) {
+  try {
+    const res  = await fetch(url);
+    const text = await res.text();
+    renderComparison(parseCSV(text));
+  } catch(e) {}
+}
+
+function renderComparison(rows) {
+  const el = document.getElementById('comparison-section');
+  if (!rows || rows.length === 0) { el.style.display='none'; return; }
+  el.style.display = 'block';
+
+  const aWins = rows.filter(r => r['Strategy A Result'] === 'Target Hit').length;
+  const bWins = rows.filter(r => r['Strategy B Result'] === 'Target Hit').length;
+  const aLoss = rows.filter(r => r['Strategy A Result'] === 'Stop Loss Hit').length;
+  const bLoss = rows.filter(r => r['Strategy B Result'] === 'Stop Loss Hit').length;
+  const aTotal = aWins + aLoss;
+  const bTotal = bWins + bLoss;
+  const aWR = aTotal ? Math.round(aWins/aTotal*100) : 0;
+  const bWR = bTotal ? Math.round(bWins/bTotal*100) : 0;
+
+  document.getElementById('cmp-a-wr').textContent = aWR + '%';
+  document.getElementById('cmp-b-wr').textContent = bWR + '%';
+  document.getElementById('cmp-a-trades').textContent = aTotal + ' trades';
+  document.getElementById('cmp-b-trades').textContent = bTotal + ' trades';
+  document.getElementById('cmp-winner').textContent = aWR >= bWR
+    ? '🏆 Strategy A leading (' + aWR + '% vs ' + bWR + '%)'
+    : '🏆 Strategy B leading (' + bWR + '% vs ' + aWR + '%)';
 }
 
 document.getElementById('fi').addEventListener('change', function(e) {
@@ -400,7 +499,14 @@ function render(trades) {
   setText('s0', trades.length||'—');
   setText('s1', wr!==null?wr+'%':'—'); setText('s1b', `${wins.length} wins · ${losses.length} losses`);
   setVal('s2', fmt(total), total>=0?'g':'r');
-  setText('s3', fmt(avgW)); setText('s3b','avg loss: '+(avgL!==null?avgL.toFixed(2)+'%':'—'));
+  // Dollar P&L
+  const dollarTotal = closed.reduce((sum, t) => {
+    if (!t['P&L $']) return sum;
+    const raw = parseFloat(t['P&L $'].replace('$','').replace('+',''));
+    return sum + (isNaN(raw) ? 0 : (t['P&L $'].startsWith('-') ? -Math.abs(raw) : Math.abs(raw)));
+  }, 0);
+  const dStr = dollarTotal >= 0 ? `+$${dollarTotal.toFixed(2)}` : `-$${Math.abs(dollarTotal).toFixed(2)}`;
+  setVal('s2d', dStr, dollarTotal>=0?'g':'r');
   setText('s4', fmt(best));  setText('s4b', bestT?bestT['Ticker']+' · '+bestT['Direction']:'—');
   setText('s5', fmt(worst)); setText('s5b', wrstT?wrstT['Ticker']+' · '+wrstT['Direction']:'—');
 
@@ -492,6 +598,7 @@ function renderTable() {
       : t['Result']==='Target Hit' ? '<span class="badge bw">Win</span>'
       : '<span class="badge bx">Loss</span>';
     const pStr = p!==null ? `<span class="${p>=0?'g':'r'}">${fmt(p)}</span>` : '<span style="color:var(--muted)">—</span>';
+    const dStr = t['P&L $'] ? `<span class="${t['P&L $'].startsWith('-')?'r':'g'}">${t['P&L $']}</span>` : '<span style="color:var(--muted)">—</span>';
     tb.innerHTML += `<tr class="fade">
       <td>${t['Date']}</td>
       <td style="font-weight:500">${t['Ticker']}</td>
@@ -500,7 +607,8 @@ function renderTable() {
       <td>${t['Exit Price']?'$'+t['Exit Price']:'<span style="color:var(--muted)">—</span>'}</td>
       <td style="color:var(--muted)">$${t['Target']}</td>
       <td style="color:var(--muted)">$${t['Stop Loss']}</td>
-      <td>${res}</td><td>${pStr}</td>
+      <td>${res}</td><td>${pStr}</td><td>${dStr}</td>
+      <td style="color:var(--muted)">${t['Shares']||'—'}</td>
       <td style="color:var(--muted)">${t['Entry Time']}</td>
       <td style="color:var(--muted)">${t['Exit Time']||'—'}</td>
       <td style="color:var(--muted)">${t['RSI at Entry']}</td>
