@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>NYLO — Trading Dashboard</title>
 
   <!-- PWA / Add to Home Screen -->
@@ -21,6 +24,82 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Custom cursor ───────────────────────────────────────────── */
+    * { cursor: none !important; }
+    #cursor { position: fixed; width: 10px; height: 10px; background: var(--accent, #1847d4); border-radius: 50%; pointer-events: none; z-index: 99999; transform: translate(-50%,-50%); transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s; }
+    #cursor-ring { position: fixed; width: 32px; height: 32px; border: 1.5px solid rgba(24,71,212,0.4); border-radius: 50%; pointer-events: none; z-index: 99998; transform: translate(-50%,-50%); transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease; }
+    #cursor.hover { width: 18px; height: 18px; }
+    #cursor-ring.hover { width: 48px; height: 48px; border-color: rgba(24,71,212,0.6); }
+    @media (hover: none) { #cursor, #cursor-ring { display: none; } * { cursor: auto !important; } }
+
+    /* ── Animated gradient mesh background ──────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: -1;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 20%, rgba(24,71,212,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 80%, rgba(61,111,255,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 50% 50%, rgba(200,216,255,0.04) 0%, transparent 70%);
+      animation: meshMove 12s ease-in-out infinite alternate;
+    }
+    @keyframes meshMove {
+      0%   { background-position: 20% 20%, 80% 80%, 50% 50%; }
+      100% { background-position: 30% 30%, 70% 70%, 45% 55%; }
+    }
+    body.dark::before {
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 20%, rgba(61,111,255,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 80%, rgba(24,71,212,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 50% 50%, rgba(10,26,92,0.2) 0%, transparent 70%);
+    }
+
+    /* ── Particle canvas ─────────────────────────────────────────── */
+    #particle-canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.4; }
+
+    /* ── Glassmorphism cards ─────────────────────────────────────── */
+    .card {
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 16px; padding: 1.4rem;
+      box-shadow: 0 4px 24px rgba(24,71,212,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(24,71,212,0.1), inset 0 1px 0 rgba(255,255,255,0.8); }
+    body.dark .card {
+      background: rgba(13,24,41,0.7);
+      border-color: rgba(255,255,255,0.08);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    body.dark .card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05); }
+
+    /* ── Scroll reveal ───────────────────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Skeleton loading ────────────────────────────────────────── */
+    .skeleton { background: linear-gradient(90deg, var(--faint) 25%, var(--border) 50%, var(--faint) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ── Toast notifications ─────────────────────────────────────── */
+    #toast-container { position: fixed; bottom: 2rem; right: 1.5rem; z-index: 9000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .toast { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem 1.1rem; font-family: var(--mono); font-size: 0.72rem; color: var(--text); box-shadow: 0 8px 32px rgba(0,0,0,0.12); display: flex; align-items: center; gap: 8px; pointer-events: all; min-width: 220px; max-width: 300px; animation: toastIn 0.3s ease; backdrop-filter: blur(20px); }
+    .toast.exit { animation: toastOut 0.3s ease forwards; }
+    @keyframes toastIn  { from { opacity:0; transform: translateX(100%); } to { opacity:1; transform: translateX(0); } }
+    @keyframes toastOut { from { opacity:1; transform: translateX(0); } to { opacity:0; transform: translateX(100%); } }
+    .toast-icon { font-size: 1rem; flex-shrink: 0; }
+
+    /* ── Pull to refresh ─────────────────────────────────────────── */
+    #ptr { position: fixed; top: 0; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; font-family: var(--mono); font-size: 0.65rem; padding: 6px 16px; border-radius: 0 0 12px 12px; z-index: 500; opacity: 0; transition: opacity 0.2s; letter-spacing: 0.1em; }
+    #ptr.show { opacity: 1; }
+
+    /* ── Micro animations ────────────────────────────────────────── */
+    button, .filter-btn, .nf, .login-btn, .share-btn, .export-btn { transition: all 0.15s cubic-bezier(0.34,1.56,0.64,1) !important; }
+    button:active, .filter-btn:active { transform: scale(0.95) !important; }
+    .stat { transition: background 0.3s, box-shadow 0.3s; }
+    .stat:hover { background: var(--accent-bg) !important; }
 
     /* Splash screen */
     #splash {
@@ -345,6 +424,19 @@
 </head>
 <body>
 
+<!-- Custom cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- Particle canvas -->
+<canvas id="particle-canvas"></canvas>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- Pull to refresh indicator -->
+<div id="ptr">↓ Release to refresh</div>
+
 <!-- Splash screen -->
 <div id="splash">
   <div class="splash-logo">NYLO</div>
@@ -468,7 +560,36 @@
 
 <div class="wrap">
 
-  <!-- CAT Coin tracker — top card -->
+  <!-- NYLO intro + slogan at very top -->
+  <div style="margin-bottom:2rem;">
+    <div style="font-family:var(--mono);font-size:0.68rem;color:var(--accent);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:0.5rem;">NYLO — Precision Trading</div>
+    <h1 style="font-family:var(--serif);font-size:2.4rem;font-weight:400;letter-spacing:-0.02em;line-height:1.1;margin-bottom:0.5rem;">Smarter signals. <em style="font-style:italic;color:var(--accent)">Better trades.</em></h1>
+    <p style="font-size:0.85rem;color:var(--muted);max-width:560px;line-height:1.7;">NYLO is an AI-powered trading signal dashboard built on the Opening Range Breakout strategy. It watches QQQ and GLD every minute during market hours, applies 5 confirmation filters — RSI, VWAP, volume, multi-timeframe and breakout — and sends you a real-time iMessage the moment conditions align. Track your performance, follow signals, and trade with an edge.</p>
+  </div>
+
+  <!-- Market mood + hours moved to top -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem;">
+    <div class="card" id="market-mood-card">
+      <div class="ct">Market mood</div>
+      <div style="display:flex;align-items:center;gap:1rem;margin-top:0.5rem;">
+        <div id="mood-icon" style="font-size:2.2rem;">⏳</div>
+        <div>
+          <div id="mood-label" style="font-family:var(--mono);font-size:0.85rem;font-weight:500;color:var(--text);">Loading...</div>
+          <div id="mood-spy" style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:2px;">SPY: —</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Market hours</div>
+      <div id="market-clock" style="font-family:var(--mono);font-size:0.95rem;font-weight:500;color:var(--accent);margin-top:0.5rem;">—</div>
+      <div id="market-status" style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:4px;">—</div>
+      <div id="market-bar" style="height:3px;background:var(--border);border-radius:2px;margin-top:0.75rem;overflow:hidden;">
+        <div id="market-fill" style="height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width 1s;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAT Coin tracker -->
   <div id="crypto-section" style="margin-bottom:2rem;">
     <div class="card" id="cat-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;cursor:pointer;border-color:var(--accent-light);" onclick="toggleCryptoChart()">
       <div style="display:flex;align-items:center;gap:1rem;">
@@ -493,16 +614,11 @@
     <div id="cat-updated" style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);text-align:right;margin-top:0.4rem;"></div>
   </div>
 
-  <div class="hero">
-    <h1>Your trading <em>edge,</em><br>powered by NYLO.</h1>
-    <p>QQQ · GLD &nbsp;·&nbsp; ORB / RSI Strategy &nbsp;·&nbsp; Paper Trading</p>
-  </div>
-
   <!-- Upload / connection zone -->
   <div class="upload" id="upload-zone" onclick="document.getElementById('fi').click()">
     <div style="font-size:1.5rem;margin-bottom:0.5rem" id="upload-icon">📂</div>
     <h3 id="upload-title">Upload your trade log</h3>
-    <p id="upload-desc">Click to select <strong>trade_log.csv</strong> — or run <strong>trading_agent_7.py</strong> for auto-load</p>
+    <p id="upload-desc">Click to select <strong>trade_log.csv</strong> — or run <strong>trading_agent_10.py</strong> for auto-load</p>
     <input type="file" id="fi" accept=".csv">
   </div>
 
@@ -523,7 +639,7 @@
     <div class="ot-bar"><div class="ot-fill" id="ot-fill" style="width:0%;background:var(--green);"></div></div>
   </div>
 
-  <div class="sl">Performance overview</div>
+  <div class="sl reveal">Performance overview</div>
 
   <!-- Win streak + share -->
   <div class="streak-card">
@@ -632,28 +748,6 @@
     </div>
   </div>
 
-  <!-- Market mood + countdown -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.5rem;">
-    <div class="card" id="market-mood-card">
-      <div class="ct">Market mood</div>
-      <div style="display:flex;align-items:center;gap:1rem;margin-top:0.5rem;">
-        <div id="mood-icon" style="font-size:2.5rem;">⏳</div>
-        <div>
-          <div id="mood-label" style="font-family:var(--mono);font-size:0.9rem;font-weight:500;color:var(--text);">Loading...</div>
-          <div id="mood-spy" style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);margin-top:2px;">SPY: —</div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="ct">Market hours</div>
-      <div id="market-clock" style="font-family:var(--mono);font-size:1rem;font-weight:500;color:var(--accent);margin-top:0.5rem;">—</div>
-      <div id="market-status" style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);margin-top:4px;">—</div>
-      <div id="market-bar" style="height:3px;background:var(--border);border-radius:2px;margin-top:0.75rem;overflow:hidden;">
-        <div id="market-fill" style="height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width 1s;"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- Trade replay -->
   <div class="sl">Trade replay</div>
   <div class="card" style="margin-bottom:2.5rem;" id="replay-card">
@@ -676,40 +770,45 @@
     </div>
   </div>
 
-  <!-- Leaderboard + Friends -->
-  <div class="sl">Leaderboard & Friends</div>
+  <!-- Members + Admin Comments -->
+  <div class="sl">Members & Admin</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.5rem;" id="leaderboard-section">
-    <!-- Leaderboard -->
+    <!-- Members -->
     <div class="card">
-      <div class="ct" style="margin-bottom:1rem;">Performance ranking</div>
+      <div class="ct" style="margin-bottom:1rem;">Members</div>
       <div id="leaderboard-list">
         <div style="font-family:var(--mono);font-size:0.75rem;color:var(--muted);text-align:center;padding:1rem;">No members yet</div>
       </div>
+      <!-- Join form -->
+      <div id="join-form" style="margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem;">
+        <div style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-bottom:0.75rem;">Not a member? Request access below.</div>
+        <input id="req-username" type="text" placeholder="Username" style="width:100%;margin-bottom:6px;font-family:var(--mono);font-size:0.75rem;padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);">
+        <input id="req-display" type="text" placeholder="Display name" style="width:100%;margin-bottom:6px;font-family:var(--mono);font-size:0.75rem;padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);">
+        <input id="req-phone" type="tel" placeholder="Phone (+13055550123)" style="width:100%;margin-bottom:10px;font-family:var(--mono);font-size:0.75rem;padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);">
+        <button onclick="submitJoinRequest()" style="width:100%;padding:7px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--mono);font-size:0.72rem;cursor:pointer;">Request Access →</button>
+        <div id="req-status" style="font-family:var(--mono);font-size:0.65rem;margin-top:6px;text-align:center;"></div>
+      </div>
     </div>
-    <!-- Friends / Join -->
+
+    <!-- Admin Comments + Panel -->
     <div class="card">
-      <div class="ct" style="margin-bottom:1rem;">Community</div>
-      <div id="friends-content">
-        <!-- Join form -->
-        <div id="join-form">
-          <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:1rem;">Request access to join the NYLO community. Giovanni will approve your request and you'll receive trade signals directly to your phone.</div>
-          <input id="req-username" type="text" placeholder="Username (e.g. trader99)" style="width:100%;margin-bottom:8px;font-family:var(--mono);font-size:0.78rem;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);">
-          <input id="req-display" type="text" placeholder="Display name (e.g. John D.)" style="width:100%;margin-bottom:8px;font-family:var(--mono);font-size:0.78rem;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);">
-          <input id="req-phone" type="tel" placeholder="Phone number (e.g. +13055550123)" style="width:100%;margin-bottom:12px;font-family:var(--mono);font-size:0.78rem;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);">
-          <button onclick="submitJoinRequest()" style="width:100%;padding:8px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--mono);font-size:0.75rem;cursor:pointer;letter-spacing:0.06em;">Request Access →</button>
-          <div id="req-status" style="font-family:var(--mono);font-size:0.68rem;margin-top:8px;text-align:center;"></div>
+      <div class="ct" style="margin-bottom:1rem;">Admin Comments</div>
+      <div id="admin-comments-list" style="margin-bottom:1rem;">
+        <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);">No comments yet.</div>
+      </div>
+      <!-- Admin unlock -->
+      <div id="admin-panel" style="border-top:1px solid var(--border);padding-top:1rem;">
+        <div id="admin-locked">
+          <input id="admin-pass" type="password" placeholder="Admin password" style="width:100%;margin-bottom:6px;font-family:var(--mono);font-size:0.72rem;padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);">
+          <button onclick="adminLogin()" style="width:100%;padding:6px;background:var(--faint);color:var(--accent);border:1px solid var(--border);border-radius:8px;font-family:var(--mono);font-size:0.68rem;cursor:pointer;">⚙ Admin Login</button>
         </div>
-        <!-- Admin panel (only visible to Giovanni) -->
-        <div id="admin-panel" style="display:none;margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem;">
-          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.75rem;">Pending requests</div>
+        <div id="admin-unlocked-panel" style="display:none;">
+          <!-- Post comment -->
+          <textarea id="admin-comment-input" placeholder="Write a comment for members..." style="width:100%;margin-bottom:6px;font-family:var(--mono);font-size:0.72rem;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);height:70px;resize:none;"></textarea>
+          <button onclick="postAdminComment()" style="width:100%;padding:6px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--mono);font-size:0.68rem;cursor:pointer;margin-bottom:1rem;">Post Comment</button>
+          <!-- Pending requests -->
+          <div style="font-family:var(--mono);font-size:0.6rem;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem;">Pending Requests</div>
           <div id="pending-list"><div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);">No pending requests</div></div>
-          <div style="margin-top:1rem;">
-            <input id="admin-pass" type="password" placeholder="Admin password" style="width:100%;margin-bottom:8px;font-family:var(--mono);font-size:0.75rem;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);">
-            <button onclick="adminLogin()" style="width:100%;padding:6px;background:var(--faint);color:var(--accent);border:1px solid var(--border);border-radius:8px;font-family:var(--mono);font-size:0.7rem;cursor:pointer;">Unlock Admin</button>
-          </div>
-        </div>
-        <div style="text-align:right;margin-top:0.5rem;">
-          <button onclick="toggleAdmin()" style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);background:none;border:none;cursor:pointer;letter-spacing:0.08em;">⚙ Admin</button>
         </div>
       </div>
     </div>
@@ -818,6 +917,8 @@ function enterDashboard(member) {
   document.getElementById('main-content').classList.add('unlocked');
   setTimeout(() => { document.getElementById('login-gate').style.display = 'none'; }, 600);
   document.getElementById('current-user').textContent = member.display || member.username;
+  playSound('swoosh');
+  setTimeout(() => showToast('👋', `Welcome back, ${member.display || member.username}!`), 800);
 }
 
 function logout() {
@@ -845,6 +946,155 @@ setTimeout(showLoginGate, 4100);
 
 // Enter key support
 document.getElementById('login-username').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+// ── Custom cursor ─────────────────────────────────────────────────────────────
+const cur  = document.getElementById('cursor');
+const curR = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cur.style.left = mx+'px'; cur.style.top = my+'px'; });
+(function animCursor() {
+  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+  curR.style.left = rx+'px'; curR.style.top = ry+'px';
+  requestAnimationFrame(animCursor);
+})();
+document.querySelectorAll('a,button,.card,.filter-btn,.nf,.login-btn').forEach(el => {
+  el.addEventListener('mouseenter', () => { cur.classList.add('hover'); curR.classList.add('hover'); });
+  el.addEventListener('mouseleave', () => { cur.classList.remove('hover'); curR.classList.remove('hover'); });
+});
+
+// ── Particles ─────────────────────────────────────────────────────────────────
+(function initParticles() {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight,
+      vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3,
+      r: Math.random()*2+1
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    const isDark = document.body.classList.contains('dark');
+    const color  = isDark ? '100,160,255' : '24,71,212';
+    particles.forEach((p,i) => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle = `rgba(${color},0.4)`; ctx.fill();
+      // Connect nearby particles
+      for (let j = i+1; j < particles.length; j++) {
+        const dx = particles[j].x-p.x, dy = particles[j].y-p.y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        if (dist < 120) {
+          ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(particles[j].x,particles[j].y);
+          ctx.strokeStyle = `rgba(${color},${0.15*(1-dist/120)})`; ctx.lineWidth=0.5; ctx.stroke();
+        }
+      }
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── Toast notifications ───────────────────────────────────────────────────────
+function showToast(icon, message, duration=3500) {
+  const container = document.getElementById('toast-container');
+  const toast     = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<span class="toast-icon">${icon}</span><span>${message}</span>`;
+  container.appendChild(toast);
+  // Haptic on mobile
+  if (navigator.vibrate) navigator.vibrate(40);
+  setTimeout(() => {
+    toast.classList.add('exit');
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+
+// ── Scroll reveal ─────────────────────────────────────────────────────────────
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// ── Pull to refresh (mobile) ──────────────────────────────────────────────────
+let ptrStart = 0, ptrActive = false;
+const ptrEl = document.getElementById('ptr');
+document.addEventListener('touchstart', e => { if (window.scrollY === 0) { ptrStart = e.touches[0].clientY; ptrActive = true; } });
+document.addEventListener('touchmove', e => {
+  if (!ptrActive) return;
+  const dy = e.touches[0].clientY - ptrStart;
+  if (dy > 60) ptrEl.classList.add('show');
+});
+document.addEventListener('touchend', () => {
+  if (ptrEl.classList.contains('show')) {
+    ptrEl.textContent = '↻ Refreshing...';
+    tryAutoLoad();
+    setTimeout(() => { ptrEl.classList.remove('show'); ptrEl.textContent = '↓ Release to refresh'; }, 1500);
+  }
+  ptrActive = false;
+});
+
+// ── Sound effects ─────────────────────────────────────────────────────────────
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+function playSound(type) {
+  try {
+    if (!audioCtx) audioCtx = new AudioCtx();
+    const osc  = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    if (type === 'click') {
+      osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime+0.08);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.08);
+      osc.start(); osc.stop(audioCtx.currentTime+0.08);
+    } else if (type === 'success') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(660, audioCtx.currentTime+0.1);
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime+0.2);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.35);
+      osc.start(); osc.stop(audioCtx.currentTime+0.35);
+    } else if (type === 'swoosh') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime+0.15);
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.15);
+      osc.start(); osc.stop(audioCtx.currentTime+0.15);
+    }
+  } catch(e) {}
+}
+// Add click sounds to all buttons
+document.addEventListener('click', e => {
+  if (e.target.closest('button') || e.target.closest('.filter-btn') || e.target.closest('.nf')) playSound('click');
+});
+
+// ── Skeleton loading ──────────────────────────────────────────────────────────
+function showSkeletons() {
+  ['s0','s1','s2','s2d','s4','s5'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.textContent === '—') { el.innerHTML = '<div class="skeleton" style="width:60px;height:24px;"></div>'; }
+  });
+}
+showSkeletons();
+
+// ── Hook toasts into render ───────────────────────────────────────────────────
+const _origTryAutoLoad = tryAutoLoad;
+async function tryAutoLoad() {
+  await _origTryAutoLoad();
+}
 
 // ── Dark mode ─────────────────────────────────────────────────────────────────
 function toggleDark() {
@@ -1152,7 +1402,11 @@ function render(trades) {
   // New features
   updateStreak(trades);
   updateNotifications();
-  if (wins.length > 0) setTimeout(fireConfetti, 600);
+  if (wins.length > 0) {
+    setTimeout(fireConfetti, 600);
+    playSound('success');
+    if (wins.length > 0 && typeof showToast === 'function') showToast('💰', `${wins.length} winning trade${wins.length>1?'s':''}! Keep it up!`);
+  }
 }
 
 // ── Open trade monitor ────────────────────────────────────────────────────────
@@ -1513,43 +1767,67 @@ function renderCatChart(pair) {
 fetchCatPrice();
 setInterval(fetchCatPrice, 30000);
 
-fetchCatPrice();
-setInterval(fetchCatPrice, 30000); // refresh every 30 seconds
+// ── News (RSS feeds — works from any domain) ──────────────────────────────────
+let allArticles = [], activeFilter = 'all';
 
-// ── News ──────────────────────────────────────────────────────────────────────
-const NEWS_KEY = 'dd717e9fb3704961ae57334df27191e6';
-const PROXY    = 'https://api.allorigins.win/get?url=';
-const NEWS_Q   = [{q:'QQQ NASDAQ ETF',tag:'qqq'},{q:'GLD gold price',tag:'gld'}];
-let allArticles=[], activeFilter='all';
+const RSS_FEEDS = [
+  { url: 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=QQQ&region=US&lang=en-US', tag: 'qqq', label: 'Yahoo Finance' },
+  { url: 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=GLD&region=US&lang=en-US', tag: 'gld', label: 'Yahoo Finance' },
+  { url: 'https://feeds.marketwatch.com/marketwatch/marketpulse/', tag: 'qqq', label: 'MarketWatch' },
+  { url: 'https://www.reutersagency.com/feed/?best-topics=business-finance&post_type=best', tag: 'gld', label: 'Reuters' },
+];
+
+const RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
 
 async function fetchNews() {
   const grid = document.getElementById('news-grid');
   grid.innerHTML = '<div class="card" style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:0.82rem;">Fetching headlines...</div>';
-  const fetched=[];
-  for (const {q,tag} of NEWS_Q) {
+  const fetched = [];
+
+  for (const feed of RSS_FEEDS) {
     try {
-      const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(q)}&language=en&sortBy=publishedAt&pageSize=6&apiKey=${NEWS_KEY}`;
-      const res = await fetch(PROXY+encodeURIComponent(url));
-      const wrap= await res.json();
-      const data= JSON.parse(wrap.contents);
-      if (data.articles) data.articles.forEach(a=>{ if(!a.title||a.title==='[Removed]') return; fetched.push({...a,_tag:tag}); });
-    } catch(e){}
+      const res  = await fetch(RSS_PROXY + encodeURIComponent(feed.url));
+      const data = await res.json();
+      if (data.items) {
+        data.items.slice(0, 5).forEach(item => {
+          if (!item.title) return;
+          fetched.push({
+            title:       item.title,
+            url:         item.link,
+            description: item.description?.replace(/<[^>]*>/g,'').slice(0,150) || '',
+            publishedAt: new Date(item.pubDate),
+            source:      feed.label,
+            _tag:        feed.tag
+          });
+        });
+      }
+    } catch(e) { console.log('RSS feed error:', feed.url, e); }
   }
-  const seen=new Set();
-  allArticles=fetched.filter(a=>{if(seen.has(a.title))return false;seen.add(a.title);return true;}).sort((a,b)=>new Date(b.publishedAt)-new Date(a.publishedAt)).slice(0,20);
-  document.getElementById('news-ts').textContent='News updated '+new Date().toLocaleTimeString();
+
+  // Dedupe and sort newest first
+  const seen = new Set();
+  allArticles = fetched
+    .filter(a => { if(seen.has(a.title)) return false; seen.add(a.title); return true; })
+    .sort((a,b) => b.publishedAt - a.publishedAt)
+    .slice(0, 20);
+
+  document.getElementById('news-ts').textContent = 'News updated ' + new Date().toLocaleTimeString();
   renderNews();
 }
 
 function renderNews() {
-  const grid=document.getElementById('news-grid');
-  const filtered=activeFilter==='all'?allArticles:allArticles.filter(a=>a._tag===activeFilter);
-  if (!filtered.length) { grid.innerHTML='<div class="card" style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:0.82rem;">No headlines found.</div>'; return; }
-  grid.innerHTML=filtered.map(a=>{
-    const ago=timeAgo(new Date(a.publishedAt));
-    const tag=a._tag==='qqq'?'<span class="news-tag tag-qqq">QQQ</span>':'<span class="news-tag tag-gld">GLD</span>';
-    const desc=a.description?`<div class="news-desc">${a.description.slice(0,120)}${a.description.length>120?'…':''}</div>`:'';
-    return `<a class="news-card fade" href="${a.url}" target="_blank" rel="noopener">${tag}<div class="news-title">${a.title}</div>${desc}<div class="news-meta">${a.source?.name||''} · ${ago}</div></a>`;
+  const grid     = document.getElementById('news-grid');
+  const filtered = activeFilter === 'all' ? allArticles : allArticles.filter(a => a._tag === activeFilter);
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="card" style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:0.82rem;">No headlines found — check back soon.</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(a => {
+    const ago  = timeAgo(a.publishedAt instanceof Date ? a.publishedAt : new Date(a.publishedAt));
+    const tag  = a._tag === 'qqq' ? '<span class="news-tag tag-qqq">QQQ</span>' : '<span class="news-tag tag-gld">GLD</span>';
+    const desc = a.description ? `<div class="news-desc">${a.description.slice(0,120)}${a.description.length>120?'…':''}</div>` : '';
+    const src  = a.source || a.source?.name || '';
+    return `<a class="news-card fade" href="${a.url}" target="_blank" rel="noopener">${tag}<div class="news-title">${a.title}</div>${desc}<div class="news-meta">${src} · ${ago}</div></a>`;
   }).join('');
 }
 
@@ -1725,27 +2003,38 @@ function renderTable() {
   });
 }
 
-// ── Leaderboard & Friends ─────────────────────────────────────────────────────
-const ADMIN_PASS    = 'nylo2024';
-let adminUnlocked   = false;
+// ── Supabase ──────────────────────────────────────────────────────────────────
+const SUPA_URL = 'https://hwczpidgbtycddiakhnx.supabase.co';
+const SUPA_KEY = 'sb_publishable_2UtHOs8J8I9QUyNm1NBABA_JfAza7CE';
+const HEADERS  = { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
 
-// Use localStorage to persist members and requests (per-device)
-function getMembers()  { try { return JSON.parse(localStorage.getItem('nylo-members') || '[]'); } catch(e) { return []; } }
-function getRequests() { try { return JSON.parse(localStorage.getItem('nylo-requests') || '[]'); } catch(e) { return []; } }
-function saveMembers(m)  { localStorage.setItem('nylo-members', JSON.stringify(m)); }
-function saveRequests(r) { localStorage.setItem('nylo-requests', JSON.stringify(r)); }
+async function sbGet(table, filter='') {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}?${filter}&order=created_at.asc`, { headers: HEADERS });
+  return res.json();
+}
+async function sbInsert(table, data) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}`, { method:'POST', headers:{...HEADERS,'Prefer':'return=representation'}, body: JSON.stringify(data) });
+  return res.json();
+}
+async function sbDelete(table, filter) {
+  await fetch(`${SUPA_URL}/rest/v1/${table}?${filter}`, { method:'DELETE', headers: HEADERS });
+}
 
-// Seed Giovanni as first member
-(function() {
-  const members = getMembers();
-  if (!members.find(m => m.username === 'giovanni')) {
-    members.unshift({ username: 'giovanni', display: 'Giovanni Flores', role: 'admin', joined: new Date().toLocaleDateString(), wins: 0, losses: 0 });
-    saveMembers(members);
-  }
-})();
+// Override localStorage functions with Supabase
+async function getMembers()  { try { return await sbGet('members'); } catch(e) { return []; } }
+async function getRequests() { try { return await sbGet('requests'); } catch(e) { return []; } }
+async function getComments() { try { return await sbGet('comments','order=created_at.desc'); } catch(e) { return []; } }
 
-function renderLeaderboard() {
-  const members = getMembers();
+async function saveMembers(m)  { /* handled by sbInsert individually */ }
+async function saveRequests(r) { /* handled by sbInsert individually */ }
+async function saveComments(c) { /* handled by sbInsert individually */ }
+
+// ── Leaderboard & Friends (Supabase powered) ──────────────────────────────────
+const ADMIN_PASS = 'nylo2024';
+let adminUnlocked = false;
+
+async function renderLeaderboard() {
+  const members = await getMembers();
   const list    = document.getElementById('leaderboard-list');
   if (!members.length) { list.innerHTML = '<div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);text-align:center;padding:1rem;">No members yet</div>'; return; }
   list.innerHTML = members.map((m, i) => {
@@ -1767,52 +2056,45 @@ function renderLeaderboard() {
   }).join('');
 }
 
-function submitJoinRequest() {
+async function submitJoinRequest() {
   const username = document.getElementById('req-username').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
   const display  = document.getElementById('req-display').value.trim();
   const phone    = document.getElementById('req-phone').value.trim().replace(/\s/g,'');
   const status   = document.getElementById('req-status');
-
   if (!username || !display || !phone) { status.textContent = 'Please fill in all fields.'; status.style.color = 'var(--red)'; return; }
-  if (!phone.startsWith('+')) { status.textContent = 'Phone must start with + and country code (e.g. +1...)'; status.style.color = 'var(--red)'; return; }
-
-  const members  = getMembers();
-  const requests = getRequests();
-  if (members.find(m => m.username === username) || requests.find(r => r.username === username)) {
-    status.textContent = 'Username already taken or pending.'; status.style.color = 'var(--red)'; return;
+  if (!phone.startsWith('+')) { status.textContent = 'Phone must start with + and country code.'; status.style.color = 'var(--red)'; return; }
+  try {
+    await sbInsert('requests', { username, display, phone, requested: new Date().toLocaleDateString() });
+    status.textContent = '✅ Request sent! Giovanni will approve you soon.';
+    status.style.color = 'var(--green)';
+    document.getElementById('req-username').value = '';
+    document.getElementById('req-display').value  = '';
+    document.getElementById('req-phone').value    = '';
+  } catch(e) {
+    status.textContent = 'Username already taken or pending.';
+    status.style.color = 'var(--red)';
   }
-  requests.push({ username, display, phone, requested: new Date().toLocaleDateString() });
-  saveRequests(requests);
-  status.textContent = '✅ Request sent! Giovanni will approve you soon. You\'ll get signals directly to your phone once approved.';
-  status.style.color = 'var(--green)';
-  document.getElementById('req-username').value = '';
-  document.getElementById('req-display').value  = '';
-  document.getElementById('req-phone').value    = '';
-  renderPendingRequests();
 }
 
-function toggleAdmin() {
-  const panel = document.getElementById('admin-panel');
-  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-}
-
-function adminLogin() {
+async function adminLogin() {
   const pass = document.getElementById('admin-pass').value;
   if (pass === ADMIN_PASS) {
     adminUnlocked = true;
-    document.getElementById('admin-pass').style.borderColor = 'var(--green)';
+    document.getElementById('admin-locked').style.display = 'none';
+    document.getElementById('admin-unlocked-panel').style.display = 'block';
     renderPendingRequests();
+    renderAdminComments();
   } else {
     document.getElementById('admin-pass').style.borderColor = 'var(--red)';
   }
 }
 
-function renderPendingRequests() {
+async function renderPendingRequests() {
   if (!adminUnlocked) return;
-  const requests = getRequests();
+  const requests = await getRequests();
   const list     = document.getElementById('pending-list');
   if (!requests.length) { list.innerHTML = '<div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);">No pending requests</div>'; return; }
-  list.innerHTML = requests.map((r,i) => `
+  list.innerHTML = requests.map(r => `
     <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;gap:8px;border-bottom:1px solid var(--border);">
       <div>
         <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text);">@${r.username} · ${r.display}</div>
@@ -1820,63 +2102,68 @@ function renderPendingRequests() {
         <div style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);">Requested ${r.requested}</div>
       </div>
       <div style="display:flex;gap:4px;">
-        <button onclick="approveRequest(${i})" style="padding:3px 8px;background:var(--green-bg);color:var(--green);border:1px solid var(--green);border-radius:6px;font-family:var(--mono);font-size:0.6rem;cursor:pointer;">✓</button>
-        <button onclick="denyRequest(${i})" style="padding:3px 8px;background:var(--red-bg);color:var(--red);border:1px solid var(--red);border-radius:6px;font-family:var(--mono);font-size:0.6rem;cursor:pointer;">✗</button>
+        <button onclick="approveRequest('${r.id}','${r.username}','${r.display}','${r.phone}')" style="padding:3px 8px;background:var(--green-bg);color:var(--green);border:1px solid var(--green);border-radius:6px;font-family:var(--mono);font-size:0.6rem;cursor:pointer;">✓</button>
+        <button onclick="denyRequest('${r.id}')" style="padding:3px 8px;background:var(--red-bg);color:var(--red);border:1px solid var(--red);border-radius:6px;font-family:var(--mono);font-size:0.6rem;cursor:pointer;">✗</button>
       </div>
     </div>`).join('');
-
-  // Show approved members' phone numbers for adding to agent
-  const members = getMembers().filter(m => m.role !== 'admin' && m.phone);
-  if (members.length) {
-    list.innerHTML += `<div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border);">
-      <div style="font-family:var(--mono);font-size:0.6rem;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem;">Approved member numbers — add to agent</div>
-      ${members.map(m => `<div style="font-family:var(--mono);font-size:0.68rem;color:var(--text);padding:2px 0;">${m.display}: <span style="color:var(--accent)">${m.phone}</span></div>`).join('')}
-    </div>`;
-  }
 }
 
-function approveRequest(i) {
-  const requests = getRequests();
-  const r        = requests[i];
-  const members  = getMembers();
-  members.push({ username: r.username, display: r.display, phone: r.phone, role: 'member', joined: new Date().toLocaleDateString(), wins: 0, losses: 0 });
-  requests.splice(i, 1);
-  saveMembers(members);
-  saveRequests(requests);
-
-  // Auto-sync phone numbers to agent via local server
+async function approveRequest(id, username, display, phone) {
+  await sbInsert('members', { username, display, phone, role: 'member', joined: new Date().toLocaleDateString(), wins: 0, losses: 0 });
+  await sbDelete('requests', `id=eq.${id}`);
+  const members = await getMembers();
   syncSubscribersToAgent(members);
-
   renderLeaderboard();
   renderPendingRequests();
+  showToast('✅', `${display} approved!`);
+}
+
+async function denyRequest(id) {
+  await sbDelete('requests', `id=eq.${id}`);
+  renderPendingRequests();
+}
+
+async function postAdminComment() {
+  const input = document.getElementById('admin-comment-input');
+  const text  = input.value.trim();
+  if (!text) return;
+  await sbInsert('comments', { text, date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) });
+  input.value = '';
+  renderAdminComments();
+  showToast('📝', 'Comment posted!');
+}
+
+async function renderAdminComments() {
+  const list     = document.getElementById('admin-comments-list');
+  const comments = await getComments();
+  if (!comments.length) { list.innerHTML = '<div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);">No comments yet.</div>'; return; }
+  list.innerHTML = comments.map(c => `
+    <div style="padding:0.6rem 0;border-bottom:1px solid var(--border);">
+      <div style="font-family:var(--sans);font-size:0.78rem;color:var(--text);line-height:1.5;">${c.text}</div>
+      <div style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);margin-top:4px;display:flex;align-items:center;justify-content:space-between;">
+        <span>Giovanni · ${c.date} ${c.time}</span>
+        ${adminUnlocked ? `<button onclick="deleteComment('${c.id}')" style="background:none;border:none;color:var(--red);font-family:var(--mono);font-size:0.6rem;cursor:pointer;">✗ delete</button>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+async function deleteComment(id) {
+  await sbDelete('comments', `id=eq.${id}`);
+  renderAdminComments();
 }
 
 async function syncSubscribersToAgent(members) {
-  // Build subscribers list — all approved non-admin members with phone numbers
-  const subs = members.filter(m => m.role !== 'admin' && m.phone);
-  const lines = subs.map(m => `["${m.display}", "${m.phone}"]`).join(',\n    ');
+  const subs    = members.filter(m => m.role !== 'admin' && m.phone);
+  const lines   = subs.map(m => `["${m.display}", "${m.phone}"]`).join(',\n    ');
   const content = `SUBSCRIBERS = [\n    ${lines}\n]\n`;
-
   try {
-    await fetch(LOCAL + '/update_subscribers', {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: content
-    });
-    console.log('[NYLO] Subscribers synced to agent:', subs.length);
-  } catch(e) {
-    console.log('[NYLO] Agent not running — subscribers saved locally for manual copy');
-  }
+    await fetch(LOCAL + '/update_subscribers', { method:'POST', headers:{'Content-Type':'text/plain'}, body: content });
+  } catch(e) { console.log('[NYLO] Agent not running'); }
 }
 
-function denyRequest(i) {
-  const requests = getRequests();
-  requests.splice(i, 1);
-  saveRequests(requests);
-  renderPendingRequests();
-}
-
+// Load on startup
 renderLeaderboard();
+renderAdminComments();
 </script>
 </body>
 </html>
