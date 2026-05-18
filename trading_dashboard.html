@@ -302,7 +302,7 @@
     /* Login gate */
     #login-gate {
       position: fixed; inset: 0; background: var(--bg);
-      display: flex; align-items: center; justify-content: center;
+      display: none; align-items: center; justify-content: center;
       z-index: 999; padding: 2rem;
       opacity: 0; pointer-events: none;
       transition: opacity 0.6s ease;
@@ -326,6 +326,9 @@
     .login-status { font-family: var(--mono); font-size: 0.68rem; text-align: center; margin-top: 10px; min-height: 20px; }
     .login-divider { text-align: center; font-family: var(--mono); font-size: 0.6rem; color: var(--muted); margin: 1rem 0; letter-spacing: 0.1em; }
     #current-user { font-family: var(--mono); font-size: 0.65rem; color: rgba(255,255,255,0.7); }
+
+    #main-content { opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+    #main-content.unlocked { opacity: 1; pointer-events: all; }
 
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.65rem; color: var(--muted); border-top: 1px solid var(--border); }
     footer span { color: var(--accent); font-weight: 500; }
@@ -417,6 +420,7 @@
   </div>
 </div>
 
+<div id="main-content">
 <nav style="position:relative;">
   <div class="logo">NYLO <span>TRADING DASHBOARD</span></div>
   <div class="nav-right">
@@ -726,6 +730,7 @@
 </div>
 
 <footer>Created by Giovanni Flores</footer>
+</div>
 
 <script>
 // Hide splash screen after 4 seconds with slow fade
@@ -810,6 +815,7 @@ function enterDashboard(member) {
   currentUser = member;
   localStorage.setItem('nylo-user', member.username);
   document.getElementById('login-gate').classList.remove('visible');
+  document.getElementById('main-content').classList.add('unlocked');
   setTimeout(() => { document.getElementById('login-gate').style.display = 'none'; }, 600);
   document.getElementById('current-user').textContent = member.display || member.username;
 }
@@ -820,8 +826,7 @@ function logout() {
 }
 
 // Show login gate after splash
-setTimeout(() => {
-  // Check if already logged in
+function showLoginGate() {
   const saved = localStorage.getItem('nylo-user');
   if (saved) {
     const members = getMembers();
@@ -833,8 +838,10 @@ setTimeout(() => {
   }
   const gate = document.getElementById('login-gate');
   gate.style.display = 'flex';
-  setTimeout(() => gate.classList.add('visible'), 50);
-}, 4200); // show just after splash fades
+  requestAnimationFrame(() => requestAnimationFrame(() => gate.classList.add('visible')));
+}
+
+setTimeout(showLoginGate, 4100);
 
 // Enter key support
 document.getElementById('login-username').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
