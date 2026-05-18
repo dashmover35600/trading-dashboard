@@ -47,18 +47,66 @@
       opacity: 0;
     }
     .splash-bar {
-      width: 120px; height: 2px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 2px; overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 48px;
       animation: fadeInUp 1s ease 0.5s forwards;
       opacity: 0;
     }
-    .splash-fill {
-      height: 100%; width: 0%; background: #ffffff;
-      border-radius: 2px;
-      animation: load 2.8s cubic-bezier(0.4,0,0.2,1) 0.5s forwards;
+    .splash-candle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
     }
-    @keyframes load { to { width: 100%; } }
+    .splash-wick {
+      width: 2px;
+      border-radius: 1px;
+      background: rgba(0,255,140,0.5);
+    }
+    .splash-body {
+      width: 10px;
+      border-radius: 2px;
+      background: #00ff8c;
+      height: 0;
+    }
+    .splash-wick-top  { animation: wickUp 0.3s ease forwards; }
+    .splash-wick-bot  { animation: wickUp 0.3s ease forwards; }
+
+    /* Each candle body grows up with a delay */
+    .c1 .splash-body { animation: growCandle 0.4s ease 0.6s forwards; }
+    .c2 .splash-body { animation: growCandle 0.4s ease 0.8s forwards; }
+    .c3 .splash-body { animation: growCandle 0.4s ease 1.0s forwards; }
+    .c4 .splash-body { animation: growCandle 0.4s ease 1.2s forwards; }
+    .c5 .splash-body { animation: growCandle 0.5s ease 1.4s forwards; }
+    .c6 .splash-body { animation: growCandle 0.5s ease 1.6s forwards; }
+    .c7 .splash-body { animation: growCandle 0.6s ease 1.8s forwards; }
+
+    .c1 .splash-wick-top { height: 0; animation: growWick 0.3s ease 1.0s forwards; }
+    .c2 .splash-wick-top { height: 0; animation: growWick 0.3s ease 1.2s forwards; }
+    .c3 .splash-wick-top { height: 0; animation: growWick 0.3s ease 1.4s forwards; }
+    .c4 .splash-wick-top { height: 0; animation: growWick 0.3s ease 1.6s forwards; }
+    .c5 .splash-wick-top { height: 0; animation: growWick 0.3s ease 1.8s forwards; }
+    .c6 .splash-wick-top { height: 0; animation: growWick 0.3s ease 2.0s forwards; }
+    .c7 .splash-wick-top { height: 0; animation: growWick 0.4s ease 2.2s forwards; }
+
+    .c1 .splash-wick-bot { height: 0; animation: growWick 0.2s ease 1.0s forwards; }
+    .c2 .splash-wick-bot { height: 0; animation: growWick 0.2s ease 1.2s forwards; }
+    .c3 .splash-wick-bot { height: 0; animation: growWick 0.2s ease 1.4s forwards; }
+    .c4 .splash-wick-bot { height: 0; animation: growWick 0.2s ease 1.6s forwards; }
+    .c5 .splash-wick-bot { height: 0; animation: growWick 0.2s ease 1.8s forwards; }
+    .c6 .splash-wick-bot { height: 0; animation: growWick 0.2s ease 2.0s forwards; }
+    .c7 .splash-wick-bot { height: 0; animation: growWick 0.2s ease 2.2s forwards; }
+
+    @keyframes growCandle {
+      from { height: 0; }
+      to   { height: var(--h); }
+    }
+    @keyframes growWick {
+      from { height: 0; }
+      to   { height: var(--wh, 8px); }
+    }
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -74,7 +122,55 @@
       --mono: 'DM Mono', monospace;
       --sans: 'DM Sans', sans-serif;
     }
-    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+    body.dark {
+      --bg: #060d1f; --surface: #0d1829; --border: #1a2744; --faint: #111e35;
+      --text: #e8eeff; --muted: #5a6a9a;
+      --accent: #3d6fff; --accent-bg: #0d1829; --accent-light: #1a2f5a;
+      --green: #00c878; --green-bg: #001a0e;
+      --red: #ff4d6a; --red-bg: #1a0008;
+      --amber: #ffb830; --amber-bg: #1a1000;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; transition: background 0.3s, color 0.3s; }
+
+    /* Dark mode toggle */
+    .dark-toggle { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 4px 10px; font-size: 1rem; cursor: pointer; transition: all 0.2s; color: #fff; font-family: var(--mono); letter-spacing: 0.05em; }
+    .dark-toggle:hover { background: rgba(255,255,255,0.25); }
+
+    /* Notification bell */
+    .notif-btn { position: relative; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 4px 10px; font-size: 1rem; cursor: pointer; color: #fff; }
+    .notif-dot { position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; border-radius: 50%; background: #ff4d6a; border: 1.5px solid var(--accent); display: none; }
+    .notif-dot.show { display: block; animation: pulse-dot 1.5s infinite; }
+    @keyframes pulse-dot { 0%,100%{transform:scale(1)} 50%{transform:scale(1.3)} }
+
+    /* Notification dropdown */
+    .notif-panel { position: absolute; top: calc(100% + 8px); right: 1.25rem; width: 300px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; z-index: 200; display: none; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+    .notif-panel.open { display: block; animation: fd 0.2s ease; }
+    .notif-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+    .notif-title { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .notif-toggle { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 0.62rem; color: var(--muted); cursor: pointer; }
+    .notif-switch { width: 28px; height: 16px; border-radius: 8px; background: var(--border); position: relative; transition: background 0.2s; }
+    .notif-switch.on { background: var(--accent); }
+    .notif-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
+    .notif-switch.on::after { transform: translateX(12px); }
+    .notif-item { font-family: var(--mono); font-size: 0.7rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); color: var(--text); }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-empty { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); text-align: center; padding: 0.5rem; }
+
+    /* Win streak */
+    .streak-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem 1.4rem; margin-bottom: 2.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .streak-label { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.3rem; }
+    .streak-val { font-family: var(--serif); font-size: 2rem; color: var(--text); }
+    .streak-emoji { font-size: 2rem; }
+
+    /* Share button */
+    .share-btn { font-family: var(--mono); font-size: 0.65rem; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--accent-light); background: var(--accent-bg); color: var(--accent); cursor: pointer; transition: all 0.15s; letter-spacing: 0.06em; }
+    .share-btn:hover { background: var(--accent); color: #fff; }
+
+    /* Confetti canvas */
+    #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 8888; }
+
+    /* Animated counters */
+    .sv { transition: all 0.3s ease; }
 
     /* Nav */
     nav { background: var(--accent); padding: 0 1.25rem; padding-top: env(safe-area-inset-top); height: calc(58px + env(safe-area-inset-top)); display: flex; align-items: flex-end; padding-bottom: 10px; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(24,71,212,0.18); }
@@ -203,6 +299,34 @@
     .news-meta { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); }
     .news-desc { font-size: 0.76rem; color: var(--muted); line-height: 1.5; }
 
+    /* Login gate */
+    #login-gate {
+      position: fixed; inset: 0; background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999; padding: 2rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.6s ease;
+    }
+    #login-gate.visible { opacity: 1; pointer-events: all; }
+    .login-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2.5rem;
+      width: 100%; max-width: 400px;
+      box-shadow: 0 20px 60px rgba(24,71,212,0.08);
+    }
+    .login-logo { font-family: var(--mono); font-size: 1.4rem; color: var(--accent); letter-spacing: 0.2em; font-weight: 500; margin-bottom: 0.25rem; }
+    .login-sub  { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 2rem; }
+    .login-tab  { display: flex; gap: 4px; margin-bottom: 1.5rem; background: var(--faint); border-radius: 10px; padding: 4px; }
+    .login-tab-btn { flex: 1; font-family: var(--mono); font-size: 0.68rem; padding: 6px; border: none; border-radius: 7px; cursor: pointer; background: transparent; color: var(--muted); transition: all 0.2s; letter-spacing: 0.06em; }
+    .login-tab-btn.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .login-input { width: 100%; margin-bottom: 10px; font-family: var(--mono); font-size: 0.8rem; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); outline: none; transition: border-color 0.2s; }
+    .login-input:focus { border-color: var(--accent); }
+    .login-btn { width: 100%; padding: 10px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-family: var(--mono); font-size: 0.78rem; cursor: pointer; letter-spacing: 0.08em; transition: opacity 0.2s; margin-top: 4px; }
+    .login-btn:hover { opacity: 0.9; }
+    .login-status { font-family: var(--mono); font-size: 0.68rem; text-align: center; margin-top: 10px; min-height: 20px; }
+    .login-divider { text-align: center; font-family: var(--mono); font-size: 0.6rem; color: var(--muted); margin: 1rem 0; letter-spacing: 0.1em; }
+    #current-user { font-family: var(--mono); font-size: 0.65rem; color: rgba(255,255,255,0.7); }
+
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.65rem; color: var(--muted); border-top: 1px solid var(--border); }
     footer span { color: var(--accent); font-weight: 500; }
     .fade { animation: fd 0.3s ease; }
@@ -221,15 +345,101 @@
 <!-- Splash screen -->
 <div id="splash">
   <div class="splash-logo">NYLO</div>
-  <div class="splash-sub">Trading Dashboard</div>
-  <div class="splash-bar"><div class="splash-fill"></div></div>
+  <div class="splash-sub">Where precision meets profit</div>
+  <div class="splash-bar">
+    <!-- 7 green candles growing up one by one -->
+    <div class="splash-candle c1">
+      <div class="splash-wick splash-wick-top" style="--wh:6px"></div>
+      <div class="splash-body" style="--h:18px"></div>
+      <div class="splash-wick splash-wick-bot" style="--wh:4px"></div>
+    </div>
+    <div class="splash-candle c2">
+      <div class="splash-wick splash-wick-top" style="--wh:8px"></div>
+      <div class="splash-body" style="--h:26px"></div>
+      <div class="splash-wick splash-wick-bot" style="--wh:5px"></div>
+    </div>
+    <div class="splash-candle c3">
+      <div class="splash-wick splash-wick-top" style="--wh:5px"></div>
+      <div class="splash-body" style="--h:20px"></div>
+      <div class="splash-wick splash-wick-bot" style="--wh:6px"></div>
+    </div>
+    <div class="splash-candle c4">
+      <div class="splash-wick splash-wick-top" style="--wh:10px"></div>
+      <div class="splash-body" style="--h:30px"></div>
+      <div class="splash-wick splash-wick-bot" style="--wh:4px"></div>
+    </div>
+    <div class="splash-candle c5">
+      <div class="splash-wick splash-wick-top" style="--wh:7px"></div>
+      <div class="splash-body" style="--h:24px"></div>
+      <div class="splash-wick splash-wick-bot" style="--wh:5px"></div>
+    </div>
+    <div class="splash-candle c6">
+      <div class="splash-wick splash-wick-top" style="--wh:9px"></div>
+      <div class="splash-body" style="--h:34px"></div>
+      <div class="splash-wick splash-wick-bot" style="--wh:6px"></div>
+    </div>
+    <div class="splash-candle c7">
+      <div class="splash-wick splash-wick-top" style="--wh:12px"></div>
+      <div class="splash-body" style="--h:42px"></div>
+      <div class="splash-wick splash-wick-bot" style="--wh:5px"></div>
+    </div>
+  </div>
 </div>
 
-<nav>
+<!-- Login gate -->
+<div id="login-gate">
+  <div class="login-card">
+    <div class="login-logo">NYLO</div>
+    <div class="login-sub">WHERE PRECISION MEETS PROFIT</div>
+
+    <div class="login-tab">
+      <button class="login-tab-btn active" onclick="switchTab('login',this)" id="tab-login">Sign in</button>
+      <button class="login-tab-btn" onclick="switchTab('register',this)" id="tab-register">Request access</button>
+    </div>
+
+    <!-- Sign in panel -->
+    <div id="panel-login">
+      <input class="login-input" id="login-username" type="text" placeholder="Enter your username" autocomplete="off">
+      <button class="login-btn" onclick="doLogin()">Enter NYLO →</button>
+      <div class="login-status" id="login-status"></div>
+    </div>
+
+    <!-- Register panel -->
+    <div id="panel-register" style="display:none;">
+      <input class="login-input" id="reg-username" type="text" placeholder="Username (e.g. trader99)" autocomplete="off">
+      <input class="login-input" id="reg-display" type="text" placeholder="Display name (e.g. John D.)">
+      <input class="login-input" id="reg-phone" type="tel" placeholder="Phone number (e.g. +13055550123)">
+      <button class="login-btn" onclick="doRegister()">Request Access →</button>
+      <div class="login-status" id="register-status"></div>
+      <div class="login-divider">· · ·</div>
+      <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-align:center;">Giovanni will approve your request.<br>You'll receive trade signals once approved.</div>
+    </div>
+  </div>
+</div>
+
+<nav style="position:relative;">
   <div class="logo">NYLO <span>TRADING DASHBOARD</span></div>
   <div class="nav-right">
+    <span id="current-user"></span>
     <span id="ts"></span>
+    <button class="notif-btn" id="notif-btn" title="Notifications">
+      ◈
+      <span class="notif-dot" id="notif-dot"></span>
+    </button>
+    <button class="dark-toggle" onclick="toggleDark()" id="dark-btn" title="Toggle dark mode">◑</button>
     <div class="pill"><div class="dot"></div>Live</div>
+  </div>
+
+  <!-- Notification panel inside nav for correct positioning -->
+  <div class="notif-panel" id="notif-panel">
+    <div class="notif-header">
+      <div class="notif-title">Recent Activity</div>
+      <div class="notif-toggle" id="notif-toggle-btn">
+        <span id="notif-setting-label">On</span>
+        <div class="notif-switch on" id="notif-switch"></div>
+      </div>
+    </div>
+    <div id="notif-list"><div class="notif-empty">No trades yet</div></div>
   </div>
 </nav>
 
@@ -249,7 +459,35 @@
   <div class="ticker-time" id="ticker-time"></div>
 </div>
 
+<!-- Confetti canvas -->
+<canvas id="confetti-canvas"></canvas>
+
 <div class="wrap">
+
+  <!-- CAT Coin tracker — top card -->
+  <div id="crypto-section" style="margin-bottom:2rem;">
+    <div class="card" id="cat-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;cursor:pointer;border-color:var(--accent-light);" onclick="toggleCryptoChart()">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <div style="width:42px;height:42px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🐱</div>
+        <div>
+          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2px;">CAT Coin · Solana · Tap for chart</div>
+          <div style="font-family:var(--mono);font-size:1.2rem;font-weight:500;color:var(--text)" id="cat-price">Loading...</div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:var(--mono);font-size:0.9rem;font-weight:500;" id="cat-change">—</div>
+        <div style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:3px;" id="cat-vol">Vol: —</div>
+        <div style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);" id="cat-mcap">MCap: —</div>
+      </div>
+    </div>
+    <div id="cat-chart-wrap" style="display:none;margin-top:0.75rem;">
+      <div class="card">
+        <div class="ct">CAT / USD — Price Chart (24h)</div>
+        <div class="cw"><canvas id="cat-chart"></canvas></div>
+      </div>
+    </div>
+    <div id="cat-updated" style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);text-align:right;margin-top:0.4rem;"></div>
+  </div>
 
   <div class="hero">
     <h1>Your trading <em>edge,</em><br>powered by NYLO.</h1>
@@ -282,6 +520,19 @@
   </div>
 
   <div class="sl">Performance overview</div>
+
+  <!-- Win streak + share -->
+  <div class="streak-card">
+    <div>
+      <div class="streak-label">Current streak</div>
+      <div class="streak-val" id="streak-val">—</div>
+      <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;" id="streak-label">No trades yet</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <div class="streak-emoji" id="streak-emoji">📊</div>
+      <button class="share-btn" onclick="shareStats()">↗ Share Stats</button>
+    </div>
+  </div>
   <div class="stats">
     <div class="stat"><div class="sl2">Total Trades</div><div class="sv" id="s0">—</div><div class="ss">all time</div></div>
     <div class="stat"><div class="sl2">Win Rate</div><div class="sv g" id="s1">—</div><div class="ss" id="s1b">— / —</div></div>
@@ -377,6 +628,89 @@
     </div>
   </div>
 
+  <!-- Market mood + countdown -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.5rem;">
+    <div class="card" id="market-mood-card">
+      <div class="ct">Market mood</div>
+      <div style="display:flex;align-items:center;gap:1rem;margin-top:0.5rem;">
+        <div id="mood-icon" style="font-size:2.5rem;">⏳</div>
+        <div>
+          <div id="mood-label" style="font-family:var(--mono);font-size:0.9rem;font-weight:500;color:var(--text);">Loading...</div>
+          <div id="mood-spy" style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);margin-top:2px;">SPY: —</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Market hours</div>
+      <div id="market-clock" style="font-family:var(--mono);font-size:1rem;font-weight:500;color:var(--accent);margin-top:0.5rem;">—</div>
+      <div id="market-status" style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);margin-top:4px;">—</div>
+      <div id="market-bar" style="height:3px;background:var(--border);border-radius:2px;margin-top:0.75rem;overflow:hidden;">
+        <div id="market-fill" style="height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width 1s;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trade replay -->
+  <div class="sl">Trade replay</div>
+  <div class="card" style="margin-bottom:2.5rem;" id="replay-card">
+    <div class="ct" style="margin-bottom:1rem;">Click any trade in the log to replay it</div>
+    <div id="replay-empty" style="text-align:center;padding:2rem;color:var(--muted);font-family:var(--mono);font-size:0.78rem;">No trade selected — click a row in the trade log below</div>
+    <div id="replay-content" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;">
+        <div>
+          <span id="replay-ticker" style="font-family:var(--mono);font-size:0.9rem;font-weight:500;color:var(--accent);"></span>
+          <span id="replay-dir" style="font-family:var(--mono);font-size:0.75rem;color:var(--muted);margin-left:8px;"></span>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="filter-btn" onclick="replayStep(-1)">← Back</button>
+          <button class="filter-btn on" onclick="replayPlay()" id="replay-play-btn">▶ Play</button>
+          <button class="filter-btn" onclick="replayStep(1)">Next →</button>
+        </div>
+      </div>
+      <div class="cw" style="height:160px;"><canvas id="replay-chart"></canvas></div>
+      <div id="replay-status" style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-top:0.75rem;text-align:center;"></div>
+    </div>
+  </div>
+
+  <!-- Leaderboard + Friends -->
+  <div class="sl">Leaderboard & Friends</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.5rem;" id="leaderboard-section">
+    <!-- Leaderboard -->
+    <div class="card">
+      <div class="ct" style="margin-bottom:1rem;">Performance ranking</div>
+      <div id="leaderboard-list">
+        <div style="font-family:var(--mono);font-size:0.75rem;color:var(--muted);text-align:center;padding:1rem;">No members yet</div>
+      </div>
+    </div>
+    <!-- Friends / Join -->
+    <div class="card">
+      <div class="ct" style="margin-bottom:1rem;">Community</div>
+      <div id="friends-content">
+        <!-- Join form -->
+        <div id="join-form">
+          <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:1rem;">Request access to join the NYLO community. Giovanni will approve your request and you'll receive trade signals directly to your phone.</div>
+          <input id="req-username" type="text" placeholder="Username (e.g. trader99)" style="width:100%;margin-bottom:8px;font-family:var(--mono);font-size:0.78rem;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);">
+          <input id="req-display" type="text" placeholder="Display name (e.g. John D.)" style="width:100%;margin-bottom:8px;font-family:var(--mono);font-size:0.78rem;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);">
+          <input id="req-phone" type="tel" placeholder="Phone number (e.g. +13055550123)" style="width:100%;margin-bottom:12px;font-family:var(--mono);font-size:0.78rem;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);">
+          <button onclick="submitJoinRequest()" style="width:100%;padding:8px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--mono);font-size:0.75rem;cursor:pointer;letter-spacing:0.06em;">Request Access →</button>
+          <div id="req-status" style="font-family:var(--mono);font-size:0.68rem;margin-top:8px;text-align:center;"></div>
+        </div>
+        <!-- Admin panel (only visible to Giovanni) -->
+        <div id="admin-panel" style="display:none;margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem;">
+          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.75rem;">Pending requests</div>
+          <div id="pending-list"><div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);">No pending requests</div></div>
+          <div style="margin-top:1rem;">
+            <input id="admin-pass" type="password" placeholder="Admin password" style="width:100%;margin-bottom:8px;font-family:var(--mono);font-size:0.75rem;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);">
+            <button onclick="adminLogin()" style="width:100%;padding:6px;background:var(--faint);color:var(--accent);border:1px solid var(--border);border-radius:8px;font-family:var(--mono);font-size:0.7rem;cursor:pointer;">Unlock Admin</button>
+          </div>
+        </div>
+        <div style="text-align:right;margin-top:0.5rem;">
+          <button onclick="toggleAdmin()" style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);background:none;border:none;cursor:pointer;letter-spacing:0.08em;">⚙ Admin</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- News -->
   <div class="sl">Market news</div>
   <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
@@ -391,7 +725,7 @@
 
 </div>
 
-<footer><span>NYLO</span> &nbsp;·&nbsp; ORB / RSI Strategy &nbsp;·&nbsp; QQQ & GLD &nbsp;·&nbsp; Paper Trading</footer>
+<footer>Created by Giovanni Flores</footer>
 
 <script>
 // Hide splash screen after 4 seconds with slow fade
@@ -413,6 +747,225 @@ calYear = now.getFullYear(); calMonth = now.getMonth();
 const LOCAL      = 'http://localhost:8765';
 const GITHUB_CSV = 'https://raw.githubusercontent.com/dashmover35600/trading-dashboard/main/trade_log.csv';
 const GITHUB_CMP = 'https://raw.githubusercontent.com/dashmover35600/trading-dashboard/main/strategy_comparison.csv';
+
+// ── Login gate ────────────────────────────────────────────────────────────────
+let currentUser = null;
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.login-tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-login').style.display    = tab === 'login'    ? 'block' : 'none';
+  document.getElementById('panel-register').style.display = tab === 'register' ? 'block' : 'none';
+}
+
+function doLogin() {
+  const username = document.getElementById('login-username').value.trim().toLowerCase();
+  const status   = document.getElementById('login-status');
+  if (!username) { status.textContent = 'Please enter your username.'; status.style.color = 'var(--red)'; return; }
+
+  // Check if giovanni (owner always gets in)
+  if (username === 'giovanni') { enterDashboard({ username: 'giovanni', display: 'Giovanni Flores', role: 'admin' }); return; }
+
+  // Check approved members
+  const members = getMembers();
+  const member  = members.find(m => m.username === username);
+  if (member) { enterDashboard(member); return; }
+
+  // Check if pending
+  const requests = getRequests();
+  if (requests.find(r => r.username === username)) {
+    status.textContent = '⏳ Your request is pending approval from Giovanni.';
+    status.style.color = 'var(--amber)'; return;
+  }
+
+  status.textContent = 'Username not found. Request access below.';
+  status.style.color = 'var(--red)';
+}
+
+function doRegister() {
+  const username = document.getElementById('reg-username').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
+  const display  = document.getElementById('reg-display').value.trim();
+  const phone    = document.getElementById('reg-phone').value.trim().replace(/\s/g,'');
+  const status   = document.getElementById('register-status');
+
+  if (!username || !display || !phone) { status.textContent = 'Please fill in all fields.'; status.style.color = 'var(--red)'; return; }
+  if (!phone.startsWith('+')) { status.textContent = 'Phone must start with + and country code.'; status.style.color = 'var(--red)'; return; }
+
+  const members  = getMembers();
+  const requests = getRequests();
+  if (members.find(m => m.username === username) || requests.find(r => r.username === username)) {
+    status.textContent = 'Username already taken or pending.'; status.style.color = 'var(--red)'; return;
+  }
+
+  requests.push({ username, display, phone, requested: new Date().toLocaleDateString() });
+  saveRequests(requests);
+  status.textContent = '✅ Request sent! You\'ll get signals once Giovanni approves you.';
+  status.style.color = 'var(--green)';
+  document.getElementById('reg-username').value = '';
+  document.getElementById('reg-display').value  = '';
+  document.getElementById('reg-phone').value    = '';
+}
+
+function enterDashboard(member) {
+  currentUser = member;
+  localStorage.setItem('nylo-user', member.username);
+  document.getElementById('login-gate').classList.remove('visible');
+  setTimeout(() => { document.getElementById('login-gate').style.display = 'none'; }, 600);
+  document.getElementById('current-user').textContent = member.display || member.username;
+}
+
+function logout() {
+  localStorage.removeItem('nylo-user');
+  location.reload();
+}
+
+// Show login gate after splash
+setTimeout(() => {
+  // Check if already logged in
+  const saved = localStorage.getItem('nylo-user');
+  if (saved) {
+    const members = getMembers();
+    const member  = members.find(m => m.username === saved);
+    if (member || saved === 'giovanni') {
+      enterDashboard(member || { username: 'giovanni', display: 'Giovanni Flores', role: 'admin' });
+      return;
+    }
+  }
+  const gate = document.getElementById('login-gate');
+  gate.style.display = 'flex';
+  setTimeout(() => gate.classList.add('visible'), 50);
+}, 4200); // show just after splash fades
+
+// Enter key support
+document.getElementById('login-username').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+// ── Dark mode ─────────────────────────────────────────────────────────────────
+function toggleDark() {
+  const dark = document.body.classList.toggle('dark');
+  document.getElementById('dark-btn').textContent = dark ? '◐' : '◑';
+  localStorage.setItem('nylo-dark', dark ? '1' : '0');
+}
+if (localStorage.getItem('nylo-dark') === '1') {
+  document.body.classList.add('dark');
+  document.getElementById('dark-btn').textContent = '◐';
+}
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+let lastTradeCount = 0;
+let notifOpen      = false;
+let notifEnabled   = localStorage.getItem('nylo-notif') !== '0';
+
+const notifBtn    = document.getElementById('notif-btn');
+const notifPanel  = document.getElementById('notif-panel');
+const notifDot    = document.getElementById('notif-dot');
+const notifSwitch = document.getElementById('notif-switch');
+const notifLabel  = document.getElementById('notif-setting-label');
+const notifToggle = document.getElementById('notif-toggle-btn');
+
+function openNotif()  { notifOpen = true;  notifPanel.classList.add('open');    notifDot.classList.remove('show'); lastTradeCount = allTrades.length; }
+function closeNotif() { notifOpen = false; notifPanel.classList.remove('open'); }
+
+notifBtn.addEventListener('click', e => { e.stopPropagation(); notifOpen ? closeNotif() : openNotif(); });
+notifPanel.addEventListener('click', e => e.stopPropagation());
+notifToggle.addEventListener('click', e => {
+  e.stopPropagation();
+  notifEnabled = !notifEnabled;
+  localStorage.setItem('nylo-notif', notifEnabled ? '1' : '0');
+  notifSwitch.classList.toggle('on', notifEnabled);
+  notifLabel.textContent = notifEnabled ? 'On' : 'Off';
+  if (!notifEnabled) notifDot.classList.remove('show');
+});
+document.addEventListener('click', () => { if (notifOpen) closeNotif(); });
+
+// Set initial toggle state
+if (!notifEnabled) { notifSwitch.classList.remove('on'); notifLabel.textContent = 'Off'; }
+
+function updateNotifications() {
+  const list   = document.getElementById('notif-list');
+  const recent = [...allTrades].reverse().slice(0, 5);
+  if (!recent.length) { list.innerHTML = '<div class="notif-empty">No trades yet</div>'; return; }
+  list.innerHTML = recent.map(t => {
+    const p = num(t['P&L %']);
+    const e = t['Result']==='Target Hit' ? '✅' : t['Result']==='Stop Loss Hit' ? '🛑' : '⏳';
+    return `<div class="notif-item">${e} ${t['Ticker']} ${t['Direction']} · ${t['Date']} · ${p!==null?(p>=0?'+':'')+p.toFixed(2)+'%':'Open'}</div>`;
+  }).join('');
+  if (notifEnabled && allTrades.length > lastTradeCount && lastTradeCount > 0) notifDot.classList.add('show');
+}
+
+// ── Win streak ────────────────────────────────────────────────────────────────
+function updateStreak(trades) {
+  const closed = [...trades].filter(t=>t['Result']!=='').reverse();
+  if (!closed.length) return;
+  let streak = 0;
+  const isWin = closed[0]['Result'] === 'Target Hit';
+  for (const t of closed) { if ((t['Result']==='Target Hit')===isWin) streak++; else break; }
+  const emojis = isWin ? ['🔥','🔥🔥','🔥🔥🔥','💰','💰💰','🚀','🚀🚀','👑'] : ['😬','📉','💀','🛑'];
+  document.getElementById('streak-val').textContent = streak;
+  document.getElementById('streak-label').textContent = isWin ? 'Win streak' : 'Loss streak';
+  document.getElementById('streak-emoji').textContent = emojis[Math.min(streak-1, emojis.length-1)];
+}
+
+// ── Animated counters ─────────────────────────────────────────────────────────
+function animateCounter(id, from, to, duration, formatter) {
+  const el = document.getElementById(id); if (!el) return;
+  const start = performance.now();
+  function step(ts) {
+    const p = Math.min((ts-start)/duration,1), ease = 1-Math.pow(1-p,3);
+    el.textContent = formatter(from+(to-from)*ease);
+    if (p<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+function animateStats(trades) {
+  const closed = trades.filter(t=>t['Result']!=='');
+  const wins   = closed.filter(t=>t['Result']==='Target Hit');
+  const pnls   = closed.map(t=>num(t['P&L %'])).filter(v=>v!==null);
+  const total  = pnls.reduce((a,b)=>a+b,0);
+  const wr     = closed.length ? wins.length/closed.length*100 : 0;
+  animateCounter('s0', 0, trades.length, 800, v => Math.round(v)||'—');
+  animateCounter('s1', 0, wr, 1000, v => v ? Math.round(v)+'%' : '—');
+  animateCounter('s2', 0, total, 1000, v => total!==0?(v>=0?'+':'')+v.toFixed(2)+'%':'—');
+}
+
+// ── Confetti ──────────────────────────────────────────────────────────────────
+let confettiRunning = false;
+function fireConfetti() {
+  if (confettiRunning) return; confettiRunning = true;
+  const canvas = document.getElementById('confetti-canvas');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const pieces = Array.from({length:120}, () => ({
+    x: Math.random()*canvas.width, y: Math.random()*-canvas.height,
+    size: Math.random()*8+4, speed: Math.random()*4+2,
+    angle: Math.random()*360, spin: (Math.random()-0.5)*6,
+    color: ['#00c878','#00ff9d','#1a7a4a','#7fffbf','#ffffff','#c8ffd4'][Math.floor(Math.random()*6)]
+  }));
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p => {
+      p.y+=p.speed; p.angle+=p.spin;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.angle*Math.PI/180);
+      ctx.fillStyle=p.color; ctx.globalAlpha=Math.max(0,1-frame/180);
+      ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size); ctx.restore();
+    });
+    frame++;
+    if(frame<200) requestAnimationFrame(draw);
+    else { ctx.clearRect(0,0,canvas.width,canvas.height); confettiRunning=false; }
+  }
+  draw();
+}
+
+// ── Share stats ───────────────────────────────────────────────────────────────
+function shareStats() {
+  const total  = document.getElementById('s2').textContent;
+  const wr     = document.getElementById('s1').textContent;
+  const trades = document.getElementById('s0').textContent;
+  const streak = document.getElementById('streak-val').textContent;
+  const text   = `🔵 NYLO Trading Dashboard\n📊 ${trades} trades · ${wr} win rate\n💰 Total P&L: ${total}\n🔥 Current streak: ${streak}\n\nWhere precision meets profit.\nhttps://dashmover35600.github.io/trading-dashboard/trading_dashboard.html`;
+  if (navigator.share) { navigator.share({title:'NYLO Trading Stats',text}); }
+  else { navigator.clipboard.writeText(text).then(()=>alert('Stats copied! Paste anywhere to share 🚀')); }
+}
 
 // ── Auto-load ─────────────────────────────────────────────────────────────────
 async function tryAutoLoad() {
@@ -567,8 +1120,9 @@ function render(trades) {
   const bestT  = closed.find(t=>num(t['P&L %'])===best);
   const wrstT  = closed.find(t=>num(t['P&L %'])===worst);
 
-  setText('s0', trades.length||'—');
-  setText('s1', wr!==null?wr+'%':'—'); setText('s1b', `${wins.length} wins · ${losses.length} losses`);
+  // Animated counters instead of direct set
+  animateStats(trades);
+  setText('s1b', `${wins.length} wins · ${losses.length} losses`);
   setVal('s2', fmt(total), total>=0?'g':'r');
   // Dollar P&L
   const dollarTotal = closed.reduce((sum, t) => {
@@ -585,6 +1139,11 @@ function render(trades) {
   renderTable();
   renderCharts(trades, closed, wins, losses, pnls);
   renderCalendar();
+
+  // New features
+  updateStreak(trades);
+  updateNotifications();
+  if (wins.length > 0) setTimeout(fireConfetti, 600);
 }
 
 // ── Open trade monitor ────────────────────────────────────────────────────────
@@ -823,6 +1382,131 @@ async function fetchPrices() {
 fetchPrices();
 setInterval(fetchPrices, 30000);
 
+// ── CAT Coin tracker ──────────────────────────────────────────────────────────
+const CAT_ADDRESS = '5gTPspC2ricuGWiYQ4Ghausg8fsq7uCrGgSVACatcoin';
+let catChart = null;
+let chartVisible = false;
+let catPairData = null;
+
+async function fetchCatPrice() {
+  try {
+    const url  = `https://api.dexscreener.com/latest/dex/tokens/${CAT_ADDRESS}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+    const pair = data?.pairs?.[0];
+    if (!pair) { document.getElementById('cat-price').textContent = 'No data'; return; }
+
+    catPairData = pair;
+    const price  = parseFloat(pair.priceUsd);
+    const change = parseFloat(pair.priceChange?.h24 || 0);
+    const vol    = parseFloat(pair.volume?.h24 || 0);
+    const mcap   = parseFloat(pair.marketCap || pair.fdv || 0);
+    const up     = change >= 0;
+
+    const priceStr = price < 0.000001 ? '$' + price.toExponential(3)
+      : price < 0.001 ? '$' + price.toFixed(8)
+      : price < 1 ? '$' + price.toFixed(6)
+      : '$' + price.toFixed(4);
+
+    document.getElementById('cat-price').textContent = priceStr;
+
+    const chgEl = document.getElementById('cat-change');
+    chgEl.textContent = (up?'+':'') + change.toFixed(2) + '% (24h)';
+    chgEl.style.color = up ? 'var(--green)' : 'var(--red)';
+
+    document.getElementById('cat-vol').textContent = 'Vol: $' +
+      (vol>=1e6?(vol/1e6).toFixed(2)+'M':vol>=1000?(vol/1000).toFixed(1)+'K':vol.toFixed(0));
+    document.getElementById('cat-mcap').textContent = 'MCap: $' +
+      (mcap>=1e6?(mcap/1e6).toFixed(2)+'M':mcap>=1000?(mcap/1000).toFixed(1)+'K':mcap.toFixed(0));
+    document.getElementById('cat-updated').textContent =
+      'Updated ' + new Date().toLocaleTimeString() + ' · ' + (pair.baseToken?.name || 'CAT') + ' / USD';
+
+    if (chartVisible) renderCatChart(pair);
+
+  } catch(e) {
+    document.getElementById('cat-price').textContent = 'Tap to retry';
+    console.error('CAT fetch error:', e);
+  }
+}
+
+function toggleCryptoChart() {
+  const wrap = document.getElementById('cat-chart-wrap');
+  chartVisible = !chartVisible;
+  wrap.style.display = chartVisible ? 'block' : 'none';
+  if (chartVisible && catPairData) renderCatChart(catPairData);
+}
+
+function renderCatChart(pair) {
+  const canvas = document.getElementById('cat-chart');
+  if (!canvas) return;
+  if (catChart) { catChart.destroy(); catChart = null; }
+
+  const price  = parseFloat(pair.priceUsd);
+  const change = parseFloat(pair.priceChange?.h24 || 0);
+  const h6     = parseFloat(pair.priceChange?.h6 || change * 0.5);
+  const h1     = parseFloat(pair.priceChange?.h1 || change * 0.2);
+  const m5     = parseFloat(pair.priceChange?.m5 || 0);
+
+  // Build a simple 5-point sparkline from available change data
+  const open   = price / (1 + change / 100);
+  const p6h    = price / (1 + h6 / 100);
+  const p1h    = price / (1 + h1 / 100);
+  const p5m    = price / (1 + m5 / 100);
+
+  const points = [
+    parseFloat(open.toFixed(10)),
+    parseFloat(((open + p6h) / 2).toFixed(10)),
+    parseFloat(p6h.toFixed(10)),
+    parseFloat(((p6h + p1h) / 2).toFixed(10)),
+    parseFloat(p1h.toFixed(10)),
+    parseFloat(((p1h + p5m) / 2).toFixed(10)),
+    parseFloat(p5m.toFixed(10)),
+    parseFloat(price.toFixed(10)),
+  ];
+  const labels = ['24h ago','18h','12h','9h','6h','3h','1h','Now'];
+  const up     = change >= 0;
+
+  catChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data: points,
+        borderColor: up ? '#1a7a4a' : '#c0392b',
+        backgroundColor: up ? 'rgba(26,122,74,0.08)' : 'rgba(192,57,43,0.08)',
+        borderWidth: 2, fill: true, tension: 0.4, pointRadius: 4,
+        pointBackgroundColor: up ? '#1a7a4a' : '#c0392b',
+        pointBorderColor: '#fff', pointBorderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: '#dde3f5', lineWidth: 0.5 }, ticks: { color: '#7a85a8', font: { family: 'DM Mono', size: 9 } } },
+        y: {
+          grid: { color: '#dde3f5', lineWidth: 0.5 },
+          ticks: {
+            color: '#7a85a8', font: { family: 'DM Mono', size: 9 },
+            callback: v => {
+              if (v < 0.000001) return '$' + v.toExponential(2);
+              if (v < 0.001)    return '$' + v.toFixed(8);
+              if (v < 1)        return '$' + v.toFixed(6);
+              return '$' + v.toFixed(4);
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+fetchCatPrice();
+setInterval(fetchCatPrice, 30000);
+
+fetchCatPrice();
+setInterval(fetchCatPrice, 30000); // refresh every 30 seconds
+
 // ── News ──────────────────────────────────────────────────────────────────────
 const NEWS_KEY = 'dd717e9fb3704961ae57334df27191e6';
 const PROXY    = 'https://api.allorigins.win/get?url=';
@@ -865,6 +1549,325 @@ function timeAgo(d){ const m=Math.floor((Date.now()-d)/60000); if(m<60) return m
 
 fetchNews();
 setInterval(fetchNews, 5*60*1000);
+
+// ── Market mood ───────────────────────────────────────────────────────────────
+async function fetchMarketMood() {
+  try {
+    const url  = `https://api.allorigins.win/get?url=${encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/SPY?interval=1d&range=2d')}`;
+    const res  = await fetch(url);
+    const wrap = await res.json();
+    const data = JSON.parse(wrap.contents);
+    const meta = data?.chart?.result?.[0]?.meta;
+    if (!meta) return;
+    const price  = meta.regularMarketPrice;
+    const prev   = meta.previousClose;
+    const change = ((price - prev) / prev * 100).toFixed(2);
+    const up     = change >= 0;
+    let icon, label;
+    if (change > 1)        { icon = '☀️';  label = 'Strongly bullish'; }
+    else if (change > 0.2) { icon = '🌤️'; label = 'Mildly bullish'; }
+    else if (change > -0.2){ icon = '⛅';  label = 'Neutral'; }
+    else if (change > -1)  { icon = '🌧️'; label = 'Mildly bearish'; }
+    else                   { icon = '⛈️'; label = 'Strongly bearish'; }
+    document.getElementById('mood-icon').textContent  = icon;
+    document.getElementById('mood-label').textContent = label;
+    document.getElementById('mood-spy').textContent   = `SPY $${price.toFixed(2)} (${up?'+':''}${change}%)`;
+  } catch(e) {}
+}
+fetchMarketMood();
+setInterval(fetchMarketMood, 60000);
+
+// ── Market hours countdown ─────────────────────────────────────────────────────
+function updateMarketClock() {
+  const now   = new Date();
+  const et    = new Date(now.toLocaleString('en-US', {timeZone:'America/New_York'}));
+  const h = et.getHours(), m = et.getMinutes(), s = et.getSeconds();
+  const day   = et.getDay(); // 0=Sun, 6=Sat
+  const isWeekend = day === 0 || day === 6;
+  const openH = 9*60+30, closeH = 16*60, nowMin = h*60+m;
+  const isOpen = !isWeekend && nowMin >= openH && nowMin < closeH;
+  const clockEl  = document.getElementById('market-clock');
+  const statusEl = document.getElementById('market-status');
+  const fillEl   = document.getElementById('market-fill');
+
+  if (isWeekend) {
+    clockEl.textContent  = 'Market closed';
+    statusEl.textContent = 'Opens Monday 9:30 AM ET';
+    fillEl.style.width   = '0%';
+    return;
+  }
+
+  if (isOpen) {
+    const elapsed  = nowMin - openH;
+    const total    = closeH - openH;
+    const pct      = Math.min(100, (elapsed / total * 100)).toFixed(1);
+    const remaining = closeH - nowMin;
+    const rh = Math.floor(remaining/60), rm = remaining%60;
+    clockEl.textContent  = `🟢 Market open`;
+    statusEl.textContent = `Closes in ${rh}h ${rm}m · ${et.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'})} ET`;
+    fillEl.style.background = '#1a7a4a';
+    fillEl.style.width = pct + '%';
+  } else if (nowMin < openH) {
+    const mins = openH - nowMin;
+    const oh = Math.floor(mins/60), om = mins%60;
+    clockEl.textContent  = `🔴 Market closed`;
+    statusEl.textContent = `Opens in ${oh}h ${om}m · 9:30 AM ET`;
+    fillEl.style.background = 'var(--accent)';
+    fillEl.style.width = '0%';
+  } else {
+    clockEl.textContent  = `🔴 Market closed`;
+    statusEl.textContent = `Opens tomorrow 9:30 AM ET`;
+    fillEl.style.width = '100%';
+  }
+}
+updateMarketClock();
+setInterval(updateMarketClock, 1000);
+
+// ── Trade replay ──────────────────────────────────────────────────────────────
+let replayTrade = null, replayStep = 0, replayInterval = null, replayChart = null;
+
+function startReplay(trade) {
+  replayTrade = trade;
+  replayStep  = 0;
+  document.getElementById('replay-empty').style.display   = 'none';
+  document.getElementById('replay-content').style.display = 'block';
+  document.getElementById('replay-ticker').textContent = trade['Ticker'];
+  document.getElementById('replay-dir').textContent    = trade['Direction'] + ' · Entry $' + trade['Entry Price'];
+  renderReplayFrame();
+}
+
+function renderReplayFrame() {
+  if (!replayTrade) return;
+  const entry  = parseFloat(replayTrade['Entry Price']);
+  const exit   = parseFloat(replayTrade['Exit Price']) || entry;
+  const target = parseFloat(replayTrade['Target']);
+  const stop   = parseFloat(replayTrade['Stop Loss']);
+  const up     = replayTrade['Direction'] === 'Long';
+  const totalSteps = 12;
+  const current    = Math.min(replayStep, totalSteps);
+
+  // Simulate price movement toward result
+  const points = Array.from({length: current + 1}, (_, i) => {
+    const t    = i / totalSteps;
+    const noise = (Math.random() - 0.5) * (target - entry) * 0.15;
+    return parseFloat((entry + (exit - entry) * t + noise).toFixed(4));
+  });
+  points[0] = entry;
+  if (current === totalSteps) points[totalSteps] = exit;
+
+  const labels = points.map((_,i) => i === 0 ? 'Entry' : i === totalSteps ? 'Exit' : `+${i}m`);
+  const color  = replayTrade['Result'] === 'Target Hit' ? '#1a7a4a' : '#c0392b';
+
+  const canvas = document.getElementById('replay-chart');
+  if (replayChart) replayChart.destroy();
+  replayChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { data: points, borderColor: color, backgroundColor: color+'22', borderWidth:2, fill:true, tension:0.4, pointRadius:3, pointBackgroundColor:color },
+        { data: Array(points.length).fill(target), borderColor:'#1a7a4a44', borderWidth:1, borderDash:[4,4], pointRadius:0, fill:false },
+        { data: Array(points.length).fill(stop),   borderColor:'#c0392b44', borderWidth:1, borderDash:[4,4], pointRadius:0, fill:false }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{grid:{display:false},ticks:{color:'#7a85a8',font:{family:'DM Mono',size:9}}},
+               y:{grid:{color:'#dde3f5',lineWidth:0.5},ticks:{color:'#7a85a8',font:{family:'DM Mono',size:9},callback:v=>'$'+v.toFixed(2)}} } }
+  });
+
+  const pnl = up ? ((points[points.length-1]-entry)/entry*100).toFixed(2) : ((entry-points[points.length-1])/entry*100).toFixed(2);
+  document.getElementById('replay-status').textContent =
+    current === 0 ? `Entry at $${entry}  ·  Target: $${target}  ·  Stop: $${stop}` :
+    current < totalSteps ? `Minute ${current} · Price $${points[points.length-1].toFixed(2)} · P&L ${pnl >= 0 ? '+' : ''}${pnl}%` :
+    `${replayTrade['Result']} · Exit $${exit} · Final P&L ${replayTrade['P&L %']}`;
+}
+
+function replayStepFn(dir) {
+  if (!replayTrade) return;
+  replayStep = Math.max(0, Math.min(12, replayStep + dir));
+  renderReplayFrame();
+}
+
+window.replayStep = replayStepFn;
+
+function replayPlay() {
+  if (!replayTrade) return;
+  if (replayInterval) { clearInterval(replayInterval); replayInterval = null; document.getElementById('replay-play-btn').textContent = '▶ Play'; return; }
+  replayStep = 0;
+  document.getElementById('replay-play-btn').textContent = '⏸ Pause';
+  replayInterval = setInterval(() => {
+    replayStep++;
+    renderReplayFrame();
+    if (replayStep >= 12) { clearInterval(replayInterval); replayInterval = null; document.getElementById('replay-play-btn').textContent = '▶ Play'; }
+  }, 500);
+}
+
+// Hook replay into table rows
+const _origRenderTable = renderTable;
+function renderTable() {
+  _origRenderTable();
+  document.querySelectorAll('#tb tr').forEach((row, i) => {
+    const t = [...allTrades].reverse()[i];
+    if (t && t['Exit Price']) {
+      row.style.cursor = 'pointer';
+      row.title = 'Click to replay this trade';
+      row.addEventListener('click', () => startReplay(t));
+    }
+  });
+}
+
+// ── Leaderboard & Friends ─────────────────────────────────────────────────────
+const ADMIN_PASS    = 'nylo2024';
+let adminUnlocked   = false;
+
+// Use localStorage to persist members and requests (per-device)
+function getMembers()  { try { return JSON.parse(localStorage.getItem('nylo-members') || '[]'); } catch(e) { return []; } }
+function getRequests() { try { return JSON.parse(localStorage.getItem('nylo-requests') || '[]'); } catch(e) { return []; } }
+function saveMembers(m)  { localStorage.setItem('nylo-members', JSON.stringify(m)); }
+function saveRequests(r) { localStorage.setItem('nylo-requests', JSON.stringify(r)); }
+
+// Seed Giovanni as first member
+(function() {
+  const members = getMembers();
+  if (!members.find(m => m.username === 'giovanni')) {
+    members.unshift({ username: 'giovanni', display: 'Giovanni Flores', role: 'admin', joined: new Date().toLocaleDateString(), wins: 0, losses: 0 });
+    saveMembers(members);
+  }
+})();
+
+function renderLeaderboard() {
+  const members = getMembers();
+  const list    = document.getElementById('leaderboard-list');
+  if (!members.length) { list.innerHTML = '<div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);text-align:center;padding:1rem;">No members yet</div>'; return; }
+  list.innerHTML = members.map((m, i) => {
+    const medal = i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+    const wr    = (m.wins + m.losses) > 0 ? Math.round(m.wins/(m.wins+m.losses)*100) + '%' : '—';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-family:var(--mono);font-size:0.8rem;width:24px;">${medal}</span>
+        <div>
+          <div style="font-family:var(--mono);font-size:0.75rem;font-weight:500;color:var(--text);">${m.display}</div>
+          <div style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);">@${m.username}${m.role==='admin'?' · admin':''}</div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:var(--mono);font-size:0.72rem;color:var(--accent);">${wr} WR</div>
+        <div style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);">${m.wins}W ${m.losses}L</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function submitJoinRequest() {
+  const username = document.getElementById('req-username').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
+  const display  = document.getElementById('req-display').value.trim();
+  const phone    = document.getElementById('req-phone').value.trim().replace(/\s/g,'');
+  const status   = document.getElementById('req-status');
+
+  if (!username || !display || !phone) { status.textContent = 'Please fill in all fields.'; status.style.color = 'var(--red)'; return; }
+  if (!phone.startsWith('+')) { status.textContent = 'Phone must start with + and country code (e.g. +1...)'; status.style.color = 'var(--red)'; return; }
+
+  const members  = getMembers();
+  const requests = getRequests();
+  if (members.find(m => m.username === username) || requests.find(r => r.username === username)) {
+    status.textContent = 'Username already taken or pending.'; status.style.color = 'var(--red)'; return;
+  }
+  requests.push({ username, display, phone, requested: new Date().toLocaleDateString() });
+  saveRequests(requests);
+  status.textContent = '✅ Request sent! Giovanni will approve you soon. You\'ll get signals directly to your phone once approved.';
+  status.style.color = 'var(--green)';
+  document.getElementById('req-username').value = '';
+  document.getElementById('req-display').value  = '';
+  document.getElementById('req-phone').value    = '';
+  renderPendingRequests();
+}
+
+function toggleAdmin() {
+  const panel = document.getElementById('admin-panel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function adminLogin() {
+  const pass = document.getElementById('admin-pass').value;
+  if (pass === ADMIN_PASS) {
+    adminUnlocked = true;
+    document.getElementById('admin-pass').style.borderColor = 'var(--green)';
+    renderPendingRequests();
+  } else {
+    document.getElementById('admin-pass').style.borderColor = 'var(--red)';
+  }
+}
+
+function renderPendingRequests() {
+  if (!adminUnlocked) return;
+  const requests = getRequests();
+  const list     = document.getElementById('pending-list');
+  if (!requests.length) { list.innerHTML = '<div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);">No pending requests</div>'; return; }
+  list.innerHTML = requests.map((r,i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;gap:8px;border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text);">@${r.username} · ${r.display}</div>
+        <div style="font-family:var(--mono);font-size:0.6rem;color:var(--accent);">${r.phone}</div>
+        <div style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);">Requested ${r.requested}</div>
+      </div>
+      <div style="display:flex;gap:4px;">
+        <button onclick="approveRequest(${i})" style="padding:3px 8px;background:var(--green-bg);color:var(--green);border:1px solid var(--green);border-radius:6px;font-family:var(--mono);font-size:0.6rem;cursor:pointer;">✓</button>
+        <button onclick="denyRequest(${i})" style="padding:3px 8px;background:var(--red-bg);color:var(--red);border:1px solid var(--red);border-radius:6px;font-family:var(--mono);font-size:0.6rem;cursor:pointer;">✗</button>
+      </div>
+    </div>`).join('');
+
+  // Show approved members' phone numbers for adding to agent
+  const members = getMembers().filter(m => m.role !== 'admin' && m.phone);
+  if (members.length) {
+    list.innerHTML += `<div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border);">
+      <div style="font-family:var(--mono);font-size:0.6rem;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem;">Approved member numbers — add to agent</div>
+      ${members.map(m => `<div style="font-family:var(--mono);font-size:0.68rem;color:var(--text);padding:2px 0;">${m.display}: <span style="color:var(--accent)">${m.phone}</span></div>`).join('')}
+    </div>`;
+  }
+}
+
+function approveRequest(i) {
+  const requests = getRequests();
+  const r        = requests[i];
+  const members  = getMembers();
+  members.push({ username: r.username, display: r.display, phone: r.phone, role: 'member', joined: new Date().toLocaleDateString(), wins: 0, losses: 0 });
+  requests.splice(i, 1);
+  saveMembers(members);
+  saveRequests(requests);
+
+  // Auto-sync phone numbers to agent via local server
+  syncSubscribersToAgent(members);
+
+  renderLeaderboard();
+  renderPendingRequests();
+}
+
+async function syncSubscribersToAgent(members) {
+  // Build subscribers list — all approved non-admin members with phone numbers
+  const subs = members.filter(m => m.role !== 'admin' && m.phone);
+  const lines = subs.map(m => `["${m.display}", "${m.phone}"]`).join(',\n    ');
+  const content = `SUBSCRIBERS = [\n    ${lines}\n]\n`;
+
+  try {
+    await fetch(LOCAL + '/update_subscribers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: content
+    });
+    console.log('[NYLO] Subscribers synced to agent:', subs.length);
+  } catch(e) {
+    console.log('[NYLO] Agent not running — subscribers saved locally for manual copy');
+  }
+}
+
+function denyRequest(i) {
+  const requests = getRequests();
+  requests.splice(i, 1);
+  saveRequests(requests);
+  renderPendingRequests();
+}
+
+renderLeaderboard();
 </script>
 </body>
 </html>
