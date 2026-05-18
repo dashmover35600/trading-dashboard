@@ -2,12 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>NYLO — Trading Dashboard</title>
+
+  <!-- PWA / Add to Home Screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NYLO">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#1847d4">
+  <meta name="description" content="NYLO Trading Dashboard — ORB/RSI Strategy">
+
+  <!-- App icon — NYLO final design -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%230a1a5c'/%3E%3Cstop offset='100%25' stop-color='%231847d4'/%3E%3C/linearGradient%3E%3ClinearGradient id='tx' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='100%25' stop-color='%23c8d8ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='80' fill='url(%23bg)'/%3E%3Ctext x='258' y='295' font-family='Georgia,serif' font-size='168' font-weight='700' fill='url(%23tx)' text-anchor='middle' letter-spacing='-2'%3ENYLO%3C/text%3E%3Crect x='100' y='316' width='312' height='3' rx='1.5' fill='rgba(255,255,255,0.9)'/%3E%3Ctext x='256' y='356' font-family='Georgia,serif' font-size='28' font-weight='700' fill='rgba(255,255,255,0.85)' text-anchor='middle' letter-spacing='6'%3EPRECISION TRADING%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%230a1a5c'/%3E%3Cstop offset='100%25' stop-color='%231847d4'/%3E%3C/linearGradient%3E%3ClinearGradient id='tx' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='100%25' stop-color='%23c8d8ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='80' fill='url(%23bg)'/%3E%3Ctext x='258' y='295' font-family='Georgia,serif' font-size='168' font-weight='700' fill='url(%23tx)' text-anchor='middle' letter-spacing='-2'%3ENYLO%3C/text%3E%3Crect x='100' y='316' width='312' height='3' rx='1.5' fill='rgba(255,255,255,0.9)'/%3E%3Ctext x='256' y='356' font-family='Georgia,serif' font-size='28' font-weight='700' fill='rgba(255,255,255,0.85)' text-anchor='middle' letter-spacing='6'%3EPRECISION TRADING%3C/text%3E%3C/svg%3E">
+
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Splash screen */
+    #splash {
+      position: fixed; inset: 0; background: #1847d4;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 9999; transition: opacity 1.8s ease;
+    }
+    #splash.hidden { opacity: 0; pointer-events: none; }
+    .splash-logo {
+      font-family: 'DM Mono', monospace;
+      font-size: 4rem; font-weight: 500;
+      color: #ffffff; letter-spacing: 0.2em;
+      margin-bottom: 0.5rem;
+      animation: fadeInUp 1s ease forwards;
+      opacity: 0;
+    }
+    .splash-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem; color: rgba(255,255,255,0.5);
+      letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 2.5rem;
+      animation: fadeInUp 1s ease 0.3s forwards;
+      opacity: 0;
+    }
+    .splash-bar {
+      width: 120px; height: 2px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px; overflow: hidden;
+      animation: fadeInUp 1s ease 0.5s forwards;
+      opacity: 0;
+    }
+    .splash-fill {
+      height: 100%; width: 0%; background: #ffffff;
+      border-radius: 2px;
+      animation: load 2.8s cubic-bezier(0.4,0,0.2,1) 0.5s forwards;
+    }
+    @keyframes load { to { width: 100%; } }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
     :root {
       --bg: #f6f8ff; --surface: #ffffff; --border: #dde3f5; --faint: #eef1fb;
       --text: #0f1a3a; --muted: #7a85a8;
@@ -160,6 +215,13 @@
   </style>
 </head>
 <body>
+
+<!-- Splash screen -->
+<div id="splash">
+  <div class="splash-logo">NYLO</div>
+  <div class="splash-sub">Trading Dashboard</div>
+  <div class="splash-bar"><div class="splash-fill"></div></div>
+</div>
 
 <nav>
   <div class="logo">NYLO <span>TRADING DASHBOARD</span></div>
@@ -330,6 +392,13 @@
 <footer><span>NYLO</span> &nbsp;·&nbsp; ORB / RSI Strategy &nbsp;·&nbsp; QQQ & GLD &nbsp;·&nbsp; Paper Trading</footer>
 
 <script>
+// Hide splash screen after 4 seconds with slow fade
+setTimeout(() => {
+  const splash = document.getElementById('splash');
+  splash.classList.add('hidden');
+  setTimeout(() => splash.remove(), 1800);
+}, 4000);
+
 // ── State ─────────────────────────────────────────────────────────────────────
 let charts = {};
 let allTrades = [];
