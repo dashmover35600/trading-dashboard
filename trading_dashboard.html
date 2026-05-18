@@ -862,52 +862,38 @@ function switchTab(tab, btn) {
   document.getElementById('panel-register').style.display = tab === 'register' ? 'block' : 'none';
 }
 
-function doLogin() {
+async function doLogin() {
   const username = document.getElementById('login-username').value.trim().toLowerCase();
   const status   = document.getElementById('login-status');
   if (!username) { status.textContent = 'Please enter your username.'; status.style.color = 'var(--red)'; return; }
-
-  // Check if giovanni (owner always gets in)
   if (username === 'giovanni') { enterDashboard({ username: 'giovanni', display: 'Giovanni Flores', role: 'admin' }); return; }
-
-  // Check approved members
-  const members = getMembers();
-  const member  = members.find(m => m.username === username);
-  if (member) { enterDashboard(member); return; }
-
-  // Check if pending
-  const requests = getRequests();
-  if (requests.find(r => r.username === username)) {
-    status.textContent = '⏳ Your request is pending approval from Giovanni.';
-    status.style.color = 'var(--amber)'; return;
-  }
-
-  status.textContent = 'Username not found. Request access below.';
-  status.style.color = 'var(--red)';
+  status.textContent = 'Checking...'; status.style.color = 'var(--muted)';
+  try {
+    const members = await sbGet('members', `username=eq.${username}`);
+    if (members.length) { enterDashboard(members[0]); return; }
+    const requests = await sbGet('requests', `username=eq.${username}`);
+    if (requests.length) { status.textContent = '⏳ Your request is pending approval from Giovanni.'; status.style.color = 'var(--amber)'; return; }
+    status.textContent = 'Username not found. Request access below.'; status.style.color = 'var(--red)';
+  } catch(e) { status.textContent = 'Connection error — try again.'; status.style.color = 'var(--red)'; }
 }
 
-function doRegister() {
+async function doRegister() {
   const username = document.getElementById('reg-username').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
   const display  = document.getElementById('reg-display').value.trim();
   const phone    = document.getElementById('reg-phone').value.trim().replace(/\s/g,'');
   const status   = document.getElementById('register-status');
-
   if (!username || !display || !phone) { status.textContent = 'Please fill in all fields.'; status.style.color = 'var(--red)'; return; }
   if (!phone.startsWith('+')) { status.textContent = 'Phone must start with + and country code.'; status.style.color = 'var(--red)'; return; }
-
-  const members  = getMembers();
-  const requests = getRequests();
-  if (members.find(m => m.username === username) || requests.find(r => r.username === username)) {
-    status.textContent = 'Username already taken or pending.'; status.style.color = 'var(--red)'; return;
+  try {
+    await sbInsert('requests', { username, display, phone, requested: new Date().toLocaleDateString() });
+    status.textContent = '✅ Request sent! You\'ll get signals once Giovanni approves you.';
+    status.style.color = 'var(--green)';
+    document.getElementById('reg-username').value = '';
+    document.getElementById('reg-display').value  = '';
+    document.getElementById('reg-phone').value    = '';
+  } catch(e) {
+    status.textContent = 'Username already taken or pending.'; status.style.color = 'var(--red)';
   }
-
-  requests.push({ username, display, phone, requested: new Date().toLocaleDateString() });
-  saveRequests(requests);
-  status.textContent = '✅ Request sent! You\'ll get signals once Giovanni approves you.';
-  status.style.color = 'var(--green)';
-  document.getElementById('reg-username').value = '';
-  document.getElementById('reg-display').value  = '';
-  document.getElementById('reg-phone').value    = '';
 }
 
 function enterDashboard(member) {
@@ -927,15 +913,14 @@ function logout() {
 }
 
 // Show login gate after splash
-function showLoginGate() {
+async function showLoginGate() {
   const saved = localStorage.getItem('nylo-user');
   if (saved) {
-    const members = getMembers();
-    const member  = members.find(m => m.username === saved);
-    if (member || saved === 'giovanni') {
-      enterDashboard(member || { username: 'giovanni', display: 'Giovanni Flores', role: 'admin' });
-      return;
-    }
+    if (saved === 'giovanni') { enterDashboard({ username: 'giovanni', display: 'Giovanni Flores', role: 'admin' }); return; }
+    try {
+      const members = await sbGet('members', `username=eq.${saved}`);
+      if (members.length) { enterDashboard(members[0]); return; }
+    } catch(e) {}
   }
   const gate = document.getElementById('login-gate');
   gate.style.display = 'flex';
@@ -1647,14 +1632,15 @@ setInterval(fetchPrices, 30000);
 
 // ── CAT Coin tracker ──────────────────────────────────────────────────────────
 const CAT_ADDRESS = '5gTPspC2ricuGWiYQ4Ghausg8fsq7uCrGgSVACatcoin';
-let catChart = null;
-let chartVisible = false;
-let catPairData = null;
+let catChart = null, chartVisible = false, catPairData = null;
 
 async function fetchCatPrice() {
   try {
-    const url  = `https://api.dexscreener.com/latest/dex/tokens/${CAT_ADDRESS}`;
-    const res  = await fetch(url);
+    // DexScreener API allows CORS from browsers
+    const res  = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${CAT_ADDRESS}`, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error('API error');
     const data = await res.json();
     const pair = data?.pairs?.[0];
     if (!pair) { document.getElementById('cat-price').textContent = 'No data'; return; }
@@ -1764,56 +1750,56 @@ function renderCatChart(pair) {
   });
 }
 
-fetchCatPrice();
-setInterval(fetchCatPrice, 30000);
+fetchNews();
+setInterval(fetchNews, 5*60*1000);
 
-// ── News (RSS feeds — works from any domain) ──────────────────────────────────
+// ── News + CAT (via Vercel API — no CORS issues) ──────────────────────────────
 let allArticles = [], activeFilter = 'all';
-
-const RSS_FEEDS = [
-  { url: 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=QQQ&region=US&lang=en-US', tag: 'qqq', label: 'Yahoo Finance' },
-  { url: 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=GLD&region=US&lang=en-US', tag: 'gld', label: 'Yahoo Finance' },
-  { url: 'https://feeds.marketwatch.com/marketwatch/marketpulse/', tag: 'qqq', label: 'MarketWatch' },
-  { url: 'https://www.reutersagency.com/feed/?best-topics=business-finance&post_type=best', tag: 'gld', label: 'Reuters' },
-];
-
-const RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
+const API_BASE = 'https://trading-dashboard-tawny-tau.vercel.app/api/news';
 
 async function fetchNews() {
   const grid = document.getElementById('news-grid');
   grid.innerHTML = '<div class="card" style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:0.82rem;">Fetching headlines...</div>';
-  const fetched = [];
+  try {
+    const res  = await fetch(API_BASE);
+    const data = await res.json();
 
-  for (const feed of RSS_FEEDS) {
-    try {
-      const res  = await fetch(RSS_PROXY + encodeURIComponent(feed.url));
-      const data = await res.json();
-      if (data.items) {
-        data.items.slice(0, 5).forEach(item => {
-          if (!item.title) return;
-          fetched.push({
-            title:       item.title,
-            url:         item.link,
-            description: item.description?.replace(/<[^>]*>/g,'').slice(0,150) || '',
-            publishedAt: new Date(item.pubDate),
-            source:      feed.label,
-            _tag:        feed.tag
-          });
-        });
-      }
-    } catch(e) { console.log('RSS feed error:', feed.url, e); }
+    // Handle news
+    const seen = new Set();
+    allArticles = (data.articles || [])
+      .filter(a => { if(seen.has(a.title)) return false; seen.add(a.title); return true; })
+      .sort((a,b) => new Date(b.publishedAt) - new Date(a.publishedAt))
+      .slice(0,20);
+    document.getElementById('news-ts').textContent = 'News updated ' + new Date().toLocaleTimeString();
+    renderNews();
+
+    // Handle CAT coin
+    if (data.cat) updateCatUI(data.cat);
+
+  } catch(e) {
+    grid.innerHTML = '<div class="card" style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:0.82rem;">News unavailable — check back soon.</div>';
   }
-
-  // Dedupe and sort newest first
-  const seen = new Set();
-  allArticles = fetched
-    .filter(a => { if(seen.has(a.title)) return false; seen.add(a.title); return true; })
-    .sort((a,b) => b.publishedAt - a.publishedAt)
-    .slice(0, 20);
-
-  document.getElementById('news-ts').textContent = 'News updated ' + new Date().toLocaleTimeString();
-  renderNews();
 }
+
+function updateCatUI(pair) {
+  catPairData = pair;
+  const price  = parseFloat(pair.priceUsd);
+  const change = parseFloat(pair.priceChange?.h24 || 0);
+  const vol    = parseFloat(pair.volume?.h24 || 0);
+  const mcap   = parseFloat(pair.marketCap || pair.fdv || 0);
+  const up     = change >= 0;
+  const priceStr = price < 0.000001 ? '$'+price.toExponential(3) : price < 0.001 ? '$'+price.toFixed(8) : price < 1 ? '$'+price.toFixed(6) : '$'+price.toFixed(4);
+  document.getElementById('cat-price').textContent = priceStr;
+  const chgEl = document.getElementById('cat-change');
+  chgEl.textContent = (up?'+':'')+change.toFixed(2)+'% (24h)';
+  chgEl.style.color = up ? 'var(--green)' : 'var(--red)';
+  document.getElementById('cat-vol').textContent = 'Vol: $'+(vol>=1e6?(vol/1e6).toFixed(2)+'M':vol>=1000?(vol/1000).toFixed(1)+'K':vol.toFixed(0));
+  document.getElementById('cat-mcap').textContent = 'MCap: $'+(mcap>=1e6?(mcap/1e6).toFixed(2)+'M':mcap>=1000?(mcap/1000).toFixed(1)+'K':mcap.toFixed(0));
+  document.getElementById('cat-updated').textContent = 'Updated '+new Date().toLocaleTimeString()+' · '+(pair.baseToken?.name||'CAT')+' / USD';
+  if (chartVisible) renderCatChart(pair);
+}
+
+async function fetchCatPrice() { fetchNews(); } // unified through API
 
 function renderNews() {
   const grid     = document.getElementById('news-grid');
@@ -2009,8 +1995,9 @@ const SUPA_KEY = 'sb_publishable_2UtHOs8J8I9QUyNm1NBABA_JfAza7CE';
 const HEADERS  = { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
 
 async function sbGet(table, filter='') {
-  const res = await fetch(`${SUPA_URL}/rest/v1/${table}?${filter}&order=created_at.asc`, { headers: HEADERS });
-  return res.json();
+  const res  = await fetch(`${SUPA_URL}/rest/v1/${table}?${filter}&order=created_at.asc`, { headers: HEADERS });
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
 }
 async function sbInsert(table, data) {
   const res = await fetch(`${SUPA_URL}/rest/v1/${table}`, { method:'POST', headers:{...HEADERS,'Prefer':'return=representation'}, body: JSON.stringify(data) });
@@ -2020,10 +2007,9 @@ async function sbDelete(table, filter) {
   await fetch(`${SUPA_URL}/rest/v1/${table}?${filter}`, { method:'DELETE', headers: HEADERS });
 }
 
-// Override localStorage functions with Supabase
-async function getMembers()  { try { return await sbGet('members'); } catch(e) { return []; } }
-async function getRequests() { try { return await sbGet('requests'); } catch(e) { return []; } }
-async function getComments() { try { return await sbGet('comments','order=created_at.desc'); } catch(e) { return []; } }
+async function getMembers()  { try { const d = await sbGet('members');  return Array.isArray(d) ? d : []; } catch(e) { return []; } }
+async function getRequests() { try { const d = await sbGet('requests'); return Array.isArray(d) ? d : []; } catch(e) { return []; } }
+async function getComments() { try { const d = await sbGet('comments','order=created_at.desc'); return Array.isArray(d) ? d : []; } catch(e) { return []; } }
 
 async function saveMembers(m)  { /* handled by sbInsert individually */ }
 async function saveRequests(r) { /* handled by sbInsert individually */ }
