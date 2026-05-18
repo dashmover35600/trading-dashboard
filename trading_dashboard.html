@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trading Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:       #fafaf8;
+      --surface:  #ffffff;
+      --border:   #e8e8e4;
+      --faint:    #f4f4f0;
+      --text:     #1a1a18;
+      --muted:    #8a8a82;
+      --green:    #1a7a4a;
+      --green-bg: #edf7f2;
+      --red:      #c0392b;
+      --red-bg:   #fdf0ee;
+      --amber:    #92600a;
+      --amber-bg: #fef8ed;
+      --blue:     #1a4a8a;
+      --blue-bg:  #eef3fc;
+      --serif:    'Instrument Serif', serif;
+      --mono:     'DM Mono', monospace;
+      --sans:     'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+    /* Nav */
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 3rem;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { font-family: var(--serif); font-size: 1.2rem; }
+    .logo em { font-style: italic; color: var(--muted); }
+    .nav-right { display: flex; align-items: center; gap: 1.25rem; }
+    .pill {
+      display: flex; align-items: center; gap: 5px;
+      font-family: var(--mono); font-size: 0.65rem;
+      color: var(--green); background: var(--green-bg);
+      border: 1px solid rgba(26,122,74,0.2);
+      padding: 3px 10px; border-radius: 20px; letter-spacing: 0.08em;
+    }
+    .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    #ts { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); }
+
+    /* Layout */
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 3.5rem 2rem; }
+
+    /* Hero */
+    .hero { margin-bottom: 3rem; }
+    .hero h1 { font-family: var(--serif); font-size: 3rem; font-weight: 400; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 0.5rem; }
+    .hero h1 em { font-style: italic; color: var(--muted); }
+    .hero p { font-size: 0.85rem; color: var(--muted); }
+
+    /* Upload */
+    .upload {
+      border: 1.5px dashed #d4d4ce;
+      border-radius: 14px;
+      padding: 2.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface);
+      margin-bottom: 3rem;
+    }
+    .upload:hover { border-color: var(--text); background: var(--faint); }
+    .upload h3 { font-size: 0.95rem; font-weight: 500; margin-bottom: 0.3rem; }
+    .upload p { font-size: 0.8rem; color: var(--muted); }
+    #fi { display: none; }
+
+    /* Section label */
+    .sl {
+      font-family: var(--mono); font-size: 0.65rem; color: var(--muted);
+      letter-spacing: 0.14em; text-transform: uppercase;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;
+    }
+    .sl::before, .sl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* Stats grid */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      gap: 1px;
+      margin-bottom: 3rem;
+    }
+    @media(max-width:800px){ .stats { grid-template-columns: repeat(3,1fr); } }
+    @media(max-width:500px){ .stats { grid-template-columns: repeat(2,1fr); } }
+    .stat { background: var(--surface); padding: 1.4rem 1.2rem; }
+    .sl2 { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .sv { font-family: var(--serif); font-size: 1.9rem; line-height: 1; margin-bottom: 0.2rem; }
+    .ss { font-size: 0.7rem; color: var(--muted); }
+    .g { color: var(--green); }
+    .r { color: var(--red); }
+
+    /* Charts */
+    .charts-a { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .charts-b { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 3rem; }
+    @media(max-width:700px){ .charts-a, .charts-b { grid-template-columns: 1fr; } }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.4rem; }
+    .ct { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.2rem; }
+    .cw { position: relative; height: 190px; }
+
+    /* Table */
+    .tc { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 3rem; }
+    .th2 { padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .th2 h4 { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .tw { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; text-align: left; padding: 0.55rem 1.2rem; border-bottom: 1px solid var(--border); background: var(--faint); white-space: nowrap; }
+    td { padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 0.73rem; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--faint); }
+
+    .badge { display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 0.6rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+    .bl { background: var(--blue-bg);  color: var(--blue); }
+    .bs { background: var(--red-bg);   color: var(--red); }
+    .bw { background: var(--green-bg); color: var(--green); }
+    .bo { background: var(--amber-bg); color: var(--amber); }
+    .bx { background: var(--red-bg);   color: var(--red); }
+
+    .es { text-align: center; padding: 3.5rem; color: var(--muted); font-size: 0.82rem; }
+
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.65rem; color: var(--muted); border-top: 1px solid var(--border); }
+    .fade { animation: fd 0.3s ease; }
+    @keyframes fd { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:none} }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Trading <em>Dashboard</em></div>
+  <div class="nav-right">
+    <span id="ts"></span>
+    <div class="pill"><div class="dot"></div>Live</div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h1>Your trading <em>performance,</em><br>at a glance.</h1>
+    <p>QQQ · GLD &nbsp;·&nbsp; ORB / RSI Strategy &nbsp;·&nbsp; Paper Trading</p>
+  </div>
+
+  <div class="upload" onclick="document.getElementById('fi').click()">
+    <div style="font-size:1.6rem;margin-bottom:0.6rem">📂</div>
+    <h3>Upload your trade log</h3>
+    <p>Click to select <strong>trade_log.csv</strong> from your Downloads folder</p>
+    <input type="file" id="fi" accept=".csv">
+  </div>
+
+  <div class="sl">Performance overview</div>
+
+  <div class="stats">
+    <div class="stat"><div class="sl2">Total Trades</div><div class="sv" id="s0">—</div><div class="ss">all time</div></div>
+    <div class="stat"><div class="sl2">Win Rate</div><div class="sv g" id="s1">—</div><div class="ss" id="s1b">— wins · — losses</div></div>
+    <div class="stat"><div class="sl2">Total P&amp;L</div><div class="sv" id="s2">—</div><div class="ss">cumulative</div></div>
+    <div class="stat"><div class="sl2">Avg Win</div><div class="sv g" id="s3">—</div><div class="ss" id="s3b">avg loss: —</div></div>
+    <div class="stat"><div class="sl2">Best Trade</div><div class="sv g" id="s4">—</div><div class="ss" id="s4b">—</div></div>
+    <div class="stat"><div class="sl2">Worst Trade</div><div class="sv r" id="s5">—</div><div class="ss" id="s5b">—</div></div>
+  </div>
+
+  <div class="sl">Charts</div>
+
+  <div class="charts-a">
+    <div class="card"><div class="ct">Cumulative P&amp;L</div><div class="cw"><canvas id="c1"></canvas></div></div>
+    <div class="card"><div class="ct">Win / Loss ratio</div><div class="cw"><canvas id="c2"></canvas></div></div>
+  </div>
+  <div class="charts-b">
+    <div class="card"><div class="ct">Daily P&amp;L</div><div class="cw"><canvas id="c3"></canvas></div></div>
+    <div class="card"><div class="ct">Trades per ticker</div><div class="cw"><canvas id="c4"></canvas></div></div>
+  </div>
+
+  <div class="sl">Trade log</div>
+
+  <div class="tc">
+    <div class="th2">
+      <h4>All Trades</h4>
+      <span id="tc-count" style="font-family:var(--mono);font-size:0.65rem;color:var(--muted)"></span>
+    </div>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Ticker</th><th>Direction</th>
+            <th>Entry</th><th>Exit</th><th>Target</th><th>Stop</th>
+            <th>Result</th><th>P&amp;L</th>
+            <th>In</th><th>Out</th><th>RSI</th><th>Volume</th>
+          </tr>
+        </thead>
+        <tbody id="tb"><tr><td colspan="13"><div class="es">Upload your <strong>trade_log.csv</strong> to see your trades here.</div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer>Trading Dashboard &nbsp;·&nbsp; ORB / RSI Strategy &nbsp;·&nbsp; QQQ & GLD &nbsp;·&nbsp; Paper Trading</footer>
+
+<script>
+let charts = {};
+
+document.getElementById('fi').addEventListener('change', function(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    const trades = parseCSV(ev.target.result);
+    render(trades);
+    document.getElementById('ts').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  };
+  r.readAsText(f);
+});
+
+function parseCSV(txt) {
+  const lines = txt.trim().split('\n');
+  const heads = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
+  return lines.slice(1).map(l => {
+    const v = l.split(',').map(x => x.trim().replace(/"/g,''));
+    const o = {};
+    heads.forEach((h,i) => o[h] = v[i]||'');
+    return o;
+  }).filter(t => t['Date']);
+}
+
+function num(s) {
+  if (!s) return null;
+  const n = parseFloat(s.replace('%','').replace('+',''));
+  return isNaN(n) ? null : n;
+}
+
+function fmt(n) {
+  if (n === null || n === undefined) return '—';
+  return (n>=0?'+':'') + n.toFixed(2) + '%';
+}
+
+function render(trades) {
+  const closed = trades.filter(t => t['Result'] !== '');
+  const wins   = closed.filter(t => t['Result'] === 'Target Hit');
+  const losses = closed.filter(t => t['Result'] === 'Stop Loss Hit');
+  const pnls   = closed.map(t => num(t['P&L %'])).filter(v=>v!==null);
+  const wPnls  = wins.map(t=>num(t['P&L %'])).filter(v=>v!==null);
+  const lPnls  = losses.map(t=>num(t['P&L %'])).filter(v=>v!==null);
+  const total  = pnls.reduce((a,b)=>a+b,0);
+  const avgW   = wPnls.length ? wPnls.reduce((a,b)=>a+b,0)/wPnls.length : null;
+  const avgL   = lPnls.length ? lPnls.reduce((a,b)=>a+b,0)/lPnls.length : null;
+  const wr     = closed.length ? Math.round(wins.length/closed.length*100) : null;
+  const best   = pnls.length ? Math.max(...pnls) : null;
+  const worst  = pnls.length ? Math.min(...pnls) : null;
+  const bestT  = closed.find(t=>num(t['P&L %'])===best);
+  const wrstT  = closed.find(t=>num(t['P&L %'])===worst);
+
+  setText('s0', trades.length||'—');
+  setText('s1', wr!==null ? wr+'%' : '—');
+  setText('s1b', `${wins.length} wins · ${losses.length} losses`);
+  setVal('s2', fmt(total), total>=0?'g':'r');
+  setText('s3', fmt(avgW)); setText('s3b', 'avg loss: '+(avgL!==null?avgL.toFixed(2)+'%':'—'));
+  setText('s4', fmt(best));  setText('s4b', bestT ? bestT['Ticker']+' · '+bestT['Direction'] : '—');
+  setText('s5', fmt(worst)); setText('s5b', wrstT ? wrstT['Ticker']+' · '+wrstT['Direction'] : '—');
+
+  renderTable(trades);
+  renderCharts(trades, closed, wins, losses, pnls);
+}
+
+function setText(id, v) { document.getElementById(id).textContent = v; }
+function setVal(id, v, cls) { const el=document.getElementById(id); el.textContent=v; el.className='sv '+(cls||''); }
+
+function renderTable(trades) {
+  document.getElementById('tc-count').textContent = trades.length+' trades';
+  const tb = document.getElementById('tb');
+  tb.innerHTML = '';
+  [...trades].reverse().forEach(t => {
+    const p = num(t['P&L %']);
+    const open = t['Result']==='';
+    const res = open ? '<span class="badge bo">Open</span>'
+      : t['Result']==='Target Hit' ? '<span class="badge bw">Win</span>'
+      : '<span class="badge bx">Loss</span>';
+    const pStr = p!==null ? `<span class="${p>=0?'g':'r'}">${fmt(p)}</span>` : '<span style="color:var(--muted)">—</span>';
+    tb.innerHTML += `<tr class="fade">
+      <td>${t['Date']}</td>
+      <td style="font-weight:500">${t['Ticker']}</td>
+      <td><span class="badge ${t['Direction']==='Long'?'bl':'bs'}">${t['Direction']}</span></td>
+      <td>$${t['Entry Price']}</td>
+      <td>${t['Exit Price']?'$'+t['Exit Price']:'<span style="color:var(--muted)">—</span>'}</td>
+      <td style="color:var(--muted)">$${t['Target']}</td>
+      <td style="color:var(--muted)">$${t['Stop Loss']}</td>
+      <td>${res}</td><td>${pStr}</td>
+      <td style="color:var(--muted)">${t['Entry Time']}</td>
+      <td style="color:var(--muted)">${t['Exit Time']||'—'}</td>
+      <td style="color:var(--muted)">${t['RSI at Entry']}</td>
+      <td style="color:var(--muted)">${t['Volume Ratio']}</td>
+    </tr>`;
+  });
+}
+
+function renderCharts(trades, closed, wins, losses, pnls) {
+  const tc = '#8a8a82', gc = '#e8e8e4';
+  const mono = 'DM Mono';
+
+  const opts = (cb) => ({
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{grid:{color:gc,lineWidth:0.5},ticks:{color:tc,font:{family:mono,size:10}}},
+      y:{grid:{color:gc,lineWidth:0.5},ticks:{color:tc,font:{family:mono,size:10},callback:cb}}
+    }
+  });
+
+  // Cumulative P&L
+  let cum=0;
+  const cData = closed.map(t=>{cum+=num(t['P&L %'])||0;return Math.round(cum*100)/100;});
+  mkChart('c1','line',{
+    labels:closed.map((_,i)=>'#'+(i+1)),
+    datasets:[{data:cData,borderColor:'#1a7a4a',backgroundColor:'rgba(26,122,74,0.07)',borderWidth:1.5,fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#1a7a4a',pointBorderColor:'#fff',pointBorderWidth:1.5}]
+  }, opts(v=>v+'%'));
+
+  // Donut
+  mkChart('c2','doughnut',{
+    labels:['Wins','Losses','Open'],
+    datasets:[{data:[wins.length,losses.length,trades.filter(t=>t['Result']==='').length],backgroundColor:['rgba(26,122,74,0.85)','rgba(192,57,43,0.85)','rgba(146,96,10,0.6)'],borderColor:'#fff',borderWidth:3}]
+  },{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{position:'bottom',labels:{color:tc,font:{family:mono,size:10},padding:14}}}});
+
+  // Daily P&L
+  const daily={};
+  closed.forEach(t=>{ daily[t['Date']]=(daily[t['Date']]||0)+(num(t['P&L %'])||0); });
+  const dd=Object.keys(daily).sort(), dv=dd.map(d=>Math.round(daily[d]*100)/100);
+  mkChart('c3','bar',{
+    labels:dd.map(d=>d.slice(5)),
+    datasets:[{data:dv,backgroundColor:dv.map(v=>v>=0?'rgba(26,122,74,0.75)':'rgba(192,57,43,0.75)'),borderRadius:4,borderSkipped:false}]
+  }, opts(v=>v+'%'));
+
+  // Ticker
+  const tk={};
+  trades.forEach(t=>tk[t['Ticker']]=(tk[t['Ticker']]||0)+1);
+  mkChart('c4','bar',{
+    labels:Object.keys(tk),
+    datasets:[{data:Object.values(tk),backgroundColor:['rgba(26,74,138,0.75)','rgba(26,122,74,0.75)'],borderRadius:4,borderSkipped:false}]
+  }, opts(v=>v));
+}
+
+function mkChart(id, type, data, options) {
+  if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart(document.getElementById(id), {type, data, options});
+}
+</script>
+</body>
+</html>
