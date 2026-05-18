@@ -1005,8 +1005,10 @@ async function tryAutoLoad() {
     document.getElementById('ts').textContent = 'Loaded from GitHub · ' + new Date().toLocaleTimeString();
     document.getElementById('upload-zone').style.borderColor = 'var(--accent)';
     document.getElementById('upload-icon').textContent = '📊';
-    document.getElementById('upload-title').textContent = 'Loaded from GitHub';
-    document.getElementById('upload-desc').textContent = 'Showing latest data from GitHub. Updates every 15 minutes.';
+    document.getElementById('upload-title').textContent = trades.length > 0 ? 'Loaded from GitHub' : '🟢 Agent running — no signals yet today';
+    document.getElementById('upload-desc').textContent = trades.length > 0
+      ? 'Showing latest data from GitHub. Updates every 15 minutes.'
+      : 'Your NYLO agent is active and watching QQQ & GLD. Trade data will appear here automatically when the first signal fires.';
     fetchComparison(GITHUB_CMP + '?t=' + Date.now());
     return;
   } catch(e) {}
