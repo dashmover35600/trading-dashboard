@@ -637,40 +637,33 @@ async function doLogin(){
   btn.disabled = true; btn.textContent = 'Signing in…';
 
   try {
-    // 1. Check admin password first (owner bypass)
-    const isAdmin = (pass === ADMIN_PASSWORD);
+    // 1. Password check — everyone uses the admin password
+    if(pass !== ADMIN_PASSWORD){
+      errEl.textContent = 'Incorrect password.';
+      btn.disabled=false; btn.textContent='Sign in'; return;
+    }
 
-    // 2. Query Supabase members table for matching email
+    // 2. Query Supabase — username=email, role must be member or admin
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/members?email=eq.${encodeURIComponent(email)}&select=name,email,approved`,
+      `${SUPABASE_URL}/rest/v1/members?username=eq.${encodeURIComponent(email)}&select=username,display,role`,
       { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
     );
     const members = await res.json();
 
     let userName = null;
 
-    if(isAdmin && email){
-      // Admin login — check if email exists in members, use name, else just use email
-      userName = members.length ? (members[0].name || email) : email;
-    } else if(members.length > 0){
-      const member = members[0];
-      if(!member.approved){
-        errEl.textContent = 'Your account is pending approval.';
-        btn.disabled=false; btn.textContent='Sign in'; return;
-      }
-      // For members, verify password against admin password OR a member password field
-      // Simple approach: password must match admin password (all members share it)
-      // or member.password field if it exists
-      const memberPass = member.password || ADMIN_PASSWORD;
-      if(pass !== memberPass && pass !== ADMIN_PASSWORD){
-        errEl.textContent = 'Incorrect password.';
-        btn.disabled=false; btn.textContent='Sign in'; return;
-      }
-      userName = member.name || email;
-    } else {
+    if(!members.length){
       errEl.textContent = 'Email not found. Contact Giovanni for access.';
       btn.disabled=false; btn.textContent='Sign in'; return;
     }
+
+    const member = members[0];
+    if(member.role !== 'member' && member.role !== 'admin'){
+      errEl.textContent = 'Your account is pending approval.';
+      btn.disabled=false; btn.textContent='Sign in'; return;
+    }
+
+    userName = member.display || email;
 
     // Success
     sessionStorage.setItem('nylo-user', userName);

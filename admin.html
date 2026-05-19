@@ -451,9 +451,11 @@ async function approveRequest(id, name, email, phone, password){
         await sbPatch('requests', id, {status:'approved'});
         // Add to members table
         await sbInsert('members', {
-          name, email, phone, password,
-          approved: true,
-          created_at: new Date().toISOString()
+          username: email,
+          display: name,
+          phone,
+          role: 'member',
+          joined: new Date().toISOString()
         });
         showToast(`✅ ${name} approved and added as a member`,'ok');
         loadAll();
