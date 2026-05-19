@@ -647,7 +647,15 @@
       <div style="display:flex;align-items:center;gap:1rem;">
         <div style="width:42px;height:42px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🐱</div>
         <div>
-          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2px;">CAT Coin · Solana · Tap for chart</div>
+          <div style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Meme Coins · Solana · Tap for chart</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;">
+            <button onclick="fetchMemeCoin('CAT')"    class="coin-btn active" id="btn-CAT">🐱 CAT</button>
+            <button onclick="fetchMemeCoin('BONK')"   class="coin-btn" id="btn-BONK">🐕 BONK</button>
+            <button onclick="fetchMemeCoin('WIF')"    class="coin-btn" id="btn-WIF">🐶 WIF</button>
+            <button onclick="fetchMemeCoin('POPCAT')" class="coin-btn" id="btn-POPCAT">😺 POPCAT</button>
+            <button onclick="fetchMemeCoin('BOME')"   class="coin-btn" id="btn-BOME">📖 BOME</button>
+            <button onclick="fetchMemeCoin('MYRO')"   class="coin-btn" id="btn-MYRO">🦊 MYRO</button>
+          </div>
           <div style="font-family:var(--mono);font-size:1.2rem;font-weight:500;color:var(--text)" id="cat-price">Loading...</div>
         </div>
       </div>
@@ -1207,7 +1215,10 @@ function updateNotifications() {
   if (!recent.length) { list.innerHTML = '<div class="notif-empty">No trades yet</div>'; return; }
   list.innerHTML = recent.map(t => {
     const p = num(t['P&L %']);
-    const e = t['Result']==='Target Hit' ? '✅' : t['Result']==='Stop Loss Hit' ? '🛑' : '⏳';
+    const e = t['Result']==='Target Hit' ? '✅' :
+      t['Result']==='Stop Loss Hit' ? '🛑' :
+      t['Result']==='Trailing Stop' ? (num(t['P&L %'])>0 ? '🔒✅' : '🔒🛑') :
+      t['Result']==='Time Exit' ? (num(t['P&L %'])>0 ? '⏰✅' : '⏰🛑') : '⏳';
     return `<div class="notif-item">${e} ${t['Ticker']} ${t['Direction']} · ${t['Date']} · ${p!==null?(p>=0?'+':'')+p.toFixed(2)+'%':'Open'}</div>`;
   }).join('');
   if (notifEnabled && allTrades.length > lastTradeCount && lastTradeCount > 0) notifDot.classList.add('show');
@@ -1218,8 +1229,10 @@ function updateStreak(trades) {
   const closed = [...trades].filter(t=>t['Result']!=='').reverse();
   if (!closed.length) return;
   let streak = 0;
-  const isWin = closed[0]['Result'] === 'Target Hit';
-  for (const t of closed) { if ((t['Result']==='Target Hit')===isWin) streak++; else break; }
+  const isWinResult = t => t['Result']==='Target Hit' ||
+    ((t['Result']==='Trailing Stop'||t['Result']==='Time Exit') && num(t['P&L %'])>0);
+  const isWin = isWinResult(closed[0]);
+  for (const t of closed) { if (isWinResult(t)===isWin) streak++; else break; }
   const emojis = isWin ? ['🔥','🔥🔥','🔥🔥🔥','💰','💰💰','🚀','🚀🚀','👑'] : ['😬','📉','💀','🛑'];
   document.getElementById('streak-val').textContent = streak;
   document.getElementById('streak-label').textContent = isWin ? 'Win streak' : 'Loss streak';
@@ -1238,8 +1251,9 @@ function animateCounter(id, from, to, duration, formatter) {
   requestAnimationFrame(step);
 }
 function animateStats(trades) {
-  const closed = trades.filter(t=>t['Result']!=='');
-  const wins   = closed.filter(t=>t['Result']==='Target Hit');
+  const closed = trades.filter(t=>t['Result'] && t['Result']!=='' && t['P&L %'] && t['P&L %']!=='');
+  const wins   = closed.filter(t=>t['Result']==='Target Hit' ||
+    ((t['Result']==='Trailing Stop'||t['Result']==='Time Exit') && num(t['P&L %'])>0));
   const pnls   = closed.map(t=>num(t['P&L %'])).filter(v=>v!==null);
   const total  = pnls.reduce((a,b)=>a+b,0);
   const wr     = closed.length ? wins.length/closed.length*100 : 0;
@@ -1298,12 +1312,16 @@ async function tryAutoLoad() {
     const trades = parseCSV(text);
     render(trades);
     document.getElementById('ts').textContent = 'Loaded from GitHub · ' + new Date().toLocaleTimeString();
-    document.getElementById('upload-zone').style.borderColor = 'var(--accent)';
-    document.getElementById('upload-icon').textContent = '📊';
-    document.getElementById('upload-title').textContent = trades.length > 0 ? 'Loaded from GitHub' : '🟢 Agent running — no signals yet today';
-    document.getElementById('upload-desc').textContent = trades.length > 0
-      ? 'Showing latest data from GitHub. Updates every 15 minutes.'
-      : 'Your NYLO agent is active and watching QQQ & GLD. Trade data will appear here automatically when the first signal fires.';
+    const uploadZone = document.getElementById('upload-zone');
+    if(uploadZone) {
+      uploadZone.style.borderColor = 'var(--accent)';
+      document.getElementById('upload-icon').textContent = '📊';
+      document.getElementById('upload-title').textContent = trades.length > 0 ? 'Loaded from GitHub ✅' : '🟢 Agent running — no signals yet today';
+      document.getElementById('upload-desc').textContent = trades.length > 0
+        ? `${trades.length} trade${trades.length>1?'s':''} loaded · Updates every 15 min`
+        : 'Agent v14 is active and watching QQQ. Trade data appears here automatically.';
+      if(trades.length > 0) uploadZone.style.display = 'none';
+    }
     fetchComparison(GITHUB_CMP + '?t=' + Date.now());
     fetchLiveTrade();
     fetchHeartbeat();
@@ -1421,9 +1439,11 @@ function setVal(id,v,cls){ const el=document.getElementById(id); el.textContent=
 // ── Main render ───────────────────────────────────────────────────────────────
 function render(trades) {
   allTrades = trades;
-  const closed = trades.filter(t=>t['Result']!=='');
-  const wins   = closed.filter(t=>t['Result']==='Target Hit');
-  const losses = closed.filter(t=>t['Result']==='Stop Loss Hit');
+  const closed = trades.filter(t=>t['Result'] && t['Result']!=='' && t['P&L %'] && t['P&L %']!=='');
+  const wins   = closed.filter(t=>t['Result']==='Target Hit' ||
+    ((t['Result']==='Trailing Stop'||t['Result']==='Time Exit') && num(t['P&L %'])>0));
+  const losses = closed.filter(t=>t['Result']==='Stop Loss Hit' ||
+    ((t['Result']==='Trailing Stop'||t['Result']==='Time Exit') && num(t['P&L %'])<=0));
   const pnls   = closed.map(t=>num(t['P&L %'])).filter(v=>v!==null);
   const wPnls  = wins.map(t=>num(t['P&L %'])).filter(v=>v!==null);
   const lPnls  = losses.map(t=>num(t['P&L %'])).filter(v=>v!==null);
@@ -1884,7 +1904,21 @@ async function fetchNews() {
     // Also refresh meme coin prices
     fetchMemeCoin(activeCoin);
   } catch(e) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:0.82rem;">News unavailable — check back soon.</div>';
+    // Try alternative news source
+    try {
+      const r2 = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ffinance.yahoo.com%2Frss%2Fnews&count=15');
+      const d2 = await r2.json();
+      allArticles = (d2.items||[]).map(item=>({
+        title:item.title, url:item.link,
+        description:item.description?.replace(/<[^>]+>/g,'').slice(0,120),
+        publishedAt:new Date(item.pubDate), source:'Yahoo Finance',
+        _tag: item.title.toLowerCase().includes('gold')||item.title.toLowerCase().includes('gld') ? 'gld' : 'qqq'
+      }));
+      document.getElementById('news-ts').textContent = 'News updated ' + new Date().toLocaleTimeString();
+      renderNews();
+    } catch(e2) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:0.82rem;">News unavailable — check back soon.</div>';
+    }
   }
 }
 
