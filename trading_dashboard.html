@@ -781,7 +781,7 @@
             <th>In</th><th>Out</th><th>RSI</th><th>Volume</th>
           </tr>
         </thead>
-        <tbody id="tb"><tr><td colspan="13"><div class="es">Upload your <strong>trade_log.csv</strong> to see trades here.</div></td></tr></tbody>
+        <tbody id="tb"><tr><td colspan="13"><div class="es">No trades yet — agent will log them automatically.</div></td></tr></tbody>
       </table>
     </div>
   </div>
@@ -1226,7 +1226,7 @@ function updateNotifications() {
 
 // ── Win streak ────────────────────────────────────────────────────────────────
 function updateStreak(trades) {
-  const closed = [...trades].filter(t=>t['Result']!=='').reverse();
+  const closed = [...trades].filter(t=>t['Result'] && t['Result'].trim()!=='' && t['P&L %'] && t['P&L %'].trim()!=='').reverse();
   if (!closed.length) return;
   let streak = 0;
   const isWinResult = t => t['Result']==='Target Hit' ||
@@ -1479,6 +1479,12 @@ function render(trades) {
   // New features
   updateStreak(trades);
   updateNotifications();
+
+  // Hide upload zone if we have trades
+  if (trades.length > 0) {
+    const uz = document.getElementById('upload-zone');
+    if(uz) uz.style.display = 'none';
+  }
   if (wins.length > 0) {
     setTimeout(fireConfetti, 600);
     playSound('success');
@@ -1543,8 +1549,10 @@ function renderTable() {
   let trades = [...allTrades];
   if (tableFilter === 'QQQ')  trades = trades.filter(t => t['Ticker']==='QQQ');
   else if (tableFilter === 'GLD')  trades = trades.filter(t => t['Ticker']==='GLD');
-  else if (tableFilter === 'win')  trades = trades.filter(t => t['Result']==='Target Hit');
-  else if (tableFilter === 'loss') trades = trades.filter(t => t['Result']==='Stop Loss Hit');
+  else if (tableFilter === 'win')  trades = trades.filter(t => t['Result']==='Target Hit' ||
+    ((t['Result']==='Trailing Stop'||t['Result']==='Time Exit') && num(t['P&L %'])>0));
+  else if (tableFilter === 'loss') trades = trades.filter(t => t['Result']==='Stop Loss Hit' ||
+    ((t['Result']==='Trailing Stop'||t['Result']==='Time Exit') && num(t['P&L %'])<=0));
 
   trades.sort((a,b) => {
     let va, vb;
@@ -1565,6 +1573,9 @@ function renderTable() {
     const p = num(t['P&L %']);
     const open = t['Result']==='';
     const res = open ? '<span class="badge bo">Open</span>'
+      : t['Result']==='Target Hit' ? '<span class="badge bw">Win ✅</span>'
+      : t['Result']==='Trailing Stop' ? (num(t['P&L %'])>0?'<span class="badge bw">Trail ✅</span>':'<span class="badge bl">Trail 🛑</span>')
+      : t['Result']==='Time Exit' ? (num(t['P&L %'])>0?'<span class="badge bw">Time Exit ✅</span>':'<span class="badge bl">Time Exit 🛑</span>')
       : t['Result']==='Target Hit' ? '<span class="badge bw">Win</span>'
       : '<span class="badge bx">Loss</span>';
     const pStr = p!==null ? `<span class="${p>=0?'g':'r'}">${fmt(p)}</span>` : '<span style="color:var(--muted)">—</span>';
