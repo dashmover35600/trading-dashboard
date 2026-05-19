@@ -1,19 +1,17 @@
 """
-NYLO Backtesting Engine
-=======================
-Runs the full ORB + RSI + VWAP + Volume + Multi-TF strategy
-on 30 days of 1-minute historical data for QQQ and GLD.
-
-Also runs a parameter sweep across RSI thresholds to find the
-optimal configuration.
-
-Output: backtest_results.json (push to GitHub, read by backtest.html)
+NYLO Backtesting Engine v14
+============================
+Exact replica of trading_agent_14.py strategy logic:
+  1. Opening Drive    — first 5 min sets day bias (long/short/neutral)
+  2. VWAP Reclaim     — primary signal: price crosses VWAP with volume
+  3. EMA Pullback     — secondary: bounce off 9 EMA in trend direction
+  4. Signal Scoring   — 0-10 score, only 6+ trades execute
+  5. Dynamic sizing   — $500 / $1000 / $1500 based on score
+  6. Trailing stop    — activates at +0.5%, trails by 0.4%
+  7. Hard cutoff      — 12:45 PM ET, no holding into lunch
 
 Usage:
-  python3 backtest.py
-
-Requirements:
-  pip install yfinance pandas ta --break-system-packages
+  python3 -W ignore backtest.py
 """
 
 import yfinance as yf
@@ -26,428 +24,335 @@ import os
 import sys
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TICKERS           = ["QQQ"]  # v13: GLD dropped — underperforming in backtest
-LOOKBACK_DAYS     = 30
-POSITION_SIZE     = 500.0
+TICKER            = "QQQ"
+LOOKBACK_DAYS     = 90
 MARKET_TZ         = pytz.timezone("America/New_York")
-
-# Baseline strategy parameters
-RSI_BUY_MIN       = 55
-RSI_SELL_MAX      = 45
-GAIN_TARGET_PCT   = 1.5   # v14: momentum moves 1.5% cleanly
-STOP_LOSS_PCT     = 0.75   # v14: 0.75% stop — tight enough to cut losers fast
-VOLUME_MULT       = 1.0    # v14: no volume filter — let momentum speak
-MAX_TRADES_DAY    = 999    # v12: unlimited — take every valid signal
-
-# Parameter sweep ranges
-SWEEP_RSI_BUY  = [50, 52, 55, 58, 60, 63, 65]  # unchanged — RSI not the issue
-SWEEP_RSI_SELL = [35, 38, 40, 42, 45, 48, 50]
-
+POS_BASE          = 500.0
+POS_MEDIUM        = 1000.0
+POS_HIGH          = 1500.0
+GAIN_TARGET_PCT   = 0.015
+STOP_LOSS_PCT     = 0.0075
+TRAIL_TRIGGER_PCT = 0.005
+TRAIL_STOP_PCT    = 0.004
+MIN_SCORE         = 6
+RSI_BULL_MIN      = 50
+RSI_BULL_MAX      = 75
+RSI_BEAR_MIN      = 25
+RSI_BEAR_MAX      = 50
+VOLUME_MIN        = 1.2
+SWEEP_RSI_BUY     = [45, 48, 50, 52, 55, 58, 60]
+SWEEP_RSI_SELL    = [40, 42, 45, 48, 50, 52, 55]
+SWEEP_MIN_SCORE   = [4, 5, 6, 7]
 BASE = os.path.dirname(os.path.abspath(__file__))
 OUT  = os.path.join(BASE, "backtest_results.json")
 
-# ── Data fetch ────────────────────────────────────────────────────────────────
-def fetch_1m(ticker: str, days: int = 30) -> pd.DataFrame:
-    """
-    yfinance only allows 7 days of 1m data per call.
-    We fetch in 7-day chunks and stitch together.
-    """
-    print(f"  Fetching {ticker} 1-minute data ({days} days)...")
+def fetch_1m(ticker, days=90):
+    print(f"  Fetching {ticker} 1-min data ({days} days)...")
     frames = []
-    end   = datetime.datetime.now(MARKET_TZ)
-    # How many 7-day chunks we need
+    end = datetime.datetime.now(MARKET_TZ)
     chunks = (days // 7) + (1 if days % 7 else 0)
-
     for i in range(chunks):
-        chunk_end   = end - datetime.timedelta(days=i*7)
-        chunk_start = chunk_end - datetime.timedelta(days=7)
+        ce = end - datetime.timedelta(days=i*7)
+        cs = ce - datetime.timedelta(days=7)
         try:
-            df = yf.download(
-                ticker,
-                start=chunk_start.strftime("%Y-%m-%d"),
-                end=chunk_end.strftime("%Y-%m-%d"),
-                interval="1m",
-                progress=False,
-                auto_adjust=True
-            )
+            df = yf.download(ticker, start=cs.strftime("%Y-%m-%d"), end=ce.strftime("%Y-%m-%d"),
+                             interval="1m", progress=False, auto_adjust=True)
             if not df.empty:
                 frames.append(df)
         except Exception as e:
-            print(f"    Warning: chunk {i} failed: {e}")
-
+            pass
     if not frames:
-        print(f"  ERROR: No data for {ticker}")
         return pd.DataFrame()
-
     df = pd.concat(frames).sort_index()
     df = df[~df.index.duplicated(keep='first')]
     if df.index.tz is None:
         df.index = df.index.tz_localize("UTC").tz_convert(MARKET_TZ)
     else:
         df.index = df.index.tz_convert(MARKET_TZ)
-
-    # Filter to trading hours only
     df = df.between_time("09:30", "13:00")
-    print(f"  {ticker}: {len(df)} 1-min bars loaded")
+    print(f"  {ticker}: {len(df)} bars across {len(df.index.normalize().unique())} days")
     return df
 
-# ── Indicators ────────────────────────────────────────────────────────────────
-def calc_rsi(series: pd.Series, window: int = 14) -> float:
+def calc_rsi(series, window=14):
     if len(series) < window + 1:
         return 50.0
-    rsi = ta.momentum.RSIIndicator(series, window=window).rsi()
-    val = rsi.iloc[-1]
-    return round(float(val), 2) if not pd.isna(val) else 50.0
+    try:
+        val = ta.momentum.RSIIndicator(series.squeeze(), window=window).rsi().iloc[-1]
+        return round(float(val), 2) if not pd.isna(val) else 50.0
+    except:
+        return 50.0
 
-def calc_vwap(day_df: pd.DataFrame) -> pd.Series:
-    close  = day_df["Close"].squeeze()
-    high   = day_df["High"].squeeze()
-    low    = day_df["Low"].squeeze()
-    volume = day_df["Volume"].squeeze()
-    tp     = (high + low + close) / 3
-    vwap   = (tp * volume).cumsum() / volume.cumsum()
-    return vwap
+def calc_ema(series, window=9):
+    if len(series) < window:
+        return float(series.iloc[-1])
+    try:
+        return round(float(series.ewm(span=window, adjust=False).mean().iloc[-1]), 4)
+    except:
+        return float(series.iloc[-1])
 
-def calc_vol_ratio(df: pd.DataFrame, idx: int, window: int = 20) -> float:
-    if idx < window:
-        return 1.0
-    vol_series = df["Volume"].squeeze()
-    avg = float(vol_series.iloc[idx-window:idx].mean())
-    cur = float(vol_series.iloc[idx])
-    return round(cur / avg, 2) if avg > 0 else 1.0
+def score_signal(direction, signal_type, rsi, vol_ratio, price, vwap, ema9, day_bias, rsi_bull_min):
+    score = 0
+    if day_bias == direction: score += 2
+    elif day_bias == "neutral": score += 1
+    if direction == "long":
+        if rsi_bull_min + 2 <= rsi <= rsi_bull_min + 20: score += 2
+        elif rsi_bull_min <= rsi <= rsi_bull_min + 28: score += 1
+    else:
+        if RSI_BEAR_MAX - 22 <= rsi <= RSI_BEAR_MAX - 2: score += 2
+        elif RSI_BEAR_MAX - 30 <= rsi <= RSI_BEAR_MAX: score += 1
+    if vol_ratio >= 2.0: score += 2
+    elif vol_ratio >= 1.3: score += 1
+    if vwap and vwap > 0:
+        if direction == "long" and price > vwap: score += 1
+        elif direction == "short" and price < vwap: score += 1
+    if direction == "long" and price > ema9: score += 1
+    elif direction == "short" and price < ema9: score += 1
+    if signal_type == "vwap_reclaim": score += 1
+    return min(score, 10)
 
-# ── Strategy engine ───────────────────────────────────────────────────────────
-def run_strategy(df: pd.DataFrame, ticker: str, cfg: dict) -> list:
-    """
-    Momentum Continuation Strategy (v14)
-    =====================================
-    Entry conditions (long):
-      - Price > 9 EMA
-      - Price > VWAP
-      - RSI between 55 and 75 (trending up, not overbought)
-      - Volume > average * vol_mult
-      - Not in dead zone (11:30-12:30)
-      - Cooldown: 30 min between signals
+def get_pos_size(score):
+    if score >= 9: return POS_HIGH
+    elif score >= 7: return POS_MEDIUM
+    return POS_BASE
 
-    Entry conditions (short):
-      - Price < 9 EMA
-      - Price < VWAP
-      - RSI between 25 and 45 (trending down, not oversold)
-      - Volume > average * vol_mult
+def close_trade(trades, entry, exit_price, result, date, ts):
+    pnl_pct = ((exit_price - entry["price"]) / entry["price"] * 100
+               if entry["dir"] == "long"
+               else (entry["price"] - exit_price) / entry["price"] * 100)
+    trades.append({
+        "date": date.strftime("%Y-%m-%d"), "ticker": TICKER,
+        "direction": "Long" if entry["dir"]=="long" else "Short",
+        "entry": round(entry["price"],4), "exit": round(exit_price,4),
+        "result": result, "pnl_pct": round(pnl_pct,3),
+        "pnl_dollar": round(pnl_pct/100*entry["pos_size"],2),
+        "rsi": round(entry["rsi"],1), "vol_ratio": entry["vol_ratio"],
+        "entry_time": entry["time"], "hour": entry["hour"],
+        "signal_type": entry["signal_type"], "signal_score": entry["signal_score"],
+        "pos_size": entry["pos_size"], "day_bias": entry["day_bias"],
+        "trail_used": entry["trail_active"],
+    })
 
-    Exit: target % gain or stop % loss
-    """
-    rsi_buy_min  = cfg["rsi_buy"]       # e.g. 55
-    rsi_buy_max  = rsi_buy_min + 30     # e.g. 85 — wider range
-    rsi_sell_max = cfg["rsi_sell"]      # e.g. 45
-    rsi_sell_min = rsi_sell_max - 30    # e.g. 15 — wider range
+def run_strategy(df, cfg):
+    rsi_bull_min = cfg["rsi_bull_min"]
+    rsi_bull_max = cfg["rsi_bull_max"]
+    rsi_bear_min = cfg["rsi_bear_min"]
+    rsi_bear_max = cfg["rsi_bear_max"]
+    min_sc       = cfg["min_score"]
     gain_pct     = cfg["gain_pct"]
     stop_pct     = cfg["stop_pct"]
-    vol_mult     = cfg["vol_mult"]
-    pos_size     = cfg["pos_size"]
-
     trades = []
     dates  = sorted(df.index.normalize().unique())
 
     for date in dates:
         day_df = df[df.index.date == date.date()]
-        # Trading hours only 9:30-13:00
-        trading = day_df.between_time("09:30", "13:00")
-        if len(trading) < 20:
-            continue
+        if len(day_df) < 20: continue
+        closes  = day_df["Close"].squeeze().tolist()
+        volumes = day_df["Volume"].squeeze().tolist()
+        day_idx = list(day_df.index)
 
-        # Pre-calculate VWAP for the day
-        close  = trading["Close"].squeeze()
-        high   = trading["High"].squeeze()
-        low    = trading["Low"].squeeze()
-        volume = trading["Volume"].squeeze()
-        tp     = (high + low + close) / 3
-        vwap_series = (tp * volume).cumsum() / volume.cumsum()
+        # Opening drive bias
+        drive_df = day_df.between_time("09:30", "09:35")
+        if len(drive_df) < 2: continue
+        drive_open  = float(drive_df["Open"].iloc[0])
+        drive_close = float(drive_df["Close"].iloc[-1])
+        move_pct    = (drive_close - drive_open) / drive_open * 100
+        prev_days   = df[df.index.date < date.date()]
+        avg_vol     = float(prev_days["Volume"].tail(200).mean()) if len(prev_days) > 0 else 1.0
+        drive_vol   = float(drive_df["Volume"].sum())
+        vr_drive    = drive_vol / avg_vol if avg_vol > 0 else 1.0
+        if move_pct > 0.3 and vr_drive > 1.5: day_bias = "long"
+        elif move_pct < -0.3 and vr_drive > 1.5: day_bias = "short"
+        else: day_bias = "neutral"
 
-        in_trade      = False
-        entry         = None
-        last_signal_i = -5   # cooldown tracker — 5 min between signals
+        # VWAP for the day
+        cl = day_df["Close"].squeeze()
+        hi = day_df["High"].squeeze()
+        lo = day_df["Low"].squeeze()
+        vo = day_df["Volume"].squeeze()
+        tp = (hi + lo + cl) / 3
+        vwap_list = ((tp * vo).cumsum() / vo.cumsum()).tolist()
 
-        closes_list = close.tolist()
+        in_trade = False
+        entry = None
 
-        for i, (ts, row) in enumerate(trading.iterrows()):
-            if i < 15:  # need enough bars for indicators
-                continue
+        for i, ts in enumerate(day_idx):
+            hour, minute = ts.hour, ts.minute
+            if (hour == 11 and minute >= 30) or (hour == 12 and minute == 0): continue
+            if (hour == 12 and minute >= 45) or hour >= 13:
+                if in_trade and entry:
+                    close_trade(trades, entry, closes[i] if i < len(closes) else entry["price"],
+                                "Time Exit", date, ts)
+                    in_trade = False; entry = None
+                break
 
-            hour   = ts.hour
-            minute = ts.minute
+            if i == 0: continue
+            price      = closes[i]
+            prev_price = closes[i-1]
+            vwap       = vwap_list[i] if i < len(vwap_list) else 0
+            rsi_sl     = pd.Series(closes[max(0,i-28):i+1])
+            rsi        = calc_rsi(rsi_sl)
+            ema_sl     = pd.Series(closes[max(0,i-30):i+1])
+            ema9       = calc_ema(ema_sl, 9)
+            ema21      = calc_ema(ema_sl, 21)
+            vol_sl     = pd.Series(volumes[max(0,i-20):i])
+            avg_v      = float(vol_sl.mean()) if len(vol_sl) > 0 else 1.0
+            vol_ratio  = round(volumes[i] / avg_v, 2) if avg_v > 0 else 1.0
 
-            # Dead zone 11:30-12:30
-            if (hour == 11 and minute >= 30) or (hour == 12 and minute <= 30):
-                continue
-
-            # Cooldown — 30 bars between signals (~30 min)
-            if not in_trade and (i - last_signal_i) < 5:
-                continue
-
-            price = float(closes_list[i])
-            vwap  = float(vwap_series.iloc[i])
-
-            # 9 EMA
-            ema_slice = closes_list[max(0, i-20):i+1]
-            ema9 = ema_slice[-1]
-            alpha = 2 / (9 + 1)
-            for j in range(1, min(9, len(ema_slice))):
-                ema9 = ema_slice[-(j+1)] * alpha + ema9 * (1 - alpha)
-
-            # RSI (14)
-            rsi_slice = pd.Series(closes_list[max(0, i-28):i+1])
-            rsi = 50.0
-            if len(rsi_slice) >= 15:
-                try:
-                    rsi_val = ta.momentum.RSIIndicator(rsi_slice, window=14).rsi().iloc[-1]
-                    rsi = float(rsi_val) if not pd.isna(rsi_val) else 50.0
-                except Exception:
-                    rsi = 50.0
-
-            # Volume ratio
-            vol_slice = volume.iloc[max(0, i-20):i]
-            avg_vol   = float(vol_slice.mean()) if len(vol_slice) > 0 else 1.0
-            cur_vol   = float(volume.iloc[i])
-            vol_ratio = cur_vol / avg_vol if avg_vol > 0 else 1.0
-
-            # Check exit first
+            # Exit check
             if in_trade and entry:
-                if entry["dir"] == "long":
-                    hit_target = price >= entry["target"]
-                    hit_stop   = price <= entry["stop"]
+                d = entry["dir"]
+                if d == "long":
+                    m = (price - entry["price"]) / entry["price"]
+                    if m >= TRAIL_TRIGGER_PCT and not entry["trail_active"]:
+                        entry["trail_active"] = True; entry["trail_peak"] = price
+                        entry["trail_stop"] = price * (1 - TRAIL_STOP_PCT)
+                    elif entry["trail_active"] and price > entry["trail_peak"]:
+                        entry["trail_peak"] = price
+                        entry["trail_stop"] = price * (1 - TRAIL_STOP_PCT)
                 else:
-                    hit_target = price <= entry["target"]
-                    hit_stop   = price >= entry["stop"]
+                    m = (entry["price"] - price) / entry["price"]
+                    if m >= TRAIL_TRIGGER_PCT and not entry["trail_active"]:
+                        entry["trail_active"] = True; entry["trail_peak"] = price
+                        entry["trail_stop"] = price * (1 + TRAIL_STOP_PCT)
+                    elif entry["trail_active"] and price < entry["trail_peak"]:
+                        entry["trail_peak"] = price
+                        entry["trail_stop"] = price * (1 + TRAIL_STOP_PCT)
 
-                if hit_target or hit_stop:
-                    exit_price = entry["target"] if hit_target else entry["stop"]
-                    pnl_pct    = ((exit_price - entry["price"]) / entry["price"] * 100
-                                  if entry["dir"] == "long"
-                                  else (entry["price"] - exit_price) / entry["price"] * 100)
-                    shares     = pos_size / entry["price"]
-                    pnl_dollar = pnl_pct / 100 * pos_size
-
-                    trades.append({
-                        "date":       date.strftime("%Y-%m-%d"),
-                        "ticker":     ticker,
-                        "direction":  "Long" if entry["dir"] == "long" else "Short",
-                        "entry":      round(entry["price"], 4),
-                        "exit":       round(exit_price, 4),
-                        "target":     round(entry["target"], 4),
-                        "stop":       round(entry["stop"], 4),
-                        "result":     "Target Hit" if hit_target else "Stop Loss Hit",
-                        "pnl_pct":    round(pnl_pct, 3),
-                        "pnl_dollar": round(pnl_dollar, 2),
-                        "rsi":        round(entry["rsi"], 1),
-                        "vol_ratio":  round(entry["vol_ratio"], 2),
-                        "entry_time": entry["time"],
-                        "hour":       entry["hour"],
-                        "shares":     round(shares, 4),
-                    })
-                    in_trade     = False
-                    entry        = None
-                    last_signal_i = i
+                ht = (d=="long" and price>=entry["target"]) or (d=="short" and price<=entry["target"])
+                hs = (d=="long" and price<=entry["stop"])   or (d=="short" and price>=entry["stop"])
+                htr= entry["trail_active"] and (
+                    (d=="long" and price<=entry["trail_stop"]) or
+                    (d=="short" and price>=entry["trail_stop"]))
+                if ht or hs or htr:
+                    res = "Target Hit" if ht else ("Trailing Stop" if htr else "Stop Loss Hit")
+                    ep  = entry["target"] if ht else (entry["trail_stop"] if htr else entry["stop"])
+                    close_trade(trades, entry, ep, res, date, ts)
+                    in_trade = False; entry = None
                     continue
 
-            if in_trade:
-                continue
+            if in_trade: continue
 
-            # Signal detection
-            direction = None
+            # Signals
+            sig = None; dirn = None
+            if vwap > 0:
+                if prev_price < vwap and price > vwap and vol_ratio >= VOLUME_MIN:
+                    if day_bias in ("long","neutral") and rsi_bull_min <= rsi <= rsi_bull_max:
+                        sig = "vwap_reclaim"; dirn = "long"
+                elif prev_price > vwap and price < vwap and vol_ratio >= VOLUME_MIN:
+                    if day_bias in ("short","neutral") and rsi_bear_min <= rsi <= rsi_bear_max:
+                        sig = "vwap_reclaim"; dirn = "short"
+            if not sig:
+                if prev_price <= ema9*1.001 and price > ema9 and price > ema21 and vol_ratio >= VOLUME_MIN:
+                    if day_bias in ("long","neutral") and rsi_bull_min <= rsi <= rsi_bull_max:
+                        sig = "ema_pullback"; dirn = "long"
+                elif prev_price >= ema9*0.999 and price < ema9 and price < ema21 and vol_ratio >= VOLUME_MIN:
+                    if day_bias in ("short","neutral") and rsi_bear_min <= rsi <= rsi_bear_max:
+                        sig = "ema_pullback"; dirn = "short"
+            if not sig: continue
 
-            # Long: price above EMA9 and VWAP, RSI in bullish range, volume spike
-            if (price > ema9 and price > vwap
-                    and rsi_buy_min <= rsi <= rsi_buy_max
-                    and vol_ratio >= vol_mult):
-                direction = "long"
+            sc = score_signal(dirn, sig, rsi, vol_ratio, price, vwap, ema9, day_bias, rsi_bull_min)
+            if sc < min_sc: continue
 
-            # Short: price below EMA9 and VWAP, RSI in bearish range, volume spike
-            elif (price < ema9 and price < vwap
-                    and rsi_sell_min <= rsi <= rsi_sell_max
-                    and vol_ratio >= vol_mult):
-                direction = "short"
-
-            if not direction:
-                continue
-
-            # Enter trade
-            target = (price * (1 + gain_pct/100) if direction == "long"
-                      else price * (1 - gain_pct/100))
-            stop   = (price * (1 - stop_pct/100) if direction == "long"
-                      else price * (1 + stop_pct/100))
-
-            in_trade     = True
-            last_signal_i = i
-            entry = {
-                "dir":       direction,
-                "price":     price,
-                "target":    round(target, 4),
-                "stop":      round(stop, 4),
-                "rsi":       rsi,
-                "vol_ratio": vol_ratio,
-                "time":      ts.strftime("%I:%M %p"),
-                "hour":      hour,
-            }
-
+            ps   = get_pos_size(sc)
+            tgt  = price*(1+gain_pct) if dirn=="long" else price*(1-gain_pct)
+            stp  = price*(1-stop_pct) if dirn=="long" else price*(1+stop_pct)
+            in_trade = True
+            entry = {"dir":dirn,"price":price,"target":round(tgt,4),"stop":round(stp,4),
+                     "trail_active":False,"trail_peak":price,"trail_stop":None,
+                     "rsi":rsi,"vol_ratio":vol_ratio,"signal_type":sig,"signal_score":sc,
+                     "pos_size":ps,"shares":round(ps/price,4),
+                     "time":ts.strftime("%I:%M %p"),"hour":hour,"day_bias":day_bias}
     return trades
 
-# ── Stats calculator# ── Stats calculator ──────────────────────────────────────────────────────────
-def calc_stats(trades: list, pos_size: float) -> dict:
+def calc_stats(trades):
     if not trades:
-        return {
-            "trades": 0, "wins": 0, "losses": 0,
-            "win_rate": 0, "total_pnl_pct": 0, "total_pnl_dollar": 0,
-            "best": 0, "worst": 0, "max_drawdown": 0, "sharpe": 0
-        }
-
-    wins   = [t for t in trades if t["result"] == "Target Hit"]
-    losses = [t for t in trades if t["result"] == "Stop Loss Hit"]
-    wr     = len(wins) / len(trades) * 100 if trades else 0
+        return {"trades":0,"wins":0,"losses":0,"trail_exits":0,"win_rate":0,
+                "total_pnl_pct":0,"total_pnl_dollar":0,"best":0,"worst":0,
+                "max_drawdown":0,"sharpe":0,"avg_score":0}
+    wins   = [t for t in trades if t["result"]=="Target Hit"]
+    losses = [t for t in trades if t["result"] in ("Stop Loss Hit","Trailing Stop")]
+    trails = [t for t in trades if t["result"]=="Trailing Stop"]
     pnls   = [t["pnl_pct"] for t in trades]
-    total_pct    = sum(pnls)
-    total_dollar = sum(t["pnl_dollar"] for t in trades)
-    best  = max(pnls) if pnls else 0
-    worst = min(pnls) if pnls else 0
-
-    # Max drawdown
-    peak, dd, cum = 0, 0, 0
+    dols   = [t["pnl_dollar"] for t in trades]
+    peak=0; dd=0; cum=0
     for p in pnls:
-        cum += p
-        if cum > peak: peak = cum
-        if cum - peak < dd: dd = cum - peak
-
-    # Sharpe (annualized, rough)
+        cum+=p
+        if cum>peak: peak=cum
+        if cum-peak<dd: dd=cum-peak
     import statistics
-    if len(pnls) > 1:
-        mean = statistics.mean(pnls)
-        stdev = statistics.stdev(pnls)
-        sharpe = (mean / stdev * (252 ** 0.5)) if stdev > 0 else 0
-    else:
-        sharpe = 0
+    sharpe=0
+    if len(pnls)>1:
+        try:
+            sharpe=round(statistics.mean(pnls)/statistics.stdev(pnls)*(252**0.5),3)
+        except: pass
+    return {"trades":len(trades),"wins":len(wins),"losses":len(losses),
+            "trail_exits":len(trails),
+            "win_rate":round(len(wins)/len(trades)*100,2),
+            "total_pnl_pct":round(sum(pnls),3),"total_pnl_dollar":round(sum(dols),2),
+            "best":round(max(pnls),3),"worst":round(min(pnls),3),
+            "max_drawdown":round(dd,3),"sharpe":sharpe,
+            "avg_score":round(sum(t["signal_score"] for t in trades)/len(trades),1)}
 
-    return {
-        "trades":          len(trades),
-        "wins":            len(wins),
-        "losses":          len(losses),
-        "win_rate":        round(wr, 2),
-        "total_pnl_pct":   round(total_pct, 3),
-        "total_pnl_dollar":round(total_dollar, 2),
-        "best":            round(best, 3),
-        "worst":           round(worst, 3),
-        "max_drawdown":    round(dd, 3),
-        "sharpe":          round(sharpe, 3),
-    }
-
-# ── Main ──────────────────────────────────────────────────────────────────────
 def main():
-    print("=" * 60)
-    print("  NYLO Backtesting Engine")
-    print(f"  Tickers  : {', '.join(TICKERS)}")
-    print(f"  Lookback : {LOOKBACK_DAYS} days of 1-minute data")
-    print(f"  Strategy : Momentum Continuation — 9 EMA + VWAP + RSI + Volume (v14)")
-    print("=" * 60)
+    print("="*60)
+    print(f"  NYLO Backtest v14 — VWAP Reclaim + EMA Pullback")
+    print(f"  Ticker: {TICKER} | Lookback: {LOOKBACK_DAYS} days")
+    print(f"  Score: min {MIN_SCORE}/10 | Sizes: ${POS_BASE:.0f}/${POS_MEDIUM:.0f}/${POS_HIGH:.0f}")
+    print("="*60)
 
-    # Fetch data for all tickers
-    data = {}
-    for ticker in TICKERS:
-        df = fetch_1m(ticker, LOOKBACK_DAYS)
-        data[ticker] = df
+    df = fetch_1m(TICKER, LOOKBACK_DAYS)
+    if df.empty: print("ERROR: No data"); return
 
-    # ── Baseline run ──────────────────────────────────────────────
-    print("\n[1/2] Running baseline strategy (RSI buy=55, sell=45)...")
-    base_cfg = {
-        "rsi_buy":   RSI_BUY_MIN,
-        "rsi_sell":  RSI_SELL_MAX,
-        "gain_pct":  GAIN_TARGET_PCT,
-        "stop_pct":  STOP_LOSS_PCT,
-        "vol_mult":  VOLUME_MULT,
-        "max_trades":MAX_TRADES_DAY,
-        "pos_size":  POSITION_SIZE,
-    }
+    print(f"\n[1/2] Baseline strategy...")
+    base_cfg = {"rsi_bull_min":RSI_BULL_MIN,"rsi_bull_max":RSI_BULL_MAX,
+                "rsi_bear_min":RSI_BEAR_MIN,"rsi_bear_max":RSI_BEAR_MAX,
+                "min_score":MIN_SCORE,"gain_pct":GAIN_TARGET_PCT,"stop_pct":STOP_LOSS_PCT}
+    bt = run_strategy(df, base_cfg)
+    bt.sort(key=lambda t:(t["date"],t["entry_time"]))
+    bs = calc_stats(bt)
+    print(f"  {bs['trades']} trades | {bs['win_rate']:.1f}% win rate | "
+          f"P&L: {bs['total_pnl_pct']:+.2f}% (${bs['total_pnl_dollar']:+.2f}) | "
+          f"Avg score: {bs['avg_score']}/10 | Sharpe: {bs['sharpe']}")
 
-    base_trades = []
-    for ticker in TICKERS:
-        if data[ticker].empty:
-            continue
-        t = run_strategy(data[ticker], ticker, base_cfg)
-        base_trades.extend(t)
-        print(f"  {ticker}: {len(t)} trades")
+    print(f"\n[2/2] Parameter sweep...")
+    combos = [(b,s,ms) for b in SWEEP_RSI_BUY for s in SWEEP_RSI_SELL
+              for ms in SWEEP_MIN_SCORE if b > s]
+    sweep = []
+    for done,(rb,rs,ms) in enumerate(combos):
+        cfg = {"rsi_bull_min":rb,"rsi_bull_max":rb+25,"rsi_bear_min":rs-25,"rsi_bear_max":rs,
+               "min_score":ms,"gain_pct":GAIN_TARGET_PCT,"stop_pct":STOP_LOSS_PCT}
+        t = run_strategy(df, cfg)
+        t.sort(key=lambda x:(x["date"],x["entry_time"]))
+        st = calc_stats(t)
+        sc = st["win_rate"]*0.5 + st["total_pnl_pct"]*0.4 + st["trades"]*0.1
+        sweep.append({"rsi_buy":rb,"rsi_sell":rs,"min_score":ms,"stats":st,"score":round(sc,3)})
+        sys.stdout.write(f"\r  Progress: {done+1}/{len(combos)}")
+        sys.stdout.flush()
 
-    base_trades.sort(key=lambda t: (t["date"], t["entry_time"]))
-    base_stats = calc_stats(base_trades, POSITION_SIZE)
+    sweep.sort(key=lambda r:r["score"],reverse=True)
+    best=sweep[0]
+    print(f"\n  Best: RSI buy={best['rsi_buy']} sell={best['rsi_sell']} "
+          f"min_score={best['min_score']} → "
+          f"{best['stats']['win_rate']:.0f}% win rate, "
+          f"{best['stats']['total_pnl_pct']:+.2f}% P&L")
 
-    print(f"  v14 params: gain={GAIN_TARGET_PCT}% stop={STOP_LOSS_PCT}% vol={VOLUME_MULT}x | QQQ only | 9 EMA + VWAP momentum")
-    print(f"  Total: {base_stats['trades']} trades | "
-          f"Win rate: {base_stats['win_rate']:.1f}% | "
-          f"P&L: {base_stats['total_pnl_pct']:+.2f}%")
-
-    # ── Parameter sweep ────────────────────────────────────────────
-    print("\n[2/2] Running parameter sweep...")
-    sweep_results = []
-    total_combos = len(SWEEP_RSI_BUY) * len(SWEEP_RSI_SELL)
-    done = 0
-
-    for rsi_buy in SWEEP_RSI_BUY:
-        for rsi_sell in SWEEP_RSI_SELL:
-            if rsi_buy <= rsi_sell:
-                done += 1
-                continue
-
-            cfg = {**base_cfg, "rsi_buy": rsi_buy, "rsi_sell": rsi_sell}
-            trades = []
-            for ticker in TICKERS:
-                if data[ticker].empty:
-                    continue
-                trades.extend(run_strategy(data[ticker], ticker, cfg))
-            trades.sort(key=lambda t: (t["date"], t["entry_time"]))
-            stats = calc_stats(trades, POSITION_SIZE)
-            score = stats["win_rate"] * 0.6 + stats["total_pnl_pct"] * 0.4
-
-            sweep_results.append({
-                "rsi_buy":  rsi_buy,
-                "rsi_sell": rsi_sell,
-                "stats":    stats,
-                "score":    round(score, 3),
-            })
-            done += 1
-            sys.stdout.write(f"\r  Progress: {done}/{total_combos} combinations")
-            sys.stdout.flush()
-
-    sweep_results.sort(key=lambda r: r["score"], reverse=True)
-    print(f"\n  Best config: RSI buy={sweep_results[0]['rsi_buy']} "
-          f"sell={sweep_results[0]['rsi_sell']} "
-          f"(score={sweep_results[0]['score']:.1f})")
-
-    # ── Save output ────────────────────────────────────────────────
-    output = {
-        "generated_at": datetime.datetime.now(MARKET_TZ).isoformat(),
+    out = {
+        "generated_at":  datetime.datetime.now(MARKET_TZ).isoformat(),
         "generated_str": datetime.datetime.now(MARKET_TZ).strftime("%B %d, %Y at %I:%M %p ET"),
-        "config": {
-            "tickers":      TICKERS,
-            "lookback_days":LOOKBACK_DAYS,
-            "position_size":POSITION_SIZE,
-            "baseline": {
-                "rsi_buy":   RSI_BUY_MIN,
-                "rsi_sell":  RSI_SELL_MAX,
-                "gain_pct":  GAIN_TARGET_PCT,
-                "stop_pct":  STOP_LOSS_PCT,
-                "vol_mult":  VOLUME_MULT,
-            }
-        },
-        "baseline": {
-            "stats":  base_stats,
-            "trades": base_trades,
-        },
-        "sweep": sweep_results,
+        "config": {"ticker":TICKER,"lookback_days":LOOKBACK_DAYS,
+                   "strategy":"VWAP Reclaim + EMA Pullback + Opening Drive",
+                   "baseline":{"rsi_bull_min":RSI_BULL_MIN,"rsi_bull_max":RSI_BULL_MAX,
+                                "rsi_bear_min":RSI_BEAR_MIN,"rsi_bear_max":RSI_BEAR_MAX,
+                                "min_score":MIN_SCORE,"gain_pct":GAIN_TARGET_PCT*100,
+                                "stop_pct":STOP_LOSS_PCT*100}},
+        "baseline":{"stats":bs,"trades":bt},
+        "sweep":sweep[:60],
     }
-
-    with open(OUT, "w") as f:
-        json.dump(output, f, indent=2)
-
+    with open(OUT,"w") as f:
+        json.dump(out,f,indent=2)
     print(f"\n✅ Results saved → {OUT}")
-    print(f"   Push to GitHub: git add backtest_results.json && git commit -m 'Backtest results' && git push")
-    print("=" * 60)
+    print(f"   git add backtest_results.json && git commit -m 'Backtest v14' && git push")
+    print("="*60)
 
-if __name__ == "__main__":
+if __name__=="__main__":
     main()
