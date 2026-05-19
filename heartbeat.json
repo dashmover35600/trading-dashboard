@@ -1,0 +1,21 @@
+{
+  "status": "stopped",
+  "version": "14",
+  "updated_at": "2026-05-19T10:53:29.405783-04:00",
+  "updated_str": "10:53:29 AM ET",
+  "uptime_sec": 420,
+  "uptime_str": "7m 0s",
+  "last_run": "10:52:33 AM ET",
+  "last_run_ok": true,
+  "errors_today": 0,
+  "last_error": null,
+  "cycles_total": 6,
+  "tickers": [
+    "QQQ"
+  ],
+  "trades_today": 0,
+  "daily_pnl": 0.0,
+  "day_bias": "long",
+  "in_trade": false,
+  "signal_type": null
+}
