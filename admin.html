@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1847d4">
+<title>NYLO — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+*{cursor:none!important;}
+
+#cursor-glow{position:fixed;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle,rgba(99,140,255,1) 0%,rgba(24,71,212,0.8) 40%,rgba(24,71,212,0) 70%);pointer-events:none;z-index:99999;transform:translate(-50%,-50%);filter:blur(1px);transition:width .15s,height .15s;}
+#cursor-aura{position:fixed;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle,rgba(24,71,212,0.15) 0%,transparent 70%);pointer-events:none;z-index:99998;transform:translate(-50%,-50%);animation:ap 2.5s ease-in-out infinite;}
+@keyframes ap{0%,100%{width:60px;height:60px;opacity:.7;}50%{width:72px;height:72px;opacity:1;}}
+#cursor-glow.clicking{width:28px;height:28px;}
+@media(hover:none){#cursor-glow,#cursor-aura{display:none;}*{cursor:auto!important;}}
+
+:root{
+  --accent:#1847d4;--accent-light:#3d6fff;--accent-dim:rgba(24,71,212,0.1);
+  --bg:#060c1a;--bg2:#0d1628;--surface:rgba(13,22,40,0.9);
+  --text:#e8eeff;--text2:#8890b0;--text3:#4a5280;
+  --border:rgba(61,111,255,0.18);--border2:rgba(61,111,255,0.09);
+  --green:#16a34a;--green-bg:rgba(22,163,74,0.12);
+  --red:#dc2626;--red-bg:rgba(220,38,38,0.1);
+  --gold:#f59e0b;--gold-bg:rgba(245,158,11,0.1);
+  --shadow:0 8px 40px rgba(0,0,0,0.5);
+  --r:14px;--r-sm:8px;
+  --font-serif:'Instrument Serif',Georgia,serif;
+  --font-sans:'DM Sans',system-ui,sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+
+html,body{min-height:100vh;font-family:var(--font-sans);background:var(--bg);color:var(--text);}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 20% 20%,rgba(24,71,212,.12) 0%,transparent 60%),radial-gradient(ellipse 50% 70% at 80% 80%,rgba(61,111,255,.08) 0%,transparent 60%);}
+canvas#pc{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.25;}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:var(--bg);}
+.login-card{width:100%;max-width:380px;background:var(--surface);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow);padding:44px 40px;animation:cardUp .5s cubic-bezier(.16,1,.3,1);}
+@keyframes cardUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.login-logo{font-family:var(--font-serif);font-size:38px;color:var(--accent);}
+.login-sub{font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-top:4px;margin-bottom:6px;}
+.login-admin-badge{display:inline-block;background:rgba(245,158,11,.15);color:var(--gold);font-family:var(--font-mono);font-size:10px;padding:3px 10px;border-radius:10px;margin-bottom:28px;}
+.login-label{font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:8px;}
+.login-input{width:100%;padding:13px 16px;background:rgba(61,111,255,.07);border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-mono);font-size:14px;color:var(--text);outline:none;transition:border .2s,box-shadow .2s;margin-bottom:16px;}
+.login-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(24,71,212,.15);}
+.login-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:500;box-shadow:0 4px 16px rgba(24,71,212,.35);transition:background .2s;}
+.login-btn:hover{background:var(--accent-light);}
+.login-err{font-size:12px;color:var(--red);text-align:center;margin-top:10px;min-height:16px;}
+
+/* ── MAIN ADMIN UI ── */
+#admin-ui{display:none;position:relative;z-index:5;min-height:100vh;padding-bottom:60px;}
+
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;padding:14px 28px;background:rgba(6,12,26,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);}
+.topbar-logo{font-family:var(--font-serif);font-size:24px;color:var(--accent);}
+.topbar-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);}
+.admin-badge-top{background:rgba(245,158,11,.15);color:var(--gold);font-family:var(--font-mono);font-size:10px;padding:4px 12px;border-radius:20px;}
+.topbar-spacer{flex:1;}
+.topbar-time{font-family:var(--font-mono);font-size:12px;color:var(--text3);}
+.logout-btn{font-size:11px;color:var(--text3);background:none;border:1px solid var(--border);padding:5px 12px;border-radius:20px;}
+.logout-btn:hover{color:var(--red);border-color:var(--red);}
+
+.page{max-width:1100px;margin:0 auto;padding:28px;}
+
+/* ── STAT CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.stat-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:18px 20px;}
+.stat-label{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+.stat-val{font-family:var(--font-mono);font-size:26px;color:var(--text);}
+.stat-val.pend{color:var(--gold);}
+.stat-val.green{color:var(--green);}
+.stat-val.red{color:var(--red);}
+@media(max-width:700px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+
+/* ── SECTION ── */
+.section{margin-bottom:28px;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.section-title{font-family:var(--font-serif);font-size:20px;color:var(--text);}
+.section-count{font-family:var(--font-mono);font-size:11px;color:var(--text3);background:var(--border2);padding:3px 10px;border-radius:10px;}
+.refresh-btn{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--text3);background:none;border:1px solid var(--border);padding:5px 12px;border-radius:10px;transition:color .2s,border .2s;}
+.refresh-btn:hover{color:var(--accent);border-color:var(--accent);}
+
+/* ── REQUEST CARDS ── */
+.requests-list{display:flex;flex-direction:column;gap:10px;}
+.req-card{
+  background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);
+  padding:18px 20px;display:flex;align-items:flex-start;gap:16px;
+  transition:border-color .2s;
+}
+.req-card:hover{border-color:var(--border);}
+.req-card.pending{border-left:3px solid var(--gold);}
+.req-card.approved{border-left:3px solid var(--green);}
+.req-card.denied{border-left:3px solid var(--red);opacity:.6;}
+
+.req-avatar{
+  width:42px;height:42px;border-radius:50%;flex-shrink:0;
+  background:var(--accent-dim);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-serif);font-size:18px;color:var(--accent);
+}
+.req-info{flex:1;min-width:0;}
+.req-name{font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.req-meta{display:flex;flex-wrap:wrap;gap:10px;font-family:var(--font-mono);font-size:11px;color:var(--text3);}
+.req-meta span{display:flex;align-items:center;gap:4px;}
+.req-date{font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:6px;}
+
+.req-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
+.btn-approve{padding:8px 18px;background:var(--green-bg);color:var(--green);border:1px solid rgba(22,163,74,.25);border-radius:var(--r-sm);font-size:12px;font-weight:500;transition:background .2s;}
+.btn-approve:hover{background:rgba(22,163,74,.25);}
+.btn-deny{padding:8px 18px;background:var(--red-bg);color:var(--red);border:1px solid rgba(220,38,38,.2);border-radius:var(--r-sm);font-size:12px;transition:background .2s;}
+.btn-deny:hover{background:rgba(220,38,38,.2);}
+.btn-remove{padding:8px 18px;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:var(--r-sm);font-size:12px;transition:color .2s,border .2s;}
+.btn-remove:hover{color:var(--red);border-color:var(--red);}
+
+.status-pill{display:inline-block;font-family:var(--font-mono);font-size:10px;padding:3px 10px;border-radius:10px;}
+.status-pill.pending{background:var(--gold-bg);color:var(--gold);}
+.status-pill.approved{background:var(--green-bg);color:var(--green);}
+.status-pill.denied{background:var(--red-bg);color:var(--red);}
+
+.empty-state{text-align:center;padding:40px;color:var(--text3);font-size:14px;}
+
+/* ── MEMBERS TABLE ── */
+.members-table{width:100%;border-collapse:collapse;font-size:12px;}
+.members-table th{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);padding:8px 14px;text-align:left;border-bottom:1px solid var(--border);}
+.members-table td{padding:11px 14px;border-bottom:1px solid var(--border2);color:var(--text2);font-family:var(--font-mono);}
+.members-table tr:last-child td{border-bottom:none;}
+.members-table tr:hover td{background:rgba(24,71,212,.05);}
+.members-table .name-col{color:var(--text);font-weight:500;}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:28px;right:28px;z-index:999;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:14px 20px;
+  font-size:13px;color:var(--text);box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:10px;
+  transform:translateY(80px);opacity:0;
+  transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .35s;
+  max-width:320px;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-left:3px solid var(--green);}
+.toast.err{border-left:3px solid var(--red);}
+
+/* ── CONFIRM MODAL ── */
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.overlay.show{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:36px;max-width:360px;width:90%;box-shadow:var(--shadow);}
+.modal-title{font-family:var(--font-serif);font-size:20px;color:var(--text);margin-bottom:10px;}
+.modal-body{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:24px;}
+.modal-actions{display:flex;gap:10px;}
+.modal-confirm{flex:1;padding:12px;background:var(--red);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:500;}
+.modal-cancel{flex:1;padding:12px;background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;}
+</style>
+</head>
+<body>
+<div id="cursor-glow"></div>
+<div id="cursor-aura"></div>
+<canvas id="pc"></canvas>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- CONFIRM MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Confirm action</div>
+    <div class="modal-body" id="modal-body">Are you sure?</div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-confirm" id="modal-confirm">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ LOGIN ══════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">NYLO</div>
+    <div class="login-sub">Precision Trading System</div>
+    <div class="login-admin-badge">⚙ Admin Panel</div>
+    <label class="login-label" for="admin-pass">Admin password</label>
+    <input class="login-input" type="password" id="admin-pass" placeholder="••••••••" autocomplete="current-password">
+    <button class="login-btn" onclick="adminLogin()">Enter admin panel →</button>
+    <div class="login-err" id="admin-err"></div>
+  </div>
+</div>
+
+<!-- ══════════ ADMIN UI ══════════ -->
+<div id="admin-ui">
+  <div class="topbar">
+    <div>
+      <div class="topbar-logo">NYLO</div>
+      <div class="topbar-tag">Admin Panel</div>
+    </div>
+    <span class="admin-badge-top">⚙ Admin</span>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-time" id="admin-clock">—</div>
+    <button class="logout-btn" onclick="adminLogout()">Sign out</button>
+  </div>
+
+  <div class="page">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Pending requests</div><div class="stat-val pend" id="stat-pending">—</div></div>
+      <div class="stat-card"><div class="stat-label">Active members</div><div class="stat-val green" id="stat-members">—</div></div>
+      <div class="stat-card"><div class="stat-label">Total requests</div><div class="stat-val" id="stat-total">—</div></div>
+      <div class="stat-card"><div class="stat-label">Denied</div><div class="stat-val red" id="stat-denied">—</div></div>
+    </div>
+
+    <!-- PENDING REQUESTS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Pending requests</div>
+        <span class="section-count" id="pending-count">0</span>
+        <button class="refresh-btn" onclick="loadAll()">↻ Refresh</button>
+      </div>
+      <div class="requests-list" id="pending-list">
+        <div class="empty-state">Loading…</div>
+      </div>
+    </div>
+
+    <!-- ALL REQUESTS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">All requests</div>
+        <span class="section-count" id="all-count">0</span>
+      </div>
+      <div class="requests-list" id="all-list">
+        <div class="empty-state">Loading…</div>
+      </div>
+    </div>
+
+    <!-- ACTIVE MEMBERS -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Active members</div>
+        <span class="section-count" id="members-count">0</span>
+      </div>
+      <div class="card" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);overflow-x:auto;">
+        <table class="members-table">
+          <thead>
+            <tr>
+              <th>Name</th><th>Email</th><th>Phone</th><th>Joined</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="members-tbody">
+            <tr><td colspan="5" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL  = 'https://hwczpidgbtycddiakhnx.supabase.co';
+const SUPABASE_KEY  = 'sb_publishable_2UtHOs8J8I9QUyNm1NBABA_JfAza7CE';
+const ADMIN_PASSWORD = 'nylo2024';
+
+// ── GLOW CURSOR ──
+const glowEl=document.getElementById('cursor-glow'),auraEl=document.getElementById('cursor-aura');
+let mx=window.innerWidth/2,my=window.innerHeight/2,ax=mx,ay=my;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;glowEl.style.left=mx+'px';glowEl.style.top=my+'px';});
+(function loop(){ax+=(mx-ax)*.12;ay+=(my-ay)*.12;auraEl.style.left=ax+'px';auraEl.style.top=ay+'px';requestAnimationFrame(loop);})();
+document.addEventListener('mousedown',()=>glowEl.classList.add('clicking'));
+document.addEventListener('mouseup',()=>glowEl.classList.remove('clicking'));
+
+// ── PARTICLES ──
+(function(){const c=document.getElementById('pc'),ctx=c.getContext('2d');let W,H,ps=[];function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}resize();window.addEventListener('resize',resize);for(let i=0;i<35;i++)ps.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.3+.3,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,o:Math.random()*.3+.08});function draw(){ctx.clearRect(0,0,W,H);ps.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(24,71,212,${p.o})`;ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;});requestAnimationFrame(draw);}draw();})();
+
+// ── CLOCK ──
+function updateClock(){const now=new Date();document.getElementById('admin-clock').textContent=now.toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'2-digit',minute:'2-digit',second:'2-digit'})+' ET';}
+setInterval(updateClock,1000);updateClock();
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg,type='ok'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className='toast show '+(type==='ok'?'ok':'err');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+// ── MODAL ──
+let modalCallback=null;
+function confirm2(title,body,confirmLabel,cb){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').textContent=body;
+  const btn=document.getElementById('modal-confirm');
+  btn.textContent=confirmLabel;
+  btn.onclick=()=>{closeModal();cb();};
+  document.getElementById('overlay').classList.add('show');
+  modalCallback=cb;
+}
+function closeModal(){document.getElementById('overlay').classList.remove('show');}
+
+// ── ADMIN LOGIN ──
+function adminLogin(){
+  const pass=document.getElementById('admin-pass').value;
+  const err=document.getElementById('admin-err');
+  if(pass===ADMIN_PASSWORD){
+    sessionStorage.setItem('nylo-admin','1');
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('admin-ui').style.display='block';
+    loadAll();
+  } else {
+    err.textContent='Incorrect password.';
+    document.getElementById('admin-pass').value='';
+  }
+}
+document.getElementById('admin-pass').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin();});
+
+function adminLogout(){sessionStorage.removeItem('nylo-admin');location.reload();}
+
+// Check if already logged in
+if(sessionStorage.getItem('nylo-admin')==='1'){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('admin-ui').style.display='block';
+  loadAll();
+}
+
+// ── SUPABASE HELPERS ──
+async function sbGet(table, filter=''){
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/${table}?${filter}&order=created_at.desc`,{
+    headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}
+  });
+  return res.json();
+}
+
+async function sbPatch(table, id, data){
+  return fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`,{
+    method:'PATCH',
+    headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify(data)
+  });
+}
+
+async function sbInsert(table, data){
+  return fetch(`${SUPABASE_URL}/rest/v1/${table}`,{
+    method:'POST',
+    headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify(data)
+  });
+}
+
+async function sbDelete(table, id){
+  return fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`,{
+    method:'DELETE',
+    headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}
+  });
+}
+
+// ── LOAD ALL DATA ──
+async function loadAll(){
+  try {
+    const [requests, members] = await Promise.all([
+      sbGet('requests','select=*'),
+      sbGet('members','select=*')
+    ]);
+
+    const pending  = requests.filter(r=>r.status==='pending');
+    const denied   = requests.filter(r=>r.status==='denied');
+
+    // Stats
+    document.getElementById('stat-pending').textContent = pending.length;
+    document.getElementById('stat-members').textContent = members.length;
+    document.getElementById('stat-total').textContent   = requests.length;
+    document.getElementById('stat-denied').textContent  = denied.length;
+    document.getElementById('pending-count').textContent = pending.length;
+    document.getElementById('all-count').textContent     = requests.length;
+    document.getElementById('members-count').textContent = members.length;
+
+    // Pending list
+    renderPending(pending);
+    // All requests
+    renderAllRequests(requests);
+    // Members table
+    renderMembers(members);
+
+  } catch(e){
+    showToast('Failed to load data from Supabase','err');
+    console.error(e);
+  }
+}
+
+// ── RENDER PENDING ──
+function renderPending(list){
+  const el=document.getElementById('pending-list');
+  if(!list.length){el.innerHTML='<div class="empty-state">No pending requests 🎉</div>';return;}
+  el.innerHTML=list.map(r=>reqCard(r,true)).join('');
+}
+
+// ── RENDER ALL REQUESTS ──
+function renderAllRequests(list){
+  const el=document.getElementById('all-list');
+  if(!list.length){el.innerHTML='<div class="empty-state">No requests yet</div>';return;}
+  el.innerHTML=list.map(r=>reqCard(r,false)).join('');
+}
+
+function reqCard(r, isPending){
+  const initials=(r.name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const date=r.created_at?new Date(r.created_at).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+  const actions = isPending
+    ? `<button class="btn-approve" onclick="approveRequest('${r.id}','${(r.name||'').replace(/'/g,"\\'")}','${(r.email||'').replace(/'/g,"\\'")}','${(r.phone||'').replace(/'/g,"\\'")}','${(r.password||'').replace(/'/g,"\\'")}')">✅ Approve</button>
+       <button class="btn-deny" onclick="denyRequest('${r.id}','${(r.name||'').replace(/'/g,"\\'")}')">🚫 Deny</button>`
+    : `<span class="status-pill ${r.status||'pending'}">${r.status||'pending'}</span>`;
+  return `
+    <div class="req-card ${r.status||'pending'}">
+      <div class="req-avatar">${initials}</div>
+      <div class="req-info">
+        <div class="req-name">${r.name||'Unknown'}</div>
+        <div class="req-meta">
+          <span>✉ ${r.email||'—'}</span>
+          <span>📱 ${r.phone||'—'}</span>
+        </div>
+        <div class="req-date">Requested ${date}</div>
+      </div>
+      <div class="req-actions">${actions}</div>
+    </div>`;
+}
+
+// ── RENDER MEMBERS ──
+function renderMembers(list){
+  const tbody=document.getElementById('members-tbody');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="5" class="empty-state">No members yet</td></tr>';return;}
+  tbody.innerHTML=list.map(m=>{
+    const date=m.created_at?new Date(m.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+    return `<tr>
+      <td class="name-col">${m.name||'—'}</td>
+      <td>${m.email||'—'}</td>
+      <td>${m.phone||'—'}</td>
+      <td>${date}</td>
+      <td><button class="btn-remove" onclick="removeMember('${m.id}','${(m.name||'').replace(/'/g,"\\'")}')">Remove</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── APPROVE ──
+async function approveRequest(id, name, email, phone, password){
+  confirm2(
+    'Approve request',
+    `Approve ${name} (${email}) as a NYLO member? They will be able to sign in immediately.`,
+    'Approve',
+    async () => {
+      try {
+        // Update request status
+        await sbPatch('requests', id, {status:'approved'});
+        // Add to members table
+        await sbInsert('members', {
+          name, email, phone, password,
+          approved: true,
+          created_at: new Date().toISOString()
+        });
+        showToast(`✅ ${name} approved and added as a member`,'ok');
+        loadAll();
+      } catch(e){
+        showToast('Error approving request','err');
+        console.error(e);
+      }
+    }
+  );
+}
+
+// ── DENY ──
+async function denyRequest(id, name){
+  confirm2(
+    'Deny request',
+    `Deny ${name}'s request? This cannot be undone.`,
+    'Deny',
+    async () => {
+      try {
+        await sbPatch('requests', id, {status:'denied'});
+        showToast(`🚫 ${name}'s request denied`,'ok');
+        loadAll();
+      } catch(e){
+        showToast('Error denying request','err');
+        console.error(e);
+      }
+    }
+  );
+}
+
+// ── REMOVE MEMBER ──
+async function removeMember(id, name){
+  confirm2(
+    'Remove member',
+    `Remove ${name} from NYLO? They will no longer be able to sign in.`,
+    'Remove',
+    async () => {
+      try {
+        await sbDelete('members', id);
+        showToast(`${name} removed from members`,'ok');
+        loadAll();
+      } catch(e){
+        showToast('Error removing member','err');
+        console.error(e);
+      }
+    }
+  );
+}
+
+// Auto-refresh every 60s
+setInterval(loadAll, 60000);
+</script>
+</body>
+</html>

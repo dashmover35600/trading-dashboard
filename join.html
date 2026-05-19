@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1847d4">
+<title>NYLO — Request Access</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+*{cursor:none!important;}
+
+#cursor-glow{
+  position:fixed;width:18px;height:18px;border-radius:50%;
+  background:radial-gradient(circle,rgba(99,140,255,1) 0%,rgba(24,71,212,0.8) 40%,rgba(24,71,212,0) 70%);
+  pointer-events:none;z-index:99999;transform:translate(-50%,-50%);
+  transition:width .15s,height .15s;filter:blur(1px);
+}
+#cursor-aura{
+  position:fixed;width:60px;height:60px;border-radius:50%;
+  background:radial-gradient(circle,rgba(24,71,212,0.15) 0%,transparent 70%);
+  pointer-events:none;z-index:99998;transform:translate(-50%,-50%);
+  animation:auraPulse 2.5s ease-in-out infinite;
+}
+@keyframes auraPulse{0%,100%{width:60px;height:60px;opacity:.7;}50%{width:72px;height:72px;opacity:1;}}
+#cursor-glow.clicking{width:28px;height:28px;}
+#cursor-glow.on-input{width:4px;height:22px;border-radius:2px;background:rgba(24,71,212,.9);filter:none;animation:blink 1s step-end infinite;}
+@keyframes blink{50%{opacity:0;}}
+@media(hover:none){#cursor-glow,#cursor-aura{display:none;}*{cursor:auto!important;}}
+
+:root{
+  --accent:#1847d4;--accent-light:#3d6fff;--accent-dim:rgba(24,71,212,0.1);
+  --bg:#f4f6fb;--surface:rgba(255,255,255,0.82);
+  --text:#0a1028;--text2:#4a5280;--text3:#8890b0;
+  --border:rgba(24,71,212,0.14);
+  --green:#16a34a;--green-bg:rgba(22,163,74,0.08);
+  --red:#dc2626;--red-bg:rgba(220,38,38,0.08);
+  --shadow:0 8px 40px rgba(24,71,212,0.13),0 2px 8px rgba(24,71,212,0.07);
+  --r:16px;--r-sm:8px;
+  --font-serif:'Instrument Serif',Georgia,serif;
+  --font-sans:'DM Sans',system-ui,sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+body.dark{
+  --bg:#060c1a;--surface:rgba(13,22,40,0.9);
+  --text:#e8eeff;--text2:#8890b0;--text3:#4a5280;
+  --border:rgba(61,111,255,0.18);
+}
+
+html,body{
+  min-height:100vh;font-family:var(--font-sans);
+  background:var(--bg);color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+  padding:32px 20px;
+}
+
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 60% at 15% 20%,rgba(24,71,212,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 70% at 85% 80%,rgba(61,111,255,.06) 0%,transparent 60%);
+}
+
+canvas#pc{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.3;}
+
+.card{
+  position:relative;z-index:1;
+  width:100%;max-width:460px;
+  background:var(--surface);backdrop-filter:blur(24px);
+  border:1px solid var(--border);border-radius:22px;
+  box-shadow:var(--shadow);padding:48px 44px;
+  animation:cardUp .55s cubic-bezier(.16,1,.3,1) forwards;
+}
+@keyframes cardUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+.logo{font-family:var(--font-serif);font-size:44px;color:var(--accent);letter-spacing:-.03em;}
+.tagline{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-top:4px;}
+.heading{font-family:var(--font-serif);font-size:22px;color:var(--text);margin:28px 0 6px;letter-spacing:-.02em;}
+.subheading{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:28px;}
+
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+.field input{
+  width:100%;padding:13px 16px;
+  background:rgba(24,71,212,.04);
+  border:1px solid var(--border);border-radius:var(--r-sm);
+  font-family:var(--font-mono);font-size:14px;color:var(--text);
+  outline:none;transition:border .2s,box-shadow .2s;
+}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(24,71,212,.1);}
+.field input.err{border-color:var(--red);}
+.field-hint{font-size:11px;color:var(--text3);margin-top:6px;}
+
+.strength-bar{display:flex;gap:3px;margin-top:8px;}
+.strength-seg{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background .3s;}
+.strength-label{font-size:10px;color:var(--text3);margin-top:5px;}
+
+.submit-btn{
+  width:100%;padding:15px;margin-top:8px;
+  background:var(--accent);color:#fff;border:none;
+  border-radius:var(--r-sm);font-family:var(--font-sans);
+  font-size:14px;font-weight:500;letter-spacing:.04em;
+  box-shadow:0 4px 18px rgba(24,71,212,.32);
+  transition:background .2s,transform .1s,box-shadow .2s;
+}
+.submit-btn:hover{background:var(--accent-light);box-shadow:0 6px 28px rgba(24,71,212,.45);}
+.submit-btn:active{transform:scale(.98);}
+.submit-btn:disabled{opacity:.5;pointer-events:none;}
+
+.error-msg{font-size:12px;color:var(--red);margin-top:10px;min-height:16px;text-align:center;}
+
+/* SUCCESS STATE */
+.success-state{text-align:center;padding:20px 0;}
+.success-icon{font-size:52px;margin-bottom:16px;animation:popIn .5s cubic-bezier(.16,1,.3,1);}
+@keyframes popIn{from{transform:scale(0);}to{transform:scale(1);}}
+.success-title{font-family:var(--font-serif);font-size:26px;color:var(--text);margin-bottom:10px;}
+.success-sub{font-size:13px;color:var(--text2);line-height:1.6;}
+.success-detail{
+  margin-top:20px;padding:14px 18px;
+  background:var(--green-bg);border:1px solid rgba(22,163,74,.2);
+  border-radius:var(--r-sm);font-size:12px;color:var(--green);
+  font-family:var(--font-mono);
+}
+
+.footer-link{
+  text-align:center;margin-top:24px;
+  font-size:12px;color:var(--text3);
+}
+.footer-link a{color:var(--accent);text-decoration:none;}
+.footer-link a:hover{text-decoration:underline;}
+
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0 0;color:var(--text3);font-size:11px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+</style>
+</head>
+<body>
+<div id="cursor-glow"></div>
+<div id="cursor-aura"></div>
+<canvas id="pc"></canvas>
+
+<div class="card" id="main-card">
+  <!-- FORM STATE -->
+  <div id="form-state">
+    <div class="logo">NYLO</div>
+    <div class="tagline">Precision Trading System</div>
+
+    <div class="heading">Request access</div>
+    <div class="subheading">Fill in your details below. Giovanni reviews every request personally — you'll hear back within 24 hours.</div>
+
+    <div class="field">
+      <label for="f-name">Full name</label>
+      <input type="text" id="f-name" placeholder="Your name" autocomplete="name">
+    </div>
+
+    <div class="field">
+      <label for="f-email">Email address</label>
+      <input type="email" id="f-email" placeholder="your@email.com" autocomplete="email">
+    </div>
+
+    <div class="field">
+      <label for="f-phone">Phone number</label>
+      <input type="tel" id="f-phone" placeholder="+1 (321) 000-0000" autocomplete="tel">
+      <div class="field-hint">Used to receive NYLO trade signals via iMessage</div>
+    </div>
+
+    <div class="field">
+      <label for="f-pass">Choose a password</label>
+      <input type="password" id="f-pass" placeholder="Min 8 characters" autocomplete="new-password" oninput="checkStrength(this.value)">
+      <div class="strength-bar" id="strength-bar">
+        <div class="strength-seg" id="s1"></div>
+        <div class="strength-seg" id="s2"></div>
+        <div class="strength-seg" id="s3"></div>
+        <div class="strength-seg" id="s4"></div>
+      </div>
+      <div class="strength-label" id="strength-label"></div>
+    </div>
+
+    <div class="field">
+      <label for="f-pass2">Confirm password</label>
+      <input type="password" id="f-pass2" placeholder="Repeat password" autocomplete="new-password">
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="submitRequest()">Request access →</button>
+    <div class="error-msg" id="error-msg"></div>
+
+    <div class="divider">already a member</div>
+    <div class="footer-link"><a href="trading_dashboard.html">Sign in to dashboard →</a></div>
+  </div>
+
+  <!-- SUCCESS STATE -->
+  <div id="success-state" style="display:none;">
+    <div class="success-state">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Request sent!</div>
+      <div class="success-sub">Giovanni has been notified and will review your request. You'll be able to log in once approved.</div>
+      <div class="success-detail" id="success-detail">
+        Submitted for: <span id="success-email">—</span>
+      </div>
+      <div class="footer-link" style="margin-top:20px;">
+        <a href="trading_dashboard.html">← Back to sign in</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://hwczpidgbtycddiakhnx.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_2UtHOs8J8I9QUyNm1NBABA_JfAza7CE';
+
+// ── GLOW CURSOR ──
+const glowEl = document.getElementById('cursor-glow');
+const auraEl = document.getElementById('cursor-aura');
+let mx=window.innerWidth/2,my=window.innerHeight/2,ax=mx,ay=my;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;glowEl.style.left=mx+'px';glowEl.style.top=my+'px';});
+(function loop(){ax+=(mx-ax)*.12;ay+=(my-ay)*.12;auraEl.style.left=ax+'px';auraEl.style.top=ay+'px';requestAnimationFrame(loop);})();
+document.addEventListener('mousedown',()=>glowEl.classList.add('clicking'));
+document.addEventListener('mouseup',()=>glowEl.classList.remove('clicking'));
+document.querySelectorAll('input').forEach(el=>{
+  el.addEventListener('focus',()=>glowEl.classList.add('on-input'));
+  el.addEventListener('blur',()=>glowEl.classList.remove('on-input'));
+});
+
+// ── PARTICLES ──
+(function(){
+  const c=document.getElementById('pc'),ctx=c.getContext('2d');
+  let W,H,ps=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  for(let i=0;i<40;i++)ps.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.4+.3,vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,o:Math.random()*.35+.1});
+  function draw(){ctx.clearRect(0,0,W,H);ps.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(24,71,212,${p.o})`;ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;});requestAnimationFrame(draw);}
+  draw();
+})();
+
+// ── PASSWORD STRENGTH ──
+function checkStrength(val){
+  const segs=[document.getElementById('s1'),document.getElementById('s2'),document.getElementById('s3'),document.getElementById('s4')];
+  const label=document.getElementById('strength-label');
+  let score=0;
+  if(val.length>=8)score++;
+  if(val.length>=12)score++;
+  if(/[A-Z]/.test(val)&&/[0-9]/.test(val))score++;
+  if(/[^A-Za-z0-9]/.test(val))score++;
+  const colors=['#dc2626','#f97316','#eab308','#16a34a'];
+  const labels=['Weak','Fair','Good','Strong'];
+  segs.forEach((s,i)=>{s.style.background=i<score?colors[score-1]:'var(--border)';});
+  label.textContent=val.length>0?(labels[score-1]||'Weak'):'';
+  label.style.color=colors[score-1]||'var(--text3)';
+}
+
+// ── PHONE FORMAT ──
+document.getElementById('f-phone').addEventListener('input',function(){
+  let v=this.value.replace(/\D/g,'');
+  if(v.length>10)v=v.slice(0,11);
+  if(v.startsWith('1'))v='+'+v;
+  else if(v.length>0)v='+1'+v;
+  this.value=v;
+});
+
+// ── SUBMIT ──
+async function submitRequest(){
+  const name  = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim().toLowerCase();
+  const phone = document.getElementById('f-phone').value.trim();
+  const pass  = document.getElementById('f-pass').value;
+  const pass2 = document.getElementById('f-pass2').value;
+  const errEl = document.getElementById('error-msg');
+  const btn   = document.getElementById('submit-btn');
+
+  errEl.textContent='';
+  // Clear err styling
+  ['f-name','f-email','f-phone','f-pass','f-pass2'].forEach(id=>document.getElementById(id).classList.remove('err'));
+
+  // Validate
+  if(!name){markErr('f-name','Please enter your name.');return;}
+  if(!email||!email.includes('@')){markErr('f-email','Please enter a valid email.');return;}
+  if(!phone||phone.length<10){markErr('f-phone','Please enter a valid phone number.');return;}
+  if(pass.length<8){markErr('f-pass','Password must be at least 8 characters.');return;}
+  if(pass!==pass2){markErr('f-pass2','Passwords do not match.');return;}
+
+  btn.disabled=true;btn.textContent='Sending request…';
+
+  try {
+    // Check if email already requested or is a member
+    const checkRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/requests?email=eq.${encodeURIComponent(email)}&select=status`,
+      {headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}}
+    );
+    const existing = await checkRes.json();
+    if(existing.length>0){
+      const s=existing[0].status;
+      if(s==='pending'){errEl.textContent='A request with this email is already pending review.';btn.disabled=false;btn.textContent='Request access →';return;}
+      if(s==='approved'){errEl.textContent='This email is already approved. Sign in at the dashboard.';btn.disabled=false;btn.textContent='Request access →';return;}
+    }
+
+    // Insert into requests table
+    const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/requests`, {
+      method:'POST',
+      headers:{
+        apikey:SUPABASE_KEY,
+        Authorization:`Bearer ${SUPABASE_KEY}`,
+        'Content-Type':'application/json',
+        Prefer:'return=minimal'
+      },
+      body:JSON.stringify({
+        name,email,phone,password:pass,
+        status:'pending',
+        created_at:new Date().toISOString()
+      })
+    });
+
+    if(!insertRes.ok){
+      const errBody=await insertRes.text();
+      console.error('Supabase insert error:',errBody);
+      throw new Error('Insert failed: '+insertRes.status);
+    }
+
+    // Show success
+    document.getElementById('form-state').style.display='none';
+    document.getElementById('success-state').style.display='block';
+    document.getElementById('success-email').textContent=email;
+
+  } catch(e){
+    console.error(e);
+    errEl.textContent='Something went wrong. Please try again or contact Giovanni directly.';
+  }
+  btn.disabled=false;btn.textContent='Request access →';
+}
+
+function markErr(id,msg){
+  document.getElementById(id).classList.add('err');
+  document.getElementById('error-msg').textContent=msg;
+}
+
+// Enter key on last field
+document.getElementById('f-pass2').addEventListener('keydown',e=>{if(e.key==='Enter')submitRequest();});
+</script>
+</body>
+</html>
