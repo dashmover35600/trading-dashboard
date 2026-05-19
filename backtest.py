@@ -147,22 +147,9 @@ def run_strategy(df: pd.DataFrame, ticker: str, cfg: dict) -> list:
         range_high = float(orb["High"].max())
         range_low  = float(orb["Low"].min())
 
-        # Gap direction filter — only trade in direction of opening gap
-        # If QQQ gapped up >0.2% only take longs; gapped down >0.2% only take shorts
-        first_bar  = float(day_df["Open"].iloc[0].iloc[0]) if hasattr(day_df["Open"].iloc[0], "iloc") else float(day_df["Open"].iloc[0])
-        prev_days  = df[df.index.date < date.date()]
-        if len(prev_days) > 0:
-            prev_close = float(prev_days["Close"].iloc[-1].iloc[0]) if hasattr(prev_days["Close"].iloc[-1], "iloc") else float(prev_days["Close"].iloc[-1])
-            gap_pct    = (first_bar - prev_close) / prev_close * 100
-            if gap_pct > 0.2:
-                allowed_direction = "long"   # gapped up — only longs
-            elif gap_pct < -0.2:
-                allowed_direction = "short"  # gapped down — only shorts
-            else:
-                allowed_direction = "both"   # flat open — allow both
-        else:
-            allowed_direction = "both"
-            gap_pct = 0
+        # Gap direction filter removed — was too restrictive (0 trades)
+        allowed_direction = "both"
+        gap_pct = 0
 
         # VWAP for the day
         vwap_series = calc_vwap(day_df)
@@ -263,11 +250,7 @@ def run_strategy(df: pd.DataFrame, ticker: str, cfg: dict) -> list:
             if not direction:
                 continue
 
-            # Gap direction filter — skip signals against the opening gap
-            if allowed_direction == "long" and direction == "short":
-                continue
-            if allowed_direction == "short" and direction == "long":
-                continue
+
 
             # Volume filter
             if vol_ratio < vol_mult:
