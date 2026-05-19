@@ -58,6 +58,10 @@ DEAD_ZONE_END     = datetime.time(12, 0)   # shorter dead zone
 SERVER_PORT       = 8765
 AGENT_VERSION     = "14"
 
+# Pushover notifications
+PUSHOVER_TOKEN    = "apuf7f5knj2yxnsnxvtk63adchuvkf"
+PUSHOVER_USER     = "u7t4a7ybuwsyhbazjzhazy2611hrhz"
+
 # Position sizing tiers
 POS_BASE          = 500.0    # low confidence signal
 POS_MEDIUM        = 1000.0   # medium confidence
@@ -287,7 +291,11 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, *args): pass
 
 def start_server():
-    HTTPServer(("localhost", SERVER_PORT), Handler).serve_forever()
+    import socketserver
+    class ReusableTCPServer(socketserver.TCPServer):
+        allow_reuse_address = True
+    server = ReusableTCPServer(("localhost", SERVER_PORT), Handler)
+    server.serve_forever()
 
 # ── Market helpers ────────────────────────────────────────────────────────────
 def now_et():
@@ -303,16 +311,54 @@ def is_dead_zone():
 
 # ── iMessage ──────────────────────────────────────────────────────────────────
 def send_imessage(message: str, broadcast: bool = False):
+    import re
+    # Strip emoji — they break AppleScript
+    emoji_re = re.compile(
+        u"[😀-🙏🌀-🗿"
+        u"🚀-🛿🇠-🇿"
+        u"✂-➰Ⓜ-🉑"
+        u"🤦-🤷𐀀-􏿿"
+        u"♀-♂☀-⭕‍⏏"
+        u"⏩⌚️〰]+", flags=re.UNICODE)
+    safe = emoji_re.sub("", message).replace("\\", "\\\\").replace('"', '\\"').replace("'", "\\'").strip()
     recipients = [IMESSAGE_TO]
     if broadcast and SUBSCRIBERS:
         recipients += [phone for _, phone in SUBSCRIBERS]
     for recipient in recipients:
-        safe   = message.replace('"', '\\"').replace("'", "\\'")
         script = f'tell application "Messages" to send "{safe}" to buddy "{recipient}" of (1st service whose service type = iMessage)'
         try:
             subprocess.run(["osascript", "-e", script], check=True, timeout=10)
+            print(f"[iMessage -> {recipient}] sent")
         except Exception as e:
             log_error(f"iMessage to {recipient}", e)
+def send_push(title: str, message: str, priority: int = 0):
+    """
+    Send a Pushover push notification to your phone.
+    Priority: -1=quiet, 0=normal, 1=high, 2=emergency
+    """
+    try:
+        import urllib.request
+        import urllib.parse
+        data = urllib.parse.urlencode({
+            "token":   PUSHOVER_TOKEN,
+            "user":    PUSHOVER_USER,
+            "title":   title[:250],
+            "message": message[:1024],
+            "priority": priority,
+            "sound":   "cashregister" if priority >= 1 else "pushover",
+        }).encode()
+        req = urllib.request.Request(
+            "https://api.pushover.net/1/messages.json",
+            data=data,
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            if resp.status == 200:
+                print(f"[Pushover] sent: {title}")
+            else:
+                print(f"[Pushover] failed: {resp.status}")
+    except Exception as e:
+        log_error("send_push", e)
 
 def maybe_crash_alert(context: str, exc: Exception):
     now  = now_et()
@@ -520,7 +566,7 @@ def set_opening_drive(df):
 
     emoji = "🟢" if bias == "long" else "🔴" if bias == "short" else "⚪"
     print(f"[Drive] {emoji} Day bias: {bias.upper()} | Move: {move_pct:+.2f}% | Vol: {vol_ratio:.1f}x")
-    send_imessage(
+    send_push("NYLO Bias", 
         f"{emoji} NYLO Day Bias Set\n"
         f"Bias    : {bias.upper()}\n"
         f"Drive   : {move_pct:+.2f}% in first 5 min\n"
@@ -644,7 +690,7 @@ def check_signals(df):
     emoji = "🟢" if direction == "long" else "🔴"
     size_label = "HIGH" if pos_size == POS_HIGH else "MEDIUM" if pos_size == POS_MEDIUM else "BASE"
 
-    send_imessage(
+    send_push("NYLO Signal", 
         f"{emoji} TRADE SIGNAL — {TICKER}\n"
         f"Type    : {signal_type.replace('_', ' ').title()} {score_stars}\n"
         f"Score   : {score}/10\n"
@@ -749,7 +795,7 @@ def check_exit(df):
     pnl_str = f"{'+' if pnl_pct >= 0 else ''}{pnl_pct:.2f}%"
     dollar_str = f"+${pnl_dollar:.2f}" if pnl_dollar >= 0 else f"-${abs(pnl_dollar):.2f}"
 
-    send_imessage(
+    send_push("NYLO Exit", 
         f"{emoji} {result.upper()} — {TICKER}\n"
         f"Type    : {signal_type.replace('_', ' ').title() if signal_type else '—'} (score {signal_score}/10)\n"
         f"Entry   : ${entry} → Exit: ${exit_price}\n"
@@ -821,7 +867,7 @@ def send_daily_summary():
     ]
     for t in trades:
         lines.append(f"  {t.get('Signal Type','—')} (score {t.get('Signal Score','—')}) → {t['Result']} {t.get('P&L %','')}")
-    send_imessage("\n".join(lines))
+    send_push("NYLO Daily Summary", "\n".join(lines))
 
 # ── Pre-market scan ───────────────────────────────────────────────────────────
 def pre_market_scan():
@@ -917,17 +963,11 @@ if __name__ == "__main__":
     print(f"  Trade log   : {LOG_FILE}")
     print("=" * 60)
 
-    send_imessage(
-        f"🚀 NYLO Elite v{AGENT_VERSION} started!\n"
-        f"✅ VWAP Reclaim + EMA Pullback signals\n"
-        f"✅ Signal scoring — only {MIN_SCORE}+/10 trades execute\n"
-        f"✅ Dynamic sizing: ${POS_BASE:.0f} / ${POS_MEDIUM:.0f} / ${POS_HIGH:.0f}\n"
-        f"✅ Trailing stop locks in profits\n"
-        f"✅ Hard close at 12:45 PM — no lunch chop\n"
-        f"✅ Opening drive sets daily bias at 9:35 AM\n"
-        f"🎯 Built to win. Let's go."
-    )
-
+    print("[Agent] Startup complete. Monitoring QQQ.")
+    try:
+        send_push("NYLO Started", f"NYLO Elite v{AGENT_VERSION} started. Monitoring QQQ. Bias sets at 9:35 AM.")
+    except Exception:
+        pass
     for day in ["monday", "tuesday", "wednesday", "thursday", "friday"]:
         getattr(schedule.every(), day).at("09:00").do(pre_market_scan)
         getattr(schedule.every(), day).at("09:25").do(reset_daily)

@@ -1,21 +1,21 @@
 {
-  "status": "stopped",
+  "status": "running",
   "version": "14",
-  "updated_at": "2026-05-19T10:53:29.405783-04:00",
-  "updated_str": "10:53:29 AM ET",
-  "uptime_sec": 420,
-  "uptime_str": "7m 0s",
-  "last_run": "10:52:33 AM ET",
+  "updated_at": "2026-05-19T10:57:21.692956-04:00",
+  "updated_str": "10:57:21 AM ET",
+  "uptime_sec": 0,
+  "uptime_str": "0m 0s",
+  "last_run": null,
   "last_run_ok": true,
   "errors_today": 0,
   "last_error": null,
-  "cycles_total": 6,
+  "cycles_total": 0,
   "tickers": [
     "QQQ"
   ],
   "trades_today": 0,
   "daily_pnl": 0.0,
-  "day_bias": "long",
+  "day_bias": null,
   "in_trade": false,
   "signal_type": null
 }

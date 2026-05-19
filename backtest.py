@@ -34,9 +34,9 @@ MARKET_TZ         = pytz.timezone("America/New_York")
 # Baseline strategy parameters
 RSI_BUY_MIN       = 55
 RSI_SELL_MAX      = 45
-GAIN_TARGET_PCT   = 2.0   # v13: wider target gives trades room to run
-STOP_LOSS_PCT     = 1.0    # v13: wider stop — 0.5% was noise level for QQQ
-VOLUME_MULT       = 1.2    # v12: loosened from 1.5x
+GAIN_TARGET_PCT   = 1.5   # v14: momentum moves 1.5% cleanly
+STOP_LOSS_PCT     = 0.75   # v14: 0.75% stop — tight enough to cut losers fast
+VOLUME_MULT       = 1.0    # v14: no volume filter — let momentum speak
 MAX_TRADES_DAY    = 999    # v12: unlimited — take every valid signal
 
 # Parameter sweep ranges
@@ -119,66 +119,99 @@ def calc_vol_ratio(df: pd.DataFrame, idx: int, window: int = 20) -> float:
 # ── Strategy engine ───────────────────────────────────────────────────────────
 def run_strategy(df: pd.DataFrame, ticker: str, cfg: dict) -> list:
     """
-    Run the full 5-filter strategy on a 1-minute DataFrame.
-    Returns a list of trade dicts.
+    Momentum Continuation Strategy (v14)
+    =====================================
+    Entry conditions (long):
+      - Price > 9 EMA
+      - Price > VWAP
+      - RSI between 55 and 75 (trending up, not overbought)
+      - Volume > average * vol_mult
+      - Not in dead zone (11:30-12:30)
+      - Cooldown: 30 min between signals
+
+    Entry conditions (short):
+      - Price < 9 EMA
+      - Price < VWAP
+      - RSI between 25 and 45 (trending down, not oversold)
+      - Volume > average * vol_mult
+
+    Exit: target % gain or stop % loss
     """
-    rsi_buy    = cfg["rsi_buy"]
-    rsi_sell   = cfg["rsi_sell"]
-    gain_pct   = cfg["gain_pct"]
-    stop_pct   = cfg["stop_pct"]
-    vol_mult   = cfg["vol_mult"]
-    max_trades = cfg["max_trades"]
-    pos_size   = cfg["pos_size"]
+    rsi_buy_min  = cfg["rsi_buy"]       # e.g. 55
+    rsi_buy_max  = rsi_buy_min + 30     # e.g. 85 — wider range
+    rsi_sell_max = cfg["rsi_sell"]      # e.g. 45
+    rsi_sell_min = rsi_sell_max - 30    # e.g. 15 — wider range
+    gain_pct     = cfg["gain_pct"]
+    stop_pct     = cfg["stop_pct"]
+    vol_mult     = cfg["vol_mult"]
+    pos_size     = cfg["pos_size"]
 
     trades = []
-
-    # Group by trading date
-    dates = sorted(df.index.normalize().unique())
+    dates  = sorted(df.index.normalize().unique())
 
     for date in dates:
         day_df = df[df.index.date == date.date()]
-        if len(day_df) < 20:
+        # Trading hours only 9:30-13:00
+        trading = day_df.between_time("09:30", "13:00")
+        if len(trading) < 20:
             continue
 
-        # Opening range: 9:30–9:45
-        orb = day_df.between_time("09:30", "09:44")
-        if len(orb) < 2:
-            continue
-        range_high = float(orb["High"].max())
-        range_low  = float(orb["Low"].min())
+        # Pre-calculate VWAP for the day
+        close  = trading["Close"].squeeze()
+        high   = trading["High"].squeeze()
+        low    = trading["Low"].squeeze()
+        volume = trading["Volume"].squeeze()
+        tp     = (high + low + close) / 3
+        vwap_series = (tp * volume).cumsum() / volume.cumsum()
 
-        # Gap direction filter removed — was too restrictive (0 trades)
-        allowed_direction = "both"
-        gap_pct = 0
+        in_trade      = False
+        entry         = None
+        last_signal_i = -5   # cooldown tracker — 5 min between signals
 
-        # VWAP for the day
-        vwap_series = calc_vwap(day_df)
+        closes_list = close.tolist()
 
-        # Scan bars after 9:45
-        after_range = day_df.between_time("09:45", "12:59")
-        if len(after_range) < 5:
-            continue
+        for i, (ts, row) in enumerate(trading.iterrows()):
+            if i < 15:  # need enough bars for indicators
+                continue
 
-        trades_today = 0
-        in_trade     = False
-        entry        = None
-
-        closes = day_df["Close"].squeeze()
-
-        for i, (ts, row) in enumerate(after_range.iterrows()):
-            if trades_today >= max_trades:
-                break
-
-            hour = ts.hour
+            hour   = ts.hour
             minute = ts.minute
 
-            # Dead zone 11:30–12:30
+            # Dead zone 11:30-12:30
             if (hour == 11 and minute >= 30) or (hour == 12 and minute <= 30):
                 continue
 
-            price = float(row["Close"])
+            # Cooldown — 30 bars between signals (~30 min)
+            if not in_trade and (i - last_signal_i) < 5:
+                continue
 
-            # Check exit
+            price = float(closes_list[i])
+            vwap  = float(vwap_series.iloc[i])
+
+            # 9 EMA
+            ema_slice = closes_list[max(0, i-20):i+1]
+            ema9 = ema_slice[-1]
+            alpha = 2 / (9 + 1)
+            for j in range(1, min(9, len(ema_slice))):
+                ema9 = ema_slice[-(j+1)] * alpha + ema9 * (1 - alpha)
+
+            # RSI (14)
+            rsi_slice = pd.Series(closes_list[max(0, i-28):i+1])
+            rsi = 50.0
+            if len(rsi_slice) >= 15:
+                try:
+                    rsi_val = ta.momentum.RSIIndicator(rsi_slice, window=14).rsi().iloc[-1]
+                    rsi = float(rsi_val) if not pd.isna(rsi_val) else 50.0
+                except Exception:
+                    rsi = 50.0
+
+            # Volume ratio
+            vol_slice = volume.iloc[max(0, i-20):i]
+            avg_vol   = float(vol_slice.mean()) if len(vol_slice) > 0 else 1.0
+            cur_vol   = float(volume.iloc[i])
+            vol_ratio = cur_vol / avg_vol if avg_vol > 0 else 1.0
+
+            # Check exit first
             if in_trade and entry:
                 if entry["dir"] == "long":
                     hit_target = price >= entry["target"]
@@ -189,13 +222,11 @@ def run_strategy(df: pd.DataFrame, ticker: str, cfg: dict) -> list:
 
                 if hit_target or hit_stop:
                     exit_price = entry["target"] if hit_target else entry["stop"]
-                    pnl_pct = ((exit_price - entry["price"]) / entry["price"] * 100
-                               if entry["dir"] == "long"
-                               else (entry["price"] - exit_price) / entry["price"] * 100)
-                    shares    = pos_size / entry["price"]
-                    pnl_dollar= ((exit_price - entry["price"]) * shares
-                                 if entry["dir"] == "long"
-                                 else (entry["price"] - exit_price) * shares)
+                    pnl_pct    = ((exit_price - entry["price"]) / entry["price"] * 100
+                                  if entry["dir"] == "long"
+                                  else (entry["price"] - exit_price) / entry["price"] * 100)
+                    shares     = pos_size / entry["price"]
+                    pnl_dollar = pnl_pct / 100 * pos_size
 
                     trades.append({
                         "date":       date.strftime("%Y-%m-%d"),
@@ -214,52 +245,30 @@ def run_strategy(df: pd.DataFrame, ticker: str, cfg: dict) -> list:
                         "hour":       entry["hour"],
                         "shares":     round(shares, 4),
                     })
-                    in_trade = False
-                    entry    = None
-                    trades_today += 1
+                    in_trade     = False
+                    entry        = None
+                    last_signal_i = i
                     continue
 
             if in_trade:
                 continue
 
-            # Get position in full day_df for RSI lookback
-            try:
-                pos_in_day = day_df.index.get_loc(ts)
-            except Exception:
-                continue
-
-            # RSI (14 bars)
-            rsi_slice = closes.iloc[max(0, pos_in_day-27):pos_in_day+1]
-            rsi       = calc_rsi(rsi_slice)
-
-            # Volume ratio
-            vol_ratio = calc_vol_ratio(day_df, pos_in_day)
-
-            # VWAP at this bar
-            try:
-                vwap = float(vwap_series.loc[ts])
-            except Exception:
-                vwap = price
-
-            # Signal check
+            # Signal detection
             direction = None
-            if price > range_high and rsi > rsi_buy:
+
+            # Long: price above EMA9 and VWAP, RSI in bullish range, volume spike
+            if (price > ema9 and price > vwap
+                    and rsi_buy_min <= rsi <= rsi_buy_max
+                    and vol_ratio >= vol_mult):
                 direction = "long"
-            elif price < range_low and rsi < rsi_sell:
+
+            # Short: price below EMA9 and VWAP, RSI in bearish range, volume spike
+            elif (price < ema9 and price < vwap
+                    and rsi_sell_min <= rsi <= rsi_sell_max
+                    and vol_ratio >= vol_mult):
                 direction = "short"
+
             if not direction:
-                continue
-
-
-
-            # Volume filter
-            if vol_ratio < vol_mult:
-                continue
-
-            # VWAP filter
-            if direction == "long" and price < vwap:
-                continue
-            if direction == "short" and price > vwap:
                 continue
 
             # Enter trade
@@ -268,7 +277,8 @@ def run_strategy(df: pd.DataFrame, ticker: str, cfg: dict) -> list:
             stop   = (price * (1 - stop_pct/100) if direction == "long"
                       else price * (1 + stop_pct/100))
 
-            in_trade = True
+            in_trade     = True
+            last_signal_i = i
             entry = {
                 "dir":       direction,
                 "price":     price,
@@ -282,7 +292,7 @@ def run_strategy(df: pd.DataFrame, ticker: str, cfg: dict) -> list:
 
     return trades
 
-# ── Stats calculator ──────────────────────────────────────────────────────────
+# ── Stats calculator# ── Stats calculator ──────────────────────────────────────────────────────────
 def calc_stats(trades: list, pos_size: float) -> dict:
     if not trades:
         return {
@@ -335,7 +345,7 @@ def main():
     print("  NYLO Backtesting Engine")
     print(f"  Tickers  : {', '.join(TICKERS)}")
     print(f"  Lookback : {LOOKBACK_DAYS} days of 1-minute data")
-    print(f"  Strategy : ORB + RSI + VWAP + Volume + Gap Direction Filter (v13)")
+    print(f"  Strategy : Momentum Continuation — 9 EMA + VWAP + RSI + Volume (v14)")
     print("=" * 60)
 
     # Fetch data for all tickers
@@ -367,7 +377,7 @@ def main():
     base_trades.sort(key=lambda t: (t["date"], t["entry_time"]))
     base_stats = calc_stats(base_trades, POSITION_SIZE)
 
-    print(f"  v13 params: gain={GAIN_TARGET_PCT}% stop={STOP_LOSS_PCT}% vol={VOLUME_MULT}x | QQQ only | gap direction filter")
+    print(f"  v14 params: gain={GAIN_TARGET_PCT}% stop={STOP_LOSS_PCT}% vol={VOLUME_MULT}x | QQQ only | 9 EMA + VWAP momentum")
     print(f"  Total: {base_stats['trades']} trades | "
           f"Win rate: {base_stats['win_rate']:.1f}% | "
           f"P&L: {base_stats['total_pnl_pct']:+.2f}%")
