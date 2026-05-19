@@ -56,7 +56,7 @@ CUTOFF            = datetime.time(12, 45)  # hard close — no holding into lunc
 DEAD_ZONE_START   = datetime.time(11, 30)
 DEAD_ZONE_END     = datetime.time(12, 0)   # shorter dead zone
 SERVER_PORT       = 8765
-AGENT_VERSION     = "14"
+AGENT_VERSION     = "14.1"
 
 # Pushover notifications
 PUSHOVER_TOKEN    = "apuf7f5knj2yxnsnxvtk63adchuvkf"
@@ -151,7 +151,17 @@ def log_error(context: str, exc: Exception = None):
 
 # ── Trade log ─────────────────────────────────────────────────────────────────
 def init_log():
-    if not os.path.exists(LOG_FILE):
+    # Always ensure correct v14 headers
+    needs_header = not os.path.exists(LOG_FILE)
+    if not needs_header:
+        with open(LOG_FILE, "r") as f:
+            first = f.readline()
+        if "Signal Type" not in first:
+            needs_header = True
+            # backup old file
+            import shutil
+            shutil.copy(LOG_FILE, LOG_FILE + ".bak")
+    if needs_header:
         with open(LOG_FILE, "w", newline="") as f:
             csv.writer(f).writerow([
                 "Date", "Ticker", "Direction",
@@ -162,7 +172,7 @@ def init_log():
                 "Signal Type", "Signal Score", "Position Size",
                 "Day Bias", "Trail Used"
             ])
-        print(f"[Tracker] Trade log created → {LOG_FILE}")
+        print(f"[Tracker] Trade log initialized → {LOG_FILE}")
 
 def calc_shares(entry_price, position_size):
     return round(position_size / entry_price, 4)
@@ -187,19 +197,24 @@ def log_entry_csv(s):
         ])
 
 def log_exit_csv(exit_price, result, pnl_pct, pnl_dollar, exit_time, trail_used):
-    with open(LOG_FILE, "r", newline="") as f:
-        rows = list(csv.reader(f))
-    for i in range(len(rows) - 1, 0, -1):
-        if rows[i][1] == TICKER and rows[i][4] == "":
-            rows[i][4]  = exit_price
-            rows[i][7]  = result
-            rows[i][8]  = f"{'+' if pnl_pct > 0 else ''}{pnl_pct}%"
-            rows[i][9]  = f"+${pnl_dollar:.2f}" if pnl_dollar >= 0 else f"-${abs(pnl_dollar):.2f}"
-            rows[i][12] = exit_time.strftime("%I:%M %p")
-            rows[i][18] = "Yes" if trail_used else "No"
-            break
-    with open(LOG_FILE, "w", newline="") as f:
-        csv.writer(f).writerows(rows)
+    try:
+        with open(LOG_FILE, "r", newline="") as f:
+            rows = list(csv.reader(f))
+        for i in range(len(rows) - 1, 0, -1):
+            if len(rows[i]) > 4 and rows[i][1] == TICKER and rows[i][4] == "":
+                rows[i][4]  = str(round(float(exit_price), 4))
+                rows[i][7]  = result
+                rows[i][8]  = f"{'+' if pnl_pct > 0 else ''}{round(pnl_pct,3)}%"
+                rows[i][9]  = f"+${pnl_dollar:.2f}" if pnl_dollar >= 0 else f"-${abs(pnl_dollar):.2f}"
+                rows[i][12] = exit_time.strftime("%I:%M %p")
+                if len(rows[i]) > 18:
+                    rows[i][18] = "Yes" if trail_used else "No"
+                break
+        with open(LOG_FILE, "w", newline="") as f:
+            csv.writer(f).writerows(rows)
+        print(f"[Tracker] Exit logged — {result} {'+' if pnl_pct>0 else ''}{pnl_pct:.2f}%")
+    except Exception as e:
+        log_error("log_exit_csv", e)
 
 # ── Live trade JSON ───────────────────────────────────────────────────────────
 def write_live_trade():
@@ -444,6 +459,38 @@ def calc_atr(df: pd.DataFrame, window=14) -> float:
     except Exception:
         return 0.0
 
+# ── VIX filter ───────────────────────────────────────────────────────────────
+def get_vix() -> float:
+    """
+    Fetch current VIX level. If VIX > 25 market is too volatile — skip signals.
+    Returns 0.0 on failure (fail open — don't block trading).
+    """
+    try:
+        df = yf.download("^VIX", period="1d", interval="1m", progress=False, auto_adjust=True)
+        if df.empty:
+            return 0.0
+        return round(float(df["Close"].iloc[-1]), 2)
+    except Exception:
+        return 0.0
+
+VIX_MAX = 30.0  # skip trading if VIX above this level
+
+# ── Earnings blackout ─────────────────────────────────────────────────────────
+# QQQ top holdings earnings dates — skip trading day before and day of
+# Update this list each quarter
+EARNINGS_BLACKOUT = [
+    # Format: "YYYY-MM-DD" — day of earnings or day before
+    # Q1 2026 earnings season
+    "2026-04-23", "2026-04-24",  # MSFT/GOOGL
+    "2026-04-24", "2026-04-25",  # META
+    "2026-04-30", "2026-05-01",  # AAPL/AMZN
+    # Add more as needed
+]
+
+def is_earnings_blackout() -> bool:
+    today = now_et().strftime("%Y-%m-%d")
+    return today in EARNINGS_BLACKOUT
+
 # ── Signal scoring ────────────────────────────────────────────────────────────
 def score_signal(df, direction, signal_type, rsi, vol_ratio, price, vwap, ema9) -> int:
     """
@@ -583,6 +630,17 @@ def check_signals(df):
     if now_et().time() > CUTOFF:
         return
     if is_dead_zone():
+        return
+
+    # VIX filter — skip if market too volatile
+    vix = get_vix()
+    if vix > VIX_MAX:
+        print(f"[{TICKER}] VIX {vix} > {VIX_MAX} — skipping (too volatile)")
+        return
+
+    # Earnings blackout
+    if is_earnings_blackout():
+        print(f"[{TICKER}] Earnings blackout today — skipping all signals")
         return
 
     price     = round(float(df["Close"].iloc[-1]), 4)
@@ -773,8 +831,10 @@ def check_exit(df):
 
     pnl_dollar = calc_pnl(entry, exit_price, direction, s["shares"])
     pnl_pct    = round(pnl_dollar / s["position_size"] * 100, 3)
+    global trades_today, daily_pnl
     trades_today += 1
     daily_pnl    += pnl_dollar
+    print(f"[Agent] Trade closed — trades today: {trades_today} | daily P&L: ${daily_pnl:.2f}")
 
     log_exit_csv(exit_price, result, pnl_pct, pnl_dollar, now, s["trail_active"])
     clear_live_trade()
@@ -853,8 +913,10 @@ def send_daily_summary():
                 if row["Date"] == today:
                     trades.append(row)
 
-    wins   = sum(1 for t in trades if t["Result"] == "Target Hit")
-    losses = sum(1 for t in trades if t["Result"] in ("Stop Loss Hit", "Trailing Stop"))
+    wins   = sum(1 for t in trades if t["Result"] == "Target Hit" or
+               (t["Result"] == "Trailing Stop" and float(t.get("P&L %","0").replace("%","").replace("+","") or 0) > 0))
+    losses = sum(1 for t in trades if t["Result"] == "Stop Loss Hit" or
+               (t["Result"] == "Trailing Stop" and float(t.get("P&L %","0").replace("%","").replace("+","") or 0) <= 0))
     timed  = sum(1 for t in trades if t["Result"] == "Time Exit")
 
     lines = [

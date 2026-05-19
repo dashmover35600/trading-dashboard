@@ -1,1 +1,2 @@
-Date,Ticker,Direction,Entry Price,Exit Price,Target,Stop Loss,Result,P&L %,Entry Time,Exit Time,RSI at Entry
+Date,Ticker,Direction,Entry Price,Exit Price,Target,Stop Loss,Result,P&L %,P&L $,Shares,Entry Time,Exit Time,RSI at Entry,Volume Ratio,Signal Type,Signal Score,Position Size,Day Bias,Trail Used
+2026-05-19,QQQ,Long,698.25,701.08,708.7237,693.0131,Time Exit,+0.41%,+$4.11,1.4322,11:02 AM,12:44 PM,58.02,2.27x,ema_pullback,7,$1000,long,No
