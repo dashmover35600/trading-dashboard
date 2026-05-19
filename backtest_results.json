@@ -1,1040 +1,851 @@
 {
-  "generated_at": "2026-05-19T03:45:07.949022-04:00",
-  "generated_str": "May 19, 2026 at 03:45 AM ET",
+  "generated_at": "2026-05-19T04:02:08.762965-04:00",
+  "generated_str": "May 19, 2026 at 04:02 AM ET",
   "config": {
     "tickers": [
-      "QQQ",
-      "GLD"
+      "QQQ"
     ],
     "lookback_days": 30,
     "position_size": 500.0,
     "baseline": {
       "rsi_buy": 55,
       "rsi_sell": 45,
-      "gain_pct": 1.0,
-      "stop_pct": 0.5,
+      "gain_pct": 2.0,
+      "stop_pct": 1.0,
       "vol_mult": 1.2
     }
   },
   "baseline": {
     "stats": {
-      "trades": 11,
-      "wins": 2,
-      "losses": 9,
-      "win_rate": 18.18,
-      "total_pnl_pct": -2.5,
-      "total_pnl_dollar": -12.5,
-      "best": 1.0,
-      "worst": -0.5,
-      "max_drawdown": -3.0,
-      "sharpe": -5.946
+      "trades": 0,
+      "wins": 0,
+      "losses": 0,
+      "win_rate": 0,
+      "total_pnl_pct": 0,
+      "total_pnl_dollar": 0,
+      "best": 0,
+      "worst": 0,
+      "max_drawdown": 0,
+      "sharpe": 0
     },
-    "trades": [
-      {
-        "date": "2026-04-21",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 649.67,
-        "exit": 646.4216,
-        "target": 656.1667,
-        "stop": 646.4216,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.5,
-        "pnl_dollar": -2.5,
-        "rsi": 76.6,
-        "vol_ratio": 1.26,
-        "entry_time": "10:08 AM",
-        "hour": 10,
-        "shares": 0.7696
-      },
-      {
-        "date": "2026-04-21",
-        "ticker": "GLD",
-        "direction": "Short",
-        "entry": 437.72,
-        "exit": 433.3428,
-        "target": 433.3428,
-        "stop": 439.9086,
-        "result": "Target Hit",
-        "pnl_pct": 1.0,
-        "pnl_dollar": 5.0,
-        "rsi": 21.7,
-        "vol_ratio": 1.68,
-        "entry_time": "10:33 AM",
-        "hour": 10,
-        "shares": 1.1423
-      },
-      {
-        "date": "2026-04-28",
-        "ticker": "GLD",
-        "direction": "Short",
-        "entry": 419.64,
-        "exit": 421.7382,
-        "target": 415.4436,
-        "stop": 421.7382,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.5,
-        "pnl_dollar": -2.5,
-        "rsi": 33.0,
-        "vol_ratio": 5.03,
-        "entry_time": "10:02 AM",
-        "hour": 10,
-        "shares": 1.1915
-      },
-      {
-        "date": "2026-04-30",
-        "ticker": "QQQ",
-        "direction": "Short",
-        "entry": 659.9893,
-        "exit": 663.2893,
-        "target": 653.3894,
-        "stop": 663.2893,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.5,
-        "pnl_dollar": -2.5,
-        "rsi": 31.7,
-        "vol_ratio": 1.21,
-        "entry_time": "09:52 AM",
-        "hour": 9,
-        "shares": 0.7576
-      },
-      {
-        "date": "2026-05-04",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 675.83,
-        "exit": 672.4509,
-        "target": 682.5883,
-        "stop": 672.4509,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.5,
-        "pnl_dollar": -2.5,
-        "rsi": 60.1,
-        "vol_ratio": 1.2,
-        "entry_time": "10:12 AM",
-        "hour": 10,
-        "shares": 0.7398
-      },
-      {
-        "date": "2026-05-04",
-        "ticker": "GLD",
-        "direction": "Long",
-        "entry": 419.83,
-        "exit": 417.7308,
-        "target": 424.0283,
-        "stop": 417.7308,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.5,
-        "pnl_dollar": -2.5,
-        "rsi": 68.6,
-        "vol_ratio": 2.54,
-        "entry_time": "10:18 AM",
-        "hour": 10,
-        "shares": 1.191
-      },
-      {
-        "date": "2026-05-08",
-        "ticker": "GLD",
-        "direction": "Long",
-        "entry": 436.03,
-        "exit": 433.8498,
-        "target": 440.3903,
-        "stop": 433.8498,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.5,
-        "pnl_dollar": -2.5,
-        "rsi": 65.3,
-        "vol_ratio": 7.5,
-        "entry_time": "09:59 AM",
-        "hour": 9,
-        "shares": 1.1467
-      },
-      {
-        "date": "2026-05-11",
-        "ticker": "QQQ",
-        "direction": "Short",
-        "entry": 709.28,
-        "exit": 712.8264,
-        "target": 702.1872,
-        "stop": 712.8264,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.5,
-        "pnl_dollar": -2.5,
-        "rsi": 20.8,
-        "vol_ratio": 2.45,
-        "entry_time": "10:31 AM",
-        "hour": 10,
-        "shares": 0.7049
-      },
-      {
-        "date": "2026-05-12",
-        "ticker": "QQQ",
-        "direction": "Short",
-        "entry": 705.92,
-        "exit": 698.8608,
-        "target": 698.8608,
-        "stop": 709.4496,
-        "result": "Target Hit",
-        "pnl_pct": 1.0,
-        "pnl_dollar": 5.0,
-        "rsi": 32.8,
-        "vol_ratio": 1.47,
-        "entry_time": "10:00 AM",
-        "hour": 10,
-        "shares": 0.7083
-      },
-      {
-        "date": "2026-05-13",
-        "ticker": "QQQ",
-        "direction": "Short",
-        "entry": 706.54,
-        "exit": 710.0727,
-        "target": 699.4746,
-        "stop": 710.0727,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.5,
-        "pnl_dollar": -2.5,
-        "rsi": 43.4,
-        "vol_ratio": 1.4,
-        "entry_time": "10:09 AM",
-        "hour": 10,
-        "shares": 0.7077
-      },
-      {
-        "date": "2026-05-14",
-        "ticker": "GLD",
-        "direction": "Long",
-        "entry": 431.44,
-        "exit": 429.2828,
-        "target": 435.7544,
-        "stop": 429.2828,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.5,
-        "pnl_dollar": -2.5,
-        "rsi": 76.7,
-        "vol_ratio": 3.56,
-        "entry_time": "10:21 AM",
-        "hour": 10,
-        "shares": 1.1589
-      }
-    ]
+    "trades": []
   },
   "sweep": [
     {
       "rsi_buy": 50,
-      "rsi_sell": 40,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 42,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 40,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 42,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 55,
-      "rsi_sell": 40,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 55,
-      "rsi_sell": 42,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 40,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 42,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 40,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 42,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 63,
-      "rsi_sell": 40,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 63,
-      "rsi_sell": 42,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 65,
-      "rsi_sell": 40,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 65,
-      "rsi_sell": 42,
-      "stats": {
-        "trades": 10,
-        "wins": 2,
-        "losses": 8,
-        "win_rate": 20.0,
-        "total_pnl_pct": -2.0,
-        "total_pnl_dollar": -10.0,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.02
-      },
-      "score": 11.2
-    },
-    {
-      "rsi_buy": 50,
       "rsi_sell": 35,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 50,
       "rsi_sell": 38,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 40,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 42,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
     },
     {
       "rsi_buy": 50,
       "rsi_sell": 45,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 50,
       "rsi_sell": 48,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 52,
       "rsi_sell": 35,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 52,
       "rsi_sell": 38,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 40,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 42,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
     },
     {
       "rsi_buy": 52,
       "rsi_sell": 45,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 52,
       "rsi_sell": 48,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 52,
       "rsi_sell": 50,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 55,
       "rsi_sell": 35,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 55,
       "rsi_sell": 38,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 40,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 42,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
     },
     {
       "rsi_buy": 55,
       "rsi_sell": 45,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 55,
       "rsi_sell": 48,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 55,
       "rsi_sell": 50,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 35,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 38,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 58,
+      "rsi_sell": 40,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 58,
+      "rsi_sell": 42,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 45,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 48,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 50,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 60,
       "rsi_sell": 35,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 60,
       "rsi_sell": 38,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 60,
+      "rsi_sell": 40,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 60,
+      "rsi_sell": 42,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
     },
     {
       "rsi_buy": 60,
       "rsi_sell": 45,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 60,
       "rsi_sell": 48,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 60,
       "rsi_sell": 50,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 63,
       "rsi_sell": 35,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 63,
       "rsi_sell": 38,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 63,
+      "rsi_sell": 40,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 63,
+      "rsi_sell": 42,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
     },
     {
       "rsi_buy": 63,
       "rsi_sell": 45,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 63,
       "rsi_sell": 48,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 63,
       "rsi_sell": 50,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 65,
       "rsi_sell": 35,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 65,
       "rsi_sell": 38,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.5,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 65,
+      "rsi_sell": 40,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
+    },
+    {
+      "rsi_buy": 65,
+      "rsi_sell": 42,
+      "stats": {
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
+      },
+      "score": 0.0
     },
     {
       "rsi_buy": 65,
       "rsi_sell": 45,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 65,
       "rsi_sell": 48,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     },
     {
       "rsi_buy": 65,
       "rsi_sell": 50,
       "stats": {
-        "trades": 11,
-        "wins": 2,
-        "losses": 9,
-        "win_rate": 18.18,
-        "total_pnl_pct": -2.5,
-        "total_pnl_dollar": -12.5,
-        "best": 1.0,
-        "worst": -0.5,
-        "max_drawdown": -3.0,
-        "sharpe": -5.946
+        "trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate": 0,
+        "total_pnl_pct": 0,
+        "total_pnl_dollar": 0,
+        "best": 0,
+        "worst": 0,
+        "max_drawdown": 0,
+        "sharpe": 0
       },
-      "score": 9.908
+      "score": 0.0
     }
   ]
 }

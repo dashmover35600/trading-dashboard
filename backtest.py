@@ -26,7 +26,7 @@ import os
 import sys
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TICKERS           = ["QQQ", "GLD"]
+TICKERS           = ["QQQ"]  # v13: GLD dropped — underperforming in backtest
 LOOKBACK_DAYS     = 30
 POSITION_SIZE     = 500.0
 MARKET_TZ         = pytz.timezone("America/New_York")
@@ -34,8 +34,8 @@ MARKET_TZ         = pytz.timezone("America/New_York")
 # Baseline strategy parameters
 RSI_BUY_MIN       = 55
 RSI_SELL_MAX      = 45
-GAIN_TARGET_PCT   = 1.0   # v12: reduced from 1.5%
-STOP_LOSS_PCT     = 0.5    # v12: reduced from 0.75%
+GAIN_TARGET_PCT   = 2.0   # v13: wider target gives trades room to run
+STOP_LOSS_PCT     = 1.0    # v13: wider stop — 0.5% was noise level for QQQ
 VOLUME_MULT       = 1.2    # v12: loosened from 1.5x
 MAX_TRADES_DAY    = 999    # v12: unlimited — take every valid signal
 
@@ -147,6 +147,23 @@ def run_strategy(df: pd.DataFrame, ticker: str, cfg: dict) -> list:
         range_high = float(orb["High"].max())
         range_low  = float(orb["Low"].min())
 
+        # Gap direction filter — only trade in direction of opening gap
+        # If QQQ gapped up >0.2% only take longs; gapped down >0.2% only take shorts
+        first_bar  = float(day_df["Open"].iloc[0].iloc[0]) if hasattr(day_df["Open"].iloc[0], "iloc") else float(day_df["Open"].iloc[0])
+        prev_days  = df[df.index.date < date.date()]
+        if len(prev_days) > 0:
+            prev_close = float(prev_days["Close"].iloc[-1].iloc[0]) if hasattr(prev_days["Close"].iloc[-1], "iloc") else float(prev_days["Close"].iloc[-1])
+            gap_pct    = (first_bar - prev_close) / prev_close * 100
+            if gap_pct > 0.2:
+                allowed_direction = "long"   # gapped up — only longs
+            elif gap_pct < -0.2:
+                allowed_direction = "short"  # gapped down — only shorts
+            else:
+                allowed_direction = "both"   # flat open — allow both
+        else:
+            allowed_direction = "both"
+            gap_pct = 0
+
         # VWAP for the day
         vwap_series = calc_vwap(day_df)
 
@@ -246,6 +263,12 @@ def run_strategy(df: pd.DataFrame, ticker: str, cfg: dict) -> list:
             if not direction:
                 continue
 
+            # Gap direction filter — skip signals against the opening gap
+            if allowed_direction == "long" and direction == "short":
+                continue
+            if allowed_direction == "short" and direction == "long":
+                continue
+
             # Volume filter
             if vol_ratio < vol_mult:
                 continue
@@ -329,7 +352,7 @@ def main():
     print("  NYLO Backtesting Engine")
     print(f"  Tickers  : {', '.join(TICKERS)}")
     print(f"  Lookback : {LOOKBACK_DAYS} days of 1-minute data")
-    print(f"  Strategy : ORB + RSI + VWAP + Volume + SPY Trend (v12)")
+    print(f"  Strategy : ORB + RSI + VWAP + Volume + Gap Direction Filter (v13)")
     print("=" * 60)
 
     # Fetch data for all tickers
@@ -361,7 +384,7 @@ def main():
     base_trades.sort(key=lambda t: (t["date"], t["entry_time"]))
     base_stats = calc_stats(base_trades, POSITION_SIZE)
 
-    print(f"  v12 params: gain={GAIN_TARGET_PCT}% stop={STOP_LOSS_PCT}% vol={VOLUME_MULT}x max={MAX_TRADES_DAY}/day")
+    print(f"  v13 params: gain={GAIN_TARGET_PCT}% stop={STOP_LOSS_PCT}% vol={VOLUME_MULT}x | QQQ only | gap direction filter")
     print(f"  Total: {base_stats['trades']} trades | "
           f"Win rate: {base_stats['win_rate']:.1f}% | "
           f"P&L: {base_stats['total_pnl_pct']:+.2f}%")
