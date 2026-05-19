@@ -449,6 +449,11 @@
       .hero h1 { font-size: 1.45rem; }
     }
   
+/* ── Coin selector ── */
+.coin-btn{padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;font-family:var(--mono);font-size:0.65rem;color:var(--muted);cursor:pointer;transition:all .2s;}
+.coin-btn:hover{border-color:var(--accent);color:var(--accent);}
+.coin-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
 /* ── Skeleton loaders ── */
 .skeleton{background:linear-gradient(90deg,var(--border) 25%,var(--faint) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -1129,11 +1134,7 @@ function showSkeletons() {
 }
 showSkeletons();
 
-// ── Hook toasts into render ───────────────────────────────────────────────────
-const _origTryAutoLoad = tryAutoLoad;
-async function tryAutoLoad() {
-  await _origTryAutoLoad();
-}
+// ── Toast + auto-load active ─────────────────────────────────────────────────
 
 // ── Heartbeat from GitHub ────────────────────────────────────────────────────
 async function fetchHeartbeat() {
@@ -1311,7 +1312,7 @@ async function tryAutoLoad() {
   } catch(e) {}
 
   // 3. Manual upload fallback
-  document.getElementById('upload-desc').textContent = 'Click to upload trade_log.csv manually — or start trading_agent_11.py for auto-load.';
+  document.getElementById('upload-desc').textContent = 'Auto-loads from GitHub every 60s. Agent v14 running — or click to upload manually.';
 }
 
 // ── Live trade P&L ────────────────────────────────────────────────────────────
@@ -1846,38 +1847,56 @@ function renderCatChart(pair) {
   });
 }
 
-fetchNews();
-setInterval(fetchNews, 5*60*1000);
-
-// ── News + CAT (via Vercel API — no CORS issues) ──────────────────────────────
+// ── News + CAT ──────────────────────────────────────────────────────────────────
 let allArticles = [], activeFilter = 'all';
-const API_BASE = 'https://trading-dashboard-tawny-tau.vercel.app/api/news';
+// News via RSS2JSON (free, no API key needed)
 
 async function fetchNews() {
   const grid = document.getElementById('news-grid');
-  grid.innerHTML = '<div class="card" style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:0.82rem;">Fetching headlines...</div>';
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:0.82rem;">Fetching headlines...</div>';
   try {
-    const res  = await fetch(API_BASE);
-    const data = await res.json();
-
-    // Handle news
+    // Use RSS2JSON to fetch Yahoo Finance RSS — free, no API key, CORS-friendly
+    const feeds = [
+      { url: 'https://finance.yahoo.com/rss/headline?s=QQQ', tag: 'qqq' },
+      { url: 'https://finance.yahoo.com/rss/headline?s=GLD', tag: 'gld' },
+    ];
+    const results = await Promise.allSettled(feeds.map(f =>
+      fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(f.url)}&count=10`)
+        .then(r => r.json())
+        .then(d => (d.items || []).map(item => ({
+          title: item.title,
+          url: item.link,
+          description: item.description?.replace(/<[^>]+>/g,'').slice(0,120),
+          publishedAt: new Date(item.pubDate),
+          source: 'Yahoo Finance',
+          _tag: f.tag
+        })))
+    ));
     const seen = new Set();
-    allArticles = (data.articles || [])
+    allArticles = results
+      .filter(r => r.status === 'fulfilled')
+      .flatMap(r => r.value)
       .filter(a => { if(seen.has(a.title)) return false; seen.add(a.title); return true; })
-      .sort((a,b) => new Date(b.publishedAt) - new Date(a.publishedAt))
-      .slice(0,20);
+      .sort((a,b) => b.publishedAt - a.publishedAt)
+      .slice(0, 20);
     document.getElementById('news-ts').textContent = 'News updated ' + new Date().toLocaleTimeString();
     renderNews();
-
-    // Handle CAT coin
-    if (data.cat) updateCatUI(data.cat);
-
+    // Also refresh meme coin prices
+    fetchMemeCoin(activeCoin);
   } catch(e) {
-    grid.innerHTML = '<div class="card" style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:0.82rem;">News unavailable — check back soon.</div>';
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:0.82rem;">News unavailable — check back soon.</div>';
   }
 }
 
 function updateCatUI(pair) {
+  // Update active coin button
+  document.querySelectorAll('.coin-btn').forEach(b => b.classList.remove('active'));
+  const activeBtn = document.getElementById('btn-' + activeCoin);
+  if(activeBtn) activeBtn.classList.add('active');
+  // Update header
+  const coins = {'CAT':'🐱','BONK':'🐕','WIF':'🐶','POPCAT':'😺','BOME':'📖','MYRO':'🦊'};
+  const headerEl = document.querySelector('.nf-card .nf-label, .cat-label');
+  
   catPairData = pair;
   const price  = parseFloat(pair.priceUsd);
   const change = parseFloat(pair.priceChange?.h24 || 0);
@@ -1895,7 +1914,77 @@ function updateCatUI(pair) {
   if (chartVisible) renderCatChart(pair);
 }
 
-async function fetchCatPrice() { fetchNews(); } // unified through API
+// Meme coin config
+const MEME_COINS = {
+  'CAT':   { name: 'CAT',   pair: '0x7714de18f9e8e4d9c1a7e5dc7b2d0b8c1a2e3f4', emoji: '🐱' },
+  'BONK':  { name: 'BONK',  pair: 'bonk',  emoji: '🐕' },
+  'WIF':   { name: 'WIF',   pair: 'wif',   emoji: '🐶' },
+  'POPCAT':{ name: 'POPCAT',pair: 'popcat',emoji: '😺' },
+  'BOME':  { name: 'BOME',  pair: 'bome',  emoji: '📖' },
+  'MYRO':  { name: 'MYRO',  pair: 'myro',  emoji: '🦊' },
+};
+let activeCoin = 'CAT';
+
+async function fetchMemeCoin(symbol) {
+  activeCoin = symbol;
+  // Update active button immediately
+  document.querySelectorAll('.coin-btn').forEach(b => b.classList.remove('active'));
+  const activeBtn = document.getElementById('btn-' + symbol);
+  if(activeBtn) activeBtn.classList.add('active');
+
+  // CoinGecko IDs for each coin
+  const geckoIds = {
+    'CAT':    'cat-in-a-dogs-world',
+    'BONK':   'bonk',
+    'WIF':    'dogwifcoin',
+    'POPCAT': 'popcat',
+    'BOME':   'book-of-meme',
+    'MYRO':   'myro',
+  };
+  const id = geckoIds[symbol] || geckoIds['CAT'];
+  try {
+    const res  = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true`,
+      { headers: { 'Accept': 'application/json' } }
+    );
+    const data = await res.json();
+    const d = data[id];
+    if(!d) return;
+    // Build a pair-like object updateCatUI understands
+    const fakePair = {
+      priceUsd: d.usd,
+      priceChange: { h24: d.usd_24h_change },
+      volume: { h24: d.usd_24h_vol },
+      marketCap: d.usd_market_cap,
+      baseToken: { name: symbol }
+    };
+    updateCatUI(fakePair);
+  } catch(e) {
+    // Fallback to Binance for BONK/WIF which are listed there
+    const binanceSymbols = { 'BONK':'BONKUSDT','WIF':'WIFUSDT','BOME':'BOMEUSDT' };
+    const bSym = binanceSymbols[symbol];
+    if(bSym) {
+      try {
+        const [ticker, stats] = await Promise.all([
+          fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${bSym}`).then(r=>r.json()),
+          fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${bSym}`).then(r=>r.json()),
+        ]);
+        const fakePair = {
+          priceUsd: parseFloat(ticker.price),
+          priceChange: { h24: parseFloat(stats.priceChangePercent) },
+          volume: { h24: parseFloat(stats.quoteVolume) },
+          marketCap: 0,
+          baseToken: { name: symbol }
+        };
+        updateCatUI(fakePair);
+      } catch(e2) {
+        console.error('All coin APIs failed for', symbol);
+      }
+    }
+  }
+}
+
+async function fetchCatPrice() { fetchMemeCoin(activeCoin); }
 
 function renderNews() {
   const grid     = document.getElementById('news-grid');
@@ -1917,7 +2006,9 @@ function filterNews(f,btn){ activeFilter=f; document.querySelectorAll('.nf').for
 function timeAgo(d){ const m=Math.floor((Date.now()-d)/60000); if(m<60) return m+'m ago'; if(m<1440) return Math.floor(m/60)+'h ago'; return Math.floor(m/1440)+'d ago'; }
 
 fetchNews();
+fetchMemeCoin('CAT');
 setInterval(fetchNews, 5*60*1000);
+setInterval(() => fetchMemeCoin(activeCoin), 30000);
 
 // ── Market mood ───────────────────────────────────────────────────────────────
 async function fetchMarketMood() {
