@@ -34,13 +34,13 @@ MARKET_TZ         = pytz.timezone("America/New_York")
 # Baseline strategy parameters
 RSI_BUY_MIN       = 55
 RSI_SELL_MAX      = 45
-GAIN_TARGET_PCT   = 1.5
-STOP_LOSS_PCT     = 0.75
-VOLUME_MULT       = 1.5
-MAX_TRADES_DAY    = 2
+GAIN_TARGET_PCT   = 1.0   # v12: reduced from 1.5%
+STOP_LOSS_PCT     = 0.5    # v12: reduced from 0.75%
+VOLUME_MULT       = 1.2    # v12: loosened from 1.5x
+MAX_TRADES_DAY    = 999    # v12: unlimited — take every valid signal
 
 # Parameter sweep ranges
-SWEEP_RSI_BUY  = [50, 52, 55, 58, 60, 63, 65]
+SWEEP_RSI_BUY  = [50, 52, 55, 58, 60, 63, 65]  # unchanged — RSI not the issue
 SWEEP_RSI_SELL = [35, 38, 40, 42, 45, 48, 50]
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -329,7 +329,7 @@ def main():
     print("  NYLO Backtesting Engine")
     print(f"  Tickers  : {', '.join(TICKERS)}")
     print(f"  Lookback : {LOOKBACK_DAYS} days of 1-minute data")
-    print(f"  Strategy : ORB + RSI + VWAP + Volume + Multi-TF")
+    print(f"  Strategy : ORB + RSI + VWAP + Volume + SPY Trend (v12)")
     print("=" * 60)
 
     # Fetch data for all tickers
@@ -361,6 +361,7 @@ def main():
     base_trades.sort(key=lambda t: (t["date"], t["entry_time"]))
     base_stats = calc_stats(base_trades, POSITION_SIZE)
 
+    print(f"  v12 params: gain={GAIN_TARGET_PCT}% stop={STOP_LOSS_PCT}% vol={VOLUME_MULT}x max={MAX_TRADES_DAY}/day")
     print(f"  Total: {base_stats['trades']} trades | "
           f"Win rate: {base_stats['win_rate']:.1f}% | "
           f"P&L: {base_stats['total_pnl_pct']:+.2f}%")
