@@ -486,6 +486,24 @@
   #app{padding-bottom:70px;}
 }
 @media(min-width:601px){.mobile-bottom-nav{display:none;}}
+
+    /* ── NYLO Animations v2 ── */
+    .stat-card{position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;}
+    .stat-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(24,71,212,.12);}
+    .stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .8s ease;}
+    .stat-card.animated::after{transform:scaleX(1);}
+    #tb tr{opacity:0;transform:translateX(-8px);transition:opacity .35s,transform .35s;}
+    #tb tr.tr-visible{opacity:1;transform:translateX(0);}
+    .agent-online-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 0 rgba(22,163,74,.4);animation:agentPulse 2s ease-in-out infinite;margin-right:6px;vertical-align:middle;}
+    @keyframes agentPulse{0%{box-shadow:0 0 0 0 rgba(22,163,74,.4);}70%{box-shadow:0 0 0 8px rgba(22,163,74,0);}100%{box-shadow:0 0 0 0 rgba(22,163,74,0);}}
+    .score-pips{display:inline-flex;gap:2px;vertical-align:middle;margin-left:6px;}
+    .score-pip{width:5px;height:5px;border-radius:1px;background:var(--border,rgba(0,0,0,.1));}
+    .score-pip.on{background:var(--accent);}
+    .score-pip.on.high{background:#16a34a;}
+    @keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotate(0deg);}100%{opacity:0;transform:translateY(180px) rotate(540deg);}}
+    .confetti-piece{position:fixed;pointer-events:none;width:8px;height:8px;border-radius:2px;animation:confettiFall 1.2s ease-in forwards;z-index:9999;}
+    #streak-val.pop{animation:streakPop .5s cubic-bezier(.16,1,.3,1);}
+    @keyframes streakPop{0%{transform:scale(1);}50%{transform:scale(1.4);}100%{transform:scale(1);}}
 </style>
 </head>
 <body>
@@ -593,7 +611,7 @@
 
 <!-- Live price ticker -->
 <div class="ticker-bar" id="ticker-bar">
-  <div class="ticker-item">
+  <div id="ticker-inner" class="ticker-item">
     <span class="ticker-symbol">QQQ</span>
     <span class="ticker-price" id="t-qqq-price">—</span>
     <span class="ticker-change" id="t-qqq-chg">—</span>
@@ -1596,6 +1614,7 @@ function renderTable() {
       <td style="color:var(--muted)">${t['Exit Time']||'—'}</td>
       <td style="color:var(--muted)">${t['RSI at Entry']}</td>
       <td style="color:var(--muted)">${t['Volume Ratio']}</td>
+      <td>${t['Signal Score']?`<span class="score-pips">${[...Array(10)].map((_,i)=>`<span class="score-pip${i<parseInt(t['Signal Score'])?' on'+(parseInt(t['Signal Score'])>=8?' high':''):''}"></span>`).join('')}</span> <span style="font-size:.65rem;color:var(--muted)">${t['Signal Score']}/10</span>`:''}</td>
     </tr>`;
   });
 }
@@ -2413,6 +2432,120 @@ function showToast(msg,type='info',duration=3000){
   c.appendChild(t);
   setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(20px)';t.style.transition='all .3s';setTimeout(()=>t.remove(),300);},duration);
 }
+
+
+// ── NYLO Animations v2 ────────────────────────────────────────────────────────
+
+// Animate stat cards on load
+function animateStatCards() {
+  document.querySelectorAll('.stat-card').forEach((card, i) => {
+    setTimeout(() => card.classList.add('animated'), i * 150);
+  });
+}
+
+// Animate trade rows sliding in
+function animateTradeRows() {
+  const rows = document.querySelectorAll('#tb tr');
+  rows.forEach((row, i) => {
+    row.classList.remove('tr-visible');
+    setTimeout(() => row.classList.add('tr-visible'), i * 80);
+  });
+}
+
+// Animated number counter
+function animateNumber(el, from, to, duration, formatter) {
+  if (!el) return;
+  const start = Date.now();
+  const tick = () => {
+    const p = Math.min((Date.now() - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = formatter(from + (to - from) * ease);
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+// Confetti burst on win
+function burstConfetti(x, y) {
+  const colors = ['#1847d4','#16a34a','#f59e0b','#ec4899','#3d6fff'];
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `left:${x + (Math.random()-0.5)*80}px;top:${y}px;background:${colors[i%colors.length]};animation-delay:${Math.random()*0.3}s;animation-duration:${0.8+Math.random()*0.6}s;`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1500);
+  }
+}
+
+// Add agent online dot to status bar
+function addAgentDot() {
+  const statusText = document.getElementById('agent-status-text');
+  if (statusText && !document.querySelector('.agent-online-dot')) {
+    const dot = document.createElement('span');
+    dot.className = 'agent-online-dot';
+    statusText.parentNode.insertBefore(dot, statusText);
+  }
+}
+
+// Animate equity chart line
+function animateEquityChart() {
+  const paths = document.querySelectorAll('canvas, .chart-line, polyline, path[stroke]');
+  // Chart.js handles animation natively - just ensure it's configured
+}
+
+// Streak pop animation
+function animateStreak() {
+  const sv = document.getElementById('streak-val');
+  if (sv) {
+    sv.classList.remove('pop');
+    void sv.offsetWidth;
+    sv.classList.add('pop');
+  }
+}
+
+// Hook into render to add animations
+const _origRender = typeof render !== 'undefined' ? render : null;
+if (_origRender) {
+  window.render = function(trades) {
+    _origRender(trades);
+    setTimeout(() => {
+      animateStatCards();
+      animateTradeRows();
+      addAgentDot();
+      // Fire confetti if there's a new win
+      const wins = trades.filter(t => t['Result'] === 'Target Hit' ||
+        ((t['Result']==='Trailing Stop'||t['Result']==='Time Exit') &&
+         parseFloat((t['P&L %']||'0').replace('%','').replace('+','')) > 0));
+      if (wins.length > 0 && trades.length === 1) {
+        const kpi = document.querySelector('.stat-card');
+        if (kpi) {
+          const r = kpi.getBoundingClientRect();
+          burstConfetti(r.left + r.width/2, r.top);
+        }
+      }
+    }, 100);
+  };
+}
+
+// Ticker auto-scroll — duplicate items for seamless loop
+function setupTicker() {
+  const inner = document.getElementById('ticker-inner');
+  if (inner && inner.children.length > 0) {
+    const clone = inner.innerHTML;
+    inner.innerHTML = clone + clone;
+  }
+}
+
+// Init on load
+document.addEventListener('DOMContentLoaded', () => {
+  setupTicker();
+  addAgentDot();
+  animateStatCards();
+});
+setTimeout(() => {
+  setupTicker();
+  addAgentDot();
+  animateStatCards();
+}, 500);
+
 </script>
-</body>
-</html>

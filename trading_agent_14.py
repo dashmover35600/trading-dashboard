@@ -74,11 +74,11 @@ TRAIL_TRIGGER_PCT = 0.0075   # activate trailing stop after +0.75% move
 TRAIL_STOP_PCT    = 0.003    # trail by 0.3% from peak (locks in more)
 
 # Signal scoring thresholds
-MIN_SCORE         = 6        # minimum score — keep at 6 for frequency
-RSI_BULL_MIN      = 50       # RSI must be above this for longs
+MIN_SCORE         = 5        # v14.2: lowered from 6 — sweep shows more signals at 4-5
+RSI_BULL_MIN      = 52       # v14.2: raised from 50 — sweep shows 52 optimal
 RSI_BULL_MAX      = 75       # RSI must be below this (not overbought)
 RSI_BEAR_MIN      = 25       # RSI must be above this for shorts (not oversold)
-RSI_BEAR_MAX      = 50       # RSI must be below this for shorts
+RSI_BEAR_MAX      = 48       # v14.2: lowered from 50 — sweep shows 48 optimal
 VOLUME_MIN        = 1.2      # minimum volume ratio
 
 # Reliability settings
