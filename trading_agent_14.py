@@ -47,7 +47,9 @@ import traceback
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TICKER            = "QQQ"           # One ticker, master it
+TICKERS           = ["QQQ", "NVDA"]  # v15.1: QQQ+NVDA only (SPY/TSLA dropped)
+VOLATILE_TICKERS  = ["NVDA"]  # 75% position size
+TICKER            = "QQQ"  # kept for compatibility
 IMESSAGE_TO       = os.environ.get("TRADING_PHONE", "+1XXXXXXXXXX")
 MARKET_TZ         = pytz.timezone("America/New_York")
 MARKET_OPEN       = datetime.time(9, 30)
@@ -56,7 +58,7 @@ CUTOFF            = datetime.time(12, 45)  # hard close — no holding into lunc
 DEAD_ZONE_START   = datetime.time(11, 30)
 DEAD_ZONE_END     = datetime.time(12, 0)   # shorter dead zone
 SERVER_PORT       = 8765
-AGENT_VERSION     = "14.2"
+AGENT_VERSION     = "15.1"
 
 # Pushover notifications
 PUSHOVER_TOKEN    = "apuf7f5knj2yxnsnxvtk63adchuvkf"
@@ -75,10 +77,10 @@ TRAIL_STOP_PCT    = 0.003    # trail by 0.3% from peak (locks in more)
 
 # Signal scoring thresholds
 MIN_SCORE         = 5        # v14.2: lowered from 6 — sweep shows more signals at 4-5
-RSI_BULL_MIN      = 52       # v14.2: raised from 50 — sweep shows 52 optimal
-RSI_BULL_MAX      = 75       # RSI must be below this (not overbought)
-RSI_BEAR_MIN      = 25       # RSI must be above this for shorts (not oversold)
-RSI_BEAR_MAX      = 48       # v14.2: lowered from 50 — sweep shows 48 optimal
+RSI_BULL_MIN      = 55       # v15: tighter — 55-72 only
+RSI_BULL_MAX      = 72       # v15: tighter upper bound
+RSI_BEAR_MIN      = 28       # v15: tighter lower bound
+RSI_BEAR_MAX      = 45       # v15: tighter — 28-45 only
 VOLUME_MIN        = 1.2      # minimum volume ratio
 
 # Reliability settings
@@ -562,18 +564,16 @@ def score_signal(df, direction, signal_type, rsi, vol_ratio, price, vwap, ema9) 
     return min(score, 10)
 
 # ── Position sizing ───────────────────────────────────────────────────────────
-def get_position_size(score: int) -> float:
+def get_position_size(score: int, ticker: str = "QQQ") -> float:
     """
-    Dynamic position sizing based on signal confidence score.
-    Score 9-10 → $3,000 (high conviction)
-    Score 7-8  → $2,000 (medium conviction)
-    Score 6    → $1,000 (baseline)
+    Maximum calculated risk position sizing.
+    Score 10: $5,000 / Score 9: $4,000 / Score 8: $3,000
+    Score 7: $2,000 / Score 6: $1,500 / Score 5: $1,000
+    NVDA/TSLA: 75% of above (more volatile)
     """
-    if score >= 9:
-        return POS_HIGH    # $3,000
-    elif score >= 7:
-        return POS_MEDIUM  # $2,000
-    return POS_BASE        # $1,000
+    sizes = {10:5000, 9:4000, 8:3000, 7:2000, 6:1500, 5:1000}
+    base = sizes.get(min(score, 10), 1000)
+    return round(base * 0.75) if ticker in ["NVDA","TSLA"] else base
 
 # ── Opening drive ─────────────────────────────────────────────────────────────
 def set_opening_drive(df):
@@ -635,8 +635,7 @@ def check_signals(df):
         return
     if now_et().time() > CUTOFF:
         return
-    if is_dead_zone():
-        return
+    # Dead zone removed in v15 — trade all hours
 
     # VIX filter — skip if market too volatile
     vix = get_vix()
