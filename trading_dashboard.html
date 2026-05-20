@@ -2210,18 +2210,7 @@ function replayPlay() {
 }
 
 // Hook replay into table rows
-const _origRenderTable = renderTable;
-function renderTable() {
-  _origRenderTable();
-  document.querySelectorAll('#tb tr').forEach((row, i) => {
-    const t = [...allTrades].reverse()[i];
-    if (t && t['Exit Price']) {
-      row.style.cursor = 'pointer';
-      row.title = 'Click to replay this trade';
-      row.addEventListener('click', () => startReplay(t));
-    }
-  });
-}
+// renderTable click handlers moved inline
 
 // ── Supabase ──────────────────────────────────────────────────────────────────
 const SUPA_URL = 'https://hwczpidgbtycddiakhnx.supabase.co';
