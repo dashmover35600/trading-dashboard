@@ -56,25 +56,25 @@ CUTOFF            = datetime.time(12, 45)  # hard close — no holding into lunc
 DEAD_ZONE_START   = datetime.time(11, 30)
 DEAD_ZONE_END     = datetime.time(12, 0)   # shorter dead zone
 SERVER_PORT       = 8765
-AGENT_VERSION     = "14.1"
+AGENT_VERSION     = "14.2"
 
 # Pushover notifications
 PUSHOVER_TOKEN    = "apuf7f5knj2yxnsnxvtk63adchuvkf"
 PUSHOVER_USER     = "u7t4a7ybuwsyhbazjzhazy2611hrhz"
 
 # Position sizing tiers
-POS_BASE          = 500.0    # low confidence signal
-POS_MEDIUM        = 1000.0   # medium confidence
-POS_HIGH          = 1500.0   # high confidence
+POS_BASE          = 1000.0   # increased from $500    # low confidence signal
+POS_MEDIUM        = 2000.0   # increased from $1000   # medium confidence
+POS_HIGH          = 3000.0   # increased from $1500   # high confidence
 
 # Strategy parameters
 GAIN_TARGET_PCT   = 0.015    # 1.5% target
 STOP_LOSS_PCT     = 0.0075   # 0.75% stop → 2:1 ratio
-TRAIL_TRIGGER_PCT = 0.005    # activate trailing stop after +0.5% move
-TRAIL_STOP_PCT    = 0.004    # trail by 0.4% from peak
+TRAIL_TRIGGER_PCT = 0.0075   # activate trailing stop after +0.75% move
+TRAIL_STOP_PCT    = 0.003    # trail by 0.3% from peak (locks in more)
 
 # Signal scoring thresholds
-MIN_SCORE         = 6        # minimum score to take a trade (out of 10)
+MIN_SCORE         = 6        # minimum score — keep at 6 for frequency
 RSI_BULL_MIN      = 50       # RSI must be above this for longs
 RSI_BULL_MAX      = 75       # RSI must be below this (not overbought)
 RSI_BEAR_MIN      = 25       # RSI must be above this for shorts (not oversold)
@@ -563,11 +563,17 @@ def score_signal(df, direction, signal_type, rsi, vol_ratio, price, vwap, ema9) 
 
 # ── Position sizing ───────────────────────────────────────────────────────────
 def get_position_size(score: int) -> float:
+    """
+    Dynamic position sizing based on signal confidence score.
+    Score 9-10 → $3,000 (high conviction)
+    Score 7-8  → $2,000 (medium conviction)
+    Score 6    → $1,000 (baseline)
+    """
     if score >= 9:
-        return POS_HIGH
+        return POS_HIGH    # $3,000
     elif score >= 7:
-        return POS_MEDIUM
-    return POS_BASE
+        return POS_MEDIUM  # $2,000
+    return POS_BASE        # $1,000
 
 # ── Opening drive ─────────────────────────────────────────────────────────────
 def set_opening_drive(df):
@@ -1017,7 +1023,7 @@ if __name__ == "__main__":
     print(f"  Ticker      : {TICKER} only")
     print(f"  Signals     : VWAP Reclaim + EMA Pullback")
     print(f"  Scoring     : Min {MIN_SCORE}/10 to trade")
-    print(f"  Sizes       : ${POS_BASE:.0f} / ${POS_MEDIUM:.0f} / ${POS_HIGH:.0f}")
+    print(f"  Sizes       : ${POS_BASE:.0f} / ${POS_MEDIUM:.0f} / ${POS_HIGH:.0f} (score 6/7/9+)")
     print(f"  Target      : {GAIN_TARGET_PCT*100:.1f}% | Stop: {STOP_LOSS_PCT*100:.2f}%")
     print(f"  Trail       : Activates at +{TRAIL_TRIGGER_PCT*100:.1f}%")
     print(f"  Hard cutoff : 12:45 PM ET")

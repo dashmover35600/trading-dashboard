@@ -543,7 +543,7 @@ const effectiveWR = s.win_rate > 0 ? s.win_rate : (s.total_pnl_pct > 0 ? 50 : 0)
 const rating=effectiveWR>=60&&s.total_pnl_pct>0?'<span class="badge bg">Excellent</span>'
                 :s.total_pnl_pct>0?'<span class="badge bb">Profitable</span>'
                 :effectiveWR>=40?'<span class="badge ba">Fair</span>'
-                :(s.total_pnl_pct>0?'<span class="badge bb">Profitable</span>':'<span class="badge br">Poor</span>');
+                :'<span class="badge br">Poor</span>';
     return `<tr class="${isBest?'best-row':''}">
       <td>${r.rsi_buy}${isBest?' ⭐':''}</td><td>${r.rsi_sell}</td>
       <td>${s.trades}</td><td>${s.wins}</td><td>${s.losses}</td>

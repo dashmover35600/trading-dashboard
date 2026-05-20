@@ -27,13 +27,13 @@ import sys
 TICKER            = "QQQ"
 LOOKBACK_DAYS     = 90
 MARKET_TZ         = pytz.timezone("America/New_York")
-POS_BASE          = 500.0
-POS_MEDIUM        = 1000.0
-POS_HIGH          = 1500.0
+POS_BASE          = 1000.0
+POS_MEDIUM        = 2000.0
+POS_HIGH          = 3000.0
 GAIN_TARGET_PCT   = 0.015
 STOP_LOSS_PCT     = 0.0075
-TRAIL_TRIGGER_PCT = 0.005
-TRAIL_STOP_PCT    = 0.004
+TRAIL_TRIGGER_PCT = 0.0075
+TRAIL_STOP_PCT    = 0.003
 MIN_SCORE         = 6
 RSI_BULL_MIN      = 50
 RSI_BULL_MAX      = 75
@@ -269,8 +269,10 @@ def calc_stats(trades):
         return {"trades":0,"wins":0,"losses":0,"trail_exits":0,"win_rate":0,
                 "total_pnl_pct":0,"total_pnl_dollar":0,"best":0,"worst":0,
                 "max_drawdown":0,"sharpe":0,"avg_score":0}
-    wins   = [t for t in trades if t["result"]=="Target Hit"]
-    losses = [t for t in trades if t["result"] in ("Stop Loss Hit","Trailing Stop")]
+    wins   = [t for t in trades if t["result"]=="Target Hit" or
+               (t["result"]=="Trailing Stop" and t["pnl_pct"] > 0)]
+    losses = [t for t in trades if t["result"]=="Stop Loss Hit" or
+               (t["result"]=="Trailing Stop" and t["pnl_pct"] <= 0)]
     trails = [t for t in trades if t["result"]=="Trailing Stop"]
     pnls   = [t["pnl_pct"] for t in trades]
     dols   = [t["pnl_dollar"] for t in trades]
