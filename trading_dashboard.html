@@ -1310,7 +1310,9 @@ async function tryAutoLoad() {
     if (!res.ok) throw new Error();
     const text = await res.text();
     const trades = parseCSV(text);
+    console.log('[NYLO] Loaded', trades.length, 'trades from GitHub:', trades);
     render(trades);
+    console.log('[NYLO] allTrades after render:', allTrades.length);
     document.getElementById('ts').textContent = 'Loaded from GitHub · ' + new Date().toLocaleTimeString();
     const uploadZone = document.getElementById('upload-zone');
     if(uploadZone) {
