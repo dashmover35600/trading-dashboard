@@ -504,6 +504,26 @@
     .confetti-piece{position:fixed;pointer-events:none;width:8px;height:8px;border-radius:2px;animation:confettiFall 1.2s ease-in forwards;z-index:9999;}
     #streak-val.pop{animation:streakPop .5s cubic-bezier(.16,1,.3,1);}
     @keyframes streakPop{0%{transform:scale(1);}50%{transform:scale(1.4);}100%{transform:scale(1);}}
+
+    /* ── Disclaimer Modal ── */
+    #disclaimer-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:1rem;}
+    #disclaimer-modal{background:var(--surface,#fff);border-radius:18px;max-width:480px;width:100%;padding:2rem;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:modalIn .4s cubic-bezier(.16,1,.3,1);}
+    @keyframes modalIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    .disclaimer-logo{font-family:'Instrument Serif',serif;font-size:2rem;color:var(--accent,#1847d4);letter-spacing:-.03em;margin-bottom:.25rem;}
+    .disclaimer-badge{display:inline-block;background:rgba(220,38,38,.1);color:#dc2626;font-size:.65rem;padding:3px 10px;border-radius:10px;font-family:monospace;letter-spacing:.06em;margin-bottom:1.25rem;}
+    .disclaimer-title{font-size:1.1rem;font-weight:600;color:var(--text,#0a1028);margin-bottom:.75rem;}
+    .disclaimer-body{font-size:.82rem;color:var(--muted,#7a85a8);line-height:1.7;margin-bottom:1.25rem;}
+    .disclaimer-points{list-style:none;margin-bottom:1.25rem;}
+    .disclaimer-points li{font-size:.78rem;color:var(--muted,#7a85a8);padding:.35rem 0;border-bottom:1px solid rgba(0,0,0,.06);display:flex;gap:.6rem;align-items:flex-start;}
+    .disclaimer-points li:last-child{border-bottom:none;}
+    .disclaimer-points li::before{content:'⚠️';flex-shrink:0;margin-top:1px;}
+    .disclaimer-check{display:flex;align-items:flex-start;gap:.6rem;margin-bottom:1.25rem;cursor:pointer;}
+    .disclaimer-check input{margin-top:3px;width:16px;height:16px;flex-shrink:0;accent-color:var(--accent,#1847d4);}
+    .disclaimer-check span{font-size:.78rem;color:var(--text,#0a1028);line-height:1.5;}
+    .disclaimer-btn{width:100%;padding:13px;background:var(--accent,#1847d4);color:#fff;border:none;border-radius:10px;font-size:.85rem;font-weight:500;opacity:.4;pointer-events:none;transition:opacity .2s,background .2s;cursor:pointer;}
+    .disclaimer-btn.ready{opacity:1;pointer-events:all;}
+    .disclaimer-btn.ready:hover{background:#2d5ce8;}
+    .disclaimer-footer{text-align:center;margin-top:.75rem;font-size:.65rem;color:var(--muted,#7a85a8);}
 </style>
 </head>
 <body>
@@ -974,6 +994,7 @@ async function doRegister() {
 }
 
 function enterDashboard(member) {
+  checkDisclaimer();
   currentUser = member;
   localStorage.setItem('nylo-user', JSON.stringify({username: member.username, display: member.display}));
   document.getElementById('login-gate').classList.remove('visible');
@@ -1678,6 +1699,32 @@ function exportPDF() {
   </div>
 </div>
 
+
+
+<!-- ── Disclaimer Modal ── -->
+<div id="disclaimer-overlay" style="display:none;">
+  <div id="disclaimer-modal">
+    <div class="disclaimer-logo">NYLO</div>
+    <div class="disclaimer-badge">⚠ IMPORTANT DISCLAIMER</div>
+    <div class="disclaimer-title">Before you continue, please read and acknowledge the following</div>
+    <div class="disclaimer-body">
+      NYLO is a <strong>paper trading signal dashboard</strong> created for educational and entertainment purposes only.
+    </div>
+    <ul class="disclaimer-points">
+      <li>This platform does <strong>not</strong> provide financial, investment, or trading advice of any kind.</li>
+      <li>All signals are <strong>simulated</strong> and based on algorithmic strategies. Past performance does not guarantee future results.</li>
+      <li>You may <strong>lose money</strong> if you choose to replicate any signals with real funds. NYLO accepts zero responsibility for any financial losses.</li>
+      <li>This is <strong>purely for fun</strong> and educational exploration of trading strategies.</li>
+      <li>Always consult a <strong>licensed financial advisor</strong> before making any real investment decisions.</li>
+    </ul>
+    <label class="disclaimer-check">
+      <input type="checkbox" id="disclaimer-checkbox" onchange="toggleDisclaimerBtn()">
+      <span>I understand that NYLO is for entertainment purposes only, does not guarantee any profits, and I accept full responsibility for any actions I take with real money. I will not hold NYLO or Giovanni Flores liable for any losses.</span>
+    </label>
+    <button class="disclaimer-btn" id="disclaimer-btn" onclick="acceptDisclaimer()">I Acknowledge & Continue →</button>
+    <div class="disclaimer-footer">This agreement is stored locally and will not be shown again on this device.</div>
+  </div>
+</div>
 
 </body></html>`);
   w.document.close();
@@ -2547,5 +2594,46 @@ setTimeout(() => {
   addAgentDot();
   animateStatCards();
 }, 500);
+
+
+
+// ── Disclaimer Modal ────────────────────────────────────────────────────────
+function showDisclaimer() {
+  const overlay = document.getElementById('disclaimer-overlay');
+  if (overlay) overlay.style.display = 'flex';
+}
+
+function toggleDisclaimerBtn() {
+  const cb  = document.getElementById('disclaimer-checkbox');
+  const btn = document.getElementById('disclaimer-btn');
+  if (cb && btn) {
+    btn.classList.toggle('ready', cb.checked);
+  }
+}
+
+function acceptDisclaimer() {
+  const cb = document.getElementById('disclaimer-checkbox');
+  if (!cb || !cb.checked) return;
+  localStorage.setItem('nylo-disclaimer-accepted', '1');
+  const overlay = document.getElementById('disclaimer-overlay');
+  if (overlay) {
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity .3s';
+    setTimeout(() => overlay.style.display = 'none', 300);
+  }
+}
+
+function checkDisclaimer() {
+  const accepted = localStorage.getItem('nylo-disclaimer-accepted');
+  if (!accepted) {
+    const overlay = document.getElementById('disclaimer-overlay');
+    if (overlay) {
+      setTimeout(showDisclaimer, 800);
+    } else {
+      // DOM not ready yet, wait
+      setTimeout(checkDisclaimer, 200);
+    }
+  }
+}
 
 </script>
