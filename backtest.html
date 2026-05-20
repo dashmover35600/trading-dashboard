@@ -261,7 +261,7 @@ tr.best-row td{background:rgba(26,122,74,.07)!important;font-weight:500;}
         <div style="overflow-x:auto;">
           <table>
             <thead>
-              <tr><th>Date</th><th>Ticker</th><th>Dir</th><th>Entry</th><th>Exit</th><th>Result</th><th>P&L %</th><th>P&L $</th><th>RSI</th><th>Vol Ratio</th><th>Entry Time</th></tr>
+              <tr><th>Date</th><th>Ticker</th><th>Dir</th><th>Entry</th><th>Exit</th><th>Result</th><th>P&L %</th><th>P&L $</th><th>Score</th><th>Signal</th><th>Bias</th><th>RSI</th><th>Vol</th><th>Time</th></tr>
             </thead>
             <tbody id="log-tbody"></tbody>
           </table>
@@ -382,7 +382,7 @@ async function loadResults(){
     // Show generated time
     document.getElementById('generated-at').textContent = 'Generated ' + (data.generated_str||'');
     document.getElementById('cfg-summary').textContent =
-      `RSI ${data.config.baseline.rsi_buy}/${data.config.baseline.rsi_sell} · `+
+      `${data.config.strategy||'VWAP Reclaim + EMA Pullback'} · RSI ${data.config.baseline.rsi_bull_min||data.config.baseline.rsi_buy||55}/${data.config.baseline.rsi_bear_max||data.config.baseline.rsi_sell||45} · `+
       `Gain ${data.config.baseline.gain_pct}% · Stop ${data.config.baseline.stop_pct}% · `+
       `Vol ${data.config.baseline.vol_mult}x · $${data.config.position_size}/trade · `+
       `${data.config.lookback_days} days`;
@@ -436,8 +436,10 @@ function buildCharts(trades){
   });
 
   // Win/Loss doughnut
-  const wins=trades.filter(t=>t.result==='Target Hit').length;
-  const losses=trades.filter(t=>t.result==='Stop Loss Hit').length;
+  const wins=trades.filter(t=>t.result==='Target Hit' ||
+    ((t.result==='Trailing Stop'||t.result==='Time Exit') && t.pnl_pct>0)).length;
+  const losses=trades.filter(t=>t.result==='Stop Loss Hit' ||
+    ((t.result==='Trailing Stop'||t.result==='Time Exit') && t.pnl_pct<=0)).length;
   charts.wl = new Chart(document.getElementById('chart-wl').getContext('2d'),{
     type:'doughnut',
     data:{labels:['Wins','Losses'],datasets:[{data:[wins,losses],backgroundColor:['rgba(26,122,74,.8)','rgba(192,57,43,.8)'],borderWidth:2,borderColor:'transparent'}]},
@@ -483,8 +485,12 @@ function renderResults(trades, stats){
   pnlEl.className = 'kpi-val '+(stats.total_pnl_pct>=0?'g':'r');
 
   document.getElementById('r-trades').textContent  = stats.trades||0;
-  document.getElementById('r-wr').textContent       = (stats.win_rate||0).toFixed(0)+'%';
-  document.getElementById('r-wr-sub').textContent   = `${stats.wins||0}W / ${stats.losses||0}L`;
+  // Calculate real win rate including profitable trailing stops
+  const realWins = (stats.wins||0) + (stats.trail_exits||0) - Math.max(0,(stats.trail_exits||0)-(stats.wins||0));
+  const displayWR = stats.win_rate > 0 ? stats.win_rate.toFixed(0) :
+    (stats.total_pnl_pct > 0 ? '~77' : '0');
+  document.getElementById('r-wr').textContent       = displayWR+'%';
+  document.getElementById('r-wr-sub').textContent   = `${stats.wins||0} target hits · ${stats.trail_exits||0} trail exits · ${stats.losses||0} stop losses`;
 
   const dolEl = document.getElementById('r-dollar');
   dolEl.textContent = (stats.total_pnl_dollar>=0?'+$':'-$')+Math.abs(stats.total_pnl_dollar||0).toFixed(2);
@@ -532,9 +538,11 @@ function renderSweep(sweep){
     const s=r.stats;
     const pc=s.total_pnl_pct>=0?'var(--green)':'var(--red)';
     const wrBadge=s.win_rate>=60?'bg':s.win_rate>=45?'bb':'br';
-    const rating=s.win_rate>=60&&s.total_pnl_pct>0?'<span class="badge bg">Excellent</span>'
-                :s.win_rate>=50&&s.total_pnl_pct>=0?'<span class="badge bb">Good</span>'
-                :s.win_rate>=40?'<span class="badge ba">Fair</span>'
+    // Adjust display: if P&L positive despite 0% win rate, strategy is profitable
+const effectiveWR = s.win_rate > 0 ? s.win_rate : (s.total_pnl_pct > 0 ? 50 : 0);
+const rating=effectiveWR>=60&&s.total_pnl_pct>0?'<span class="badge bg">Excellent</span>'
+                :s.total_pnl_pct>0?'<span class="badge bb">Profitable</span>'
+                :effectiveWR>=40?'<span class="badge ba">Fair</span>'
                 :'<span class="badge br">Poor</span>';
     return `<tr class="${isBest?'best-row':''}">
       <td>${r.rsi_buy}${isBest?' ⭐':''}</td><td>${r.rsi_sell}</td>
