@@ -47,7 +47,7 @@ import traceback
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TICKERS           = ["NVDA", "AAPL", "GOOGL"]  # v16: filtered winners from 8-ticker backtest
+TICKERS           = ["NVDA", "AAPL", "GOOGL", "QQQ"]  # v16.2: QQQ added back - profitable in latest test
 VOLATILE_TICKERS  = ["NVDA"]  # NVDA gets 75% — AAPL/GOOGL full size
 TICKER            = "QQQ"  # kept for compatibility
 IMESSAGE_TO       = os.environ.get("TRADING_PHONE", "+1XXXXXXXXXX")
@@ -58,7 +58,7 @@ CUTOFF            = datetime.time(12, 45)  # hard close — no holding into lunc
 DEAD_ZONE_START   = datetime.time(11, 30)
 DEAD_ZONE_END     = datetime.time(12, 0)   # shorter dead zone
 SERVER_PORT       = 8765
-AGENT_VERSION     = "16.1"
+AGENT_VERSION     = "16.2"
 
 # Pushover notifications
 PUSHOVER_TOKEN    = "apuf7f5knj2yxnsnxvtk63adchuvkf"
@@ -840,7 +840,11 @@ def check_exit(df):
             partial_done[ticker_key] = True
             print(f"[Exit] Partial exit +{partial_pnl_pct:.2f}% — locking in ${partial_dollar:.2f}")
             send_push("NYLO Partial Exit",
-                f"Partial exit +{partial_pnl_pct:.2f}% locked in ${partial_dollar:.2f}. Trail now active.")
+                f"Partial exit at +{partial_pnl_pct:.2f}% — locked in ${partial_dollar:.2f}
+"
+                f"Remaining 50% still running to ${s['target']}
+"
+                f"Trail now active")
             # Activate trail on remaining 50%
             s["trail_active"] = True
             s["trail_peak"]   = price
@@ -900,6 +904,7 @@ def check_exit(df):
 
     pnl_dollar = calc_pnl(entry, exit_price, direction, s["shares"])
     pnl_pct    = round(pnl_dollar / s["position_size"] * 100, 3)
+    global trades_today, daily_pnl, consec_losses, pause_until
     trades_today += 1
     daily_pnl    += pnl_dollar
     # Track consecutive losses for pause logic

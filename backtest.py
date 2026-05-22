@@ -347,8 +347,8 @@ def run_strategy(df, ticker, cfg, vix=15):
                 ht = (d=="long" and price>=entry["target"]) or (d=="short" and price<=entry["target"])
                 hs = (d=="long" and price<=entry["stop"])   or (d=="short" and price>=entry["stop"])
                 htr= entry["trail_active"] and (
-                    (d=="long" and price<=entry.get("trail_stop",0)) or
-                    (d=="short" and entry.get("trail_stop") and price>=entry["trail_stop"]))
+                    (d=="long" and entry.get("trail_stop") is not None and price<=entry["trail_stop"]) or
+                    (d=="short" and entry.get("trail_stop") is not None and price>=entry["trail_stop"]))
                 htime = hour>=15 and minute>=20
 
                 if ht or hs or htr or htime:
