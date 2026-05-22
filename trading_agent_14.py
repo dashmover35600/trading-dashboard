@@ -47,8 +47,8 @@ import traceback
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TICKERS           = ["QQQ", "NVDA"]  # v15.1: QQQ+NVDA only (SPY/TSLA dropped)
-VOLATILE_TICKERS  = ["NVDA"]  # 75% position size
+TICKERS           = ["NVDA", "AAPL", "GOOGL"]  # v16: filtered winners from 8-ticker backtest
+VOLATILE_TICKERS  = ["NVDA"]  # NVDA gets 75% — AAPL/GOOGL full size
 TICKER            = "QQQ"  # kept for compatibility
 IMESSAGE_TO       = os.environ.get("TRADING_PHONE", "+1XXXXXXXXXX")
 MARKET_TZ         = pytz.timezone("America/New_York")
@@ -58,7 +58,7 @@ CUTOFF            = datetime.time(12, 45)  # hard close — no holding into lunc
 DEAD_ZONE_START   = datetime.time(11, 30)
 DEAD_ZONE_END     = datetime.time(12, 0)   # shorter dead zone
 SERVER_PORT       = 8765
-AGENT_VERSION     = "16"
+AGENT_VERSION     = "16.1"
 
 # Pushover notifications
 PUSHOVER_TOKEN    = "apuf7f5knj2yxnsnxvtk63adchuvkf"
@@ -84,10 +84,10 @@ VIX_HIGH          = 20.0     # reduce size when VIX above this
 
 # Signal scoring thresholds
 MIN_SCORE         = 5        # v14.2: lowered from 6 — sweep shows more signals at 4-5
-RSI_BULL_MIN      = 58       # v16: sweep best config
+RSI_BULL_MIN      = 58       # v16.1: confirmed best
 RSI_BULL_MAX      = 72       # v15: tighter upper bound
 RSI_BEAR_MIN      = 28       # v15: tighter lower bound
-RSI_BEAR_MAX      = 45       # v16: confirmed optimal
+RSI_BEAR_MAX      = 42       # v16.1: updated from sweep (58/42 = 60% WR)
 VOLUME_MIN        = 1.2      # minimum volume ratio
 
 # Reliability settings

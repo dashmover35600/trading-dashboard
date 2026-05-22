@@ -37,8 +37,8 @@ import os
 import sys
 import statistics
 
-TICKERS         = ["NVDA", "AAPL", "GOOGL"]  # filtered winners only
-VOLATILE        = ["NVDA"]  # 75% sizing on volatile names
+TICKERS         = ["QQQ", "NVDA", "AMD", "MSFT", "AAPL", "META", "GOOGL", "SPY"]
+VOLATILE        = ["NVDA", "AMD", "META"]  # 75% sizing on volatile names
 LOOKBACK_DAYS   = 120  # keep 120 days, more tickers = more trades
 MARKET_TZ       = pytz.timezone("America/New_York")
 
@@ -347,8 +347,8 @@ def run_strategy(df, ticker, cfg, vix=15):
                 ht = (d=="long" and price>=entry["target"]) or (d=="short" and price<=entry["target"])
                 hs = (d=="long" and price<=entry["stop"])   or (d=="short" and price>=entry["stop"])
                 htr= entry["trail_active"] and (
-                    (d=="long" and entry.get("trail_stop") is not None and price<=entry["trail_stop"]) or
-                    (d=="short" and entry.get("trail_stop") is not None and price>=entry["trail_stop"]))
+                    (d=="long" and price<=entry.get("trail_stop",0)) or
+                    (d=="short" and entry.get("trail_stop") and price>=entry["trail_stop"]))
                 htime = hour>=15 and minute>=20
 
                 if ht or hs or htr or htime:
