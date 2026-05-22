@@ -58,7 +58,7 @@ CUTOFF            = datetime.time(12, 45)  # hard close — no holding into lunc
 DEAD_ZONE_START   = datetime.time(11, 30)
 DEAD_ZONE_END     = datetime.time(12, 0)   # shorter dead zone
 SERVER_PORT       = 8765
-AGENT_VERSION     = "15.1"
+AGENT_VERSION     = "15.2"
 
 # Pushover notifications
 PUSHOVER_TOKEN    = "apuf7f5knj2yxnsnxvtk63adchuvkf"
@@ -202,19 +202,28 @@ def log_exit_csv(exit_price, result, pnl_pct, pnl_dollar, exit_time, trail_used)
     try:
         with open(LOG_FILE, "r", newline="") as f:
             rows = list(csv.reader(f))
+        fixed = False
         for i in range(len(rows) - 1, 0, -1):
-            if len(rows[i]) > 4 and rows[i][1] == TICKER and rows[i][4] == "":
+            if len(rows[i]) < 5:
+                continue
+            # Match any open trade (no exit price) for any ticker
+            if rows[i][4] == "" and rows[i][7] == "":
                 rows[i][4]  = str(round(float(exit_price), 4))
                 rows[i][7]  = result
                 rows[i][8]  = f"{'+' if pnl_pct > 0 else ''}{round(pnl_pct,3)}%"
                 rows[i][9]  = f"+${pnl_dollar:.2f}" if pnl_dollar >= 0 else f"-${abs(pnl_dollar):.2f}"
                 rows[i][12] = exit_time.strftime("%I:%M %p")
-                if len(rows[i]) > 18:
-                    rows[i][18] = "Yes" if trail_used else "No"
+                while len(rows[i]) < 20:
+                    rows[i].append("")
+                rows[i][18] = "Yes" if trail_used else "No"
+                fixed = True
                 break
-        with open(LOG_FILE, "w", newline="") as f:
-            csv.writer(f).writerows(rows)
-        print(f"[Tracker] Exit logged — {result} {'+' if pnl_pct>0 else ''}{pnl_pct:.2f}%")
+        if fixed:
+            with open(LOG_FILE, "w", newline="") as f:
+                csv.writer(f).writerows(rows)
+            print(f"[Tracker] Exit logged — {result} {'+' if pnl_pct>0 else ''}{pnl_pct:.2f}%  ${pnl_dollar:+.2f}")
+        else:
+            log_error("log_exit_csv — no open trade found to close", None)
     except Exception as e:
         log_error("log_exit_csv", e)
 
@@ -265,7 +274,7 @@ def write_heartbeat(status="running"):
         "errors_today": _health["errors_today"],
         "last_error":   _health["last_error"],
         "cycles_total": _health["cycles_total"],
-        "tickers":      [TICKER],
+        "tickers":      TICKERS if isinstance(TICKERS, list) else [TICKER],
         "trades_today": trades_today,
         "daily_pnl":    round(daily_pnl, 2),
         "day_bias":     state["day_bias"],
