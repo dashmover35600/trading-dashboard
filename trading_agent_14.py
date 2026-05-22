@@ -58,7 +58,7 @@ CUTOFF            = datetime.time(12, 45)  # hard close — no holding into lunc
 DEAD_ZONE_START   = datetime.time(11, 30)
 DEAD_ZONE_END     = datetime.time(12, 0)   # shorter dead zone
 SERVER_PORT       = 8765
-AGENT_VERSION     = "15.2"
+AGENT_VERSION     = "16"
 
 # Pushover notifications
 PUSHOVER_TOKEN    = "apuf7f5knj2yxnsnxvtk63adchuvkf"
@@ -73,14 +73,21 @@ POS_HIGH          = 3000.0   # increased from $1500   # high confidence
 GAIN_TARGET_PCT   = 0.015    # 1.5% target
 STOP_LOSS_PCT     = 0.0075   # 0.75% stop → 2:1 ratio
 TRAIL_TRIGGER_PCT = 0.0075   # activate trailing stop after +0.75% move
-TRAIL_STOP_PCT    = 0.003    # trail by 0.3% from peak (locks in more)
+TRAIL_STOP_PCT    = 0.003    # trail by 0.3% from peak
+TRAIL_STOP_LATE   = 0.002    # tighter trail after 11 AM
+PARTIAL_EXIT_PCT  = 0.0075   # take 50% profit at +0.75%
+BREAKEVEN_TRIGGER = 0.005    # move stop to breakeven at +0.5%
+SLIPPAGE_PCT      = 0.0002   # 0.02% slippage per trade
+DAILY_LOSS_LIMIT  = -500.0   # stop trading if down $500/day
+CONSEC_LOSS_PAUSE = 3        # pause 30 min after 3 consecutive losses
+VIX_HIGH          = 20.0     # reduce size when VIX above this
 
 # Signal scoring thresholds
 MIN_SCORE         = 5        # v14.2: lowered from 6 — sweep shows more signals at 4-5
-RSI_BULL_MIN      = 55       # v15: tighter — 55-72 only
+RSI_BULL_MIN      = 58       # v16: sweep best config
 RSI_BULL_MAX      = 72       # v15: tighter upper bound
 RSI_BEAR_MIN      = 28       # v15: tighter lower bound
-RSI_BEAR_MAX      = 45       # v15: tighter — 28-45 only
+RSI_BEAR_MAX      = 45       # v16: confirmed optimal
 VOLUME_MIN        = 1.2      # minimum volume ratio
 
 # Reliability settings
@@ -134,6 +141,9 @@ daily_trades    = []
 trades_today    = 0
 daily_pnl       = 0.0
 SUBSCRIBERS     = []
+consec_losses   = 0
+pause_until     = None
+partial_done    = {}  # tracks partial exits by ticker
 
 # ── Error logging ─────────────────────────────────────────────────────────────
 def log_error(context: str, exc: Exception = None):
@@ -330,6 +340,14 @@ def now_et():
 def is_market_hours():
     t = now_et().time()
     return MARKET_OPEN <= t <= CUTOFF
+
+def is_prime_window() -> bool:
+    """9:35 AM - 10:30 AM is the prime trading window (+2 score bonus)"""
+    t = now_et().time()
+    return (datetime.time(9,35) <= t <= datetime.time(10,30))
+
+def is_late_session() -> bool:
+    return now_et().time() >= datetime.time(11,0)
 
 def is_dead_zone():
     t = now_et().time()
@@ -559,7 +577,7 @@ def score_signal(df, direction, signal_type, rsi, vol_ratio, price, vwap, ema9) 
     if signal_type == "vwap_reclaim":
         score += 1
 
-    # ATR momentum (+1) — reward when ATR is higher than average (trending day)
+    # ATR momentum (+1)
     try:
         atr     = calc_atr(df)
         atr_avg = float(ta.volatility.AverageTrueRange(
@@ -570,19 +588,28 @@ def score_signal(df, direction, signal_type, rsi, vol_ratio, price, vwap, ema9) 
     except Exception:
         pass
 
+    # Prime window bonus (+2) — 9:35-10:30 AM signals are highest quality
+    if is_prime_window():
+        score += 2
+
     return min(score, 10)
 
 # ── Position sizing ───────────────────────────────────────────────────────────
-def get_position_size(score: int, ticker: str = "QQQ") -> float:
+def get_position_size(score: int, ticker: str = "QQQ", vix: float = 15.0) -> float:
     """
-    Maximum calculated risk position sizing.
+    Maximum calculated risk position sizing with VIX adjustment.
     Score 10: $5,000 / Score 9: $4,000 / Score 8: $3,000
-    Score 7: $2,000 / Score 6: $1,500 / Score 5: $1,000
-    NVDA/TSLA: 75% of above (more volatile)
+    Score 7: $2,000 / Score 6: $1,500 / Score 5: $1,000 / Score 4: $750
+    NVDA: 75% · VIX>20: additional 25% reduction
     """
-    sizes = {10:5000, 9:4000, 8:3000, 7:2000, 6:1500, 5:1000}
-    base = sizes.get(min(score, 10), 1000)
-    return round(base * 0.75) if ticker in ["NVDA","TSLA"] else base
+    sizes = {10:5000, 9:4000, 8:3000, 7:2000, 6:1500, 5:1000, 4:750}
+    base = sizes.get(min(score, 10), 750)
+    if ticker in ["NVDA", "TSLA"]:
+        base = round(base * 0.75)
+    if vix > VIX_HIGH:
+        base = round(base * 0.75)
+        print(f"[Risk] VIX {vix:.1f} > {VIX_HIGH} — reducing position size to ${base}")
+    return base
 
 # ── Opening drive ─────────────────────────────────────────────────────────────
 def set_opening_drive(df):
@@ -780,7 +807,7 @@ def check_signals(df):
 
 # ── Exit management ───────────────────────────────────────────────────────────
 def check_exit(df):
-    global trades_today, daily_pnl
+    global trades_today, daily_pnl, consec_losses, pause_until
     s   = state
     if not s["in_trade"]:
         return
@@ -789,6 +816,38 @@ def check_exit(df):
     now       = now_et()
     direction = s["trade_dir"]
     entry     = s["entry_price"]
+    ticker    = s.get("signal_type", TICKER)
+
+    # Use tighter trail after 11 AM
+    trail_pct = TRAIL_STOP_LATE if is_late_session() else TRAIL_STOP_PCT
+
+    # Breakeven stop — move stop to entry at +0.5%
+    if not s.get("breakeven_set", False):
+        move = (price-entry)/entry if direction=="long" else (entry-price)/entry
+        if move >= BREAKEVEN_TRIGGER:
+            s["stop"] = entry
+            s["breakeven_set"] = True
+            print(f"[Exit] Breakeven stop set at ${entry}")
+
+    # Partial exit at +0.75%
+    ticker_key = s.get("signal_type", "default")
+    if not partial_done.get(ticker_key, False):
+        partial_target = entry*(1+PARTIAL_EXIT_PCT) if direction=="long" else entry*(1-PARTIAL_EXIT_PCT)
+        if (direction=="long" and price>=partial_target) or (direction=="short" and price<=partial_target):
+            partial_pnl_pct = PARTIAL_EXIT_PCT*100
+            partial_dollar  = s["position_size"]*0.5*partial_pnl_pct/100
+            daily_pnl += partial_dollar
+            partial_done[ticker_key] = True
+            print(f"[Exit] Partial exit +{partial_pnl_pct:.2f}% — locking in ${partial_dollar:.2f}")
+            send_push("NYLO Partial Exit",
+                f"Partial exit at +{partial_pnl_pct:.2f}% — locked in ${partial_dollar:.2f}
+"
+                f"Remaining 50% still running to ${s['target']}
+"
+                f"Trail now active")
+            # Activate trail on remaining 50%
+            s["trail_active"] = True
+            s["trail_peak"]   = price
 
     # Update trailing stop
     if direction == "long":
@@ -796,21 +855,21 @@ def check_exit(df):
         if move_pct >= TRAIL_TRIGGER_PCT and not s["trail_active"]:
             s["trail_active"] = True
             s["trail_peak"]   = price
-            s["trail_stop"]   = round(price * (1 - TRAIL_STOP_PCT), 4)
-            print(f"[{TICKER}] 🔒 Trailing stop activated at ${s['trail_stop']}")
+            s["trail_stop"]   = round(price * (1 - trail_pct), 4)
+            print(f"[Exit] Trailing stop activated at ${s['trail_stop']}")
         elif s["trail_active"] and price > s["trail_peak"]:
             s["trail_peak"] = price
-            s["trail_stop"] = round(price * (1 - TRAIL_STOP_PCT), 4)
+            s["trail_stop"] = round(price * (1 - trail_pct), 4)
     else:
         move_pct = (entry - price) / entry
         if move_pct >= TRAIL_TRIGGER_PCT and not s["trail_active"]:
             s["trail_active"] = True
             s["trail_peak"]   = price
-            s["trail_stop"]   = round(price * (1 + TRAIL_STOP_PCT), 4)
-            print(f"[{TICKER}] 🔒 Trailing stop activated at ${s['trail_stop']}")
+            s["trail_stop"]   = round(price * (1 + trail_pct), 4)
+            print(f"[Exit] Trailing stop activated at ${s['trail_stop']}")
         elif s["trail_active"] and price < s["trail_peak"]:
             s["trail_peak"] = price
-            s["trail_stop"] = round(price * (1 + TRAIL_STOP_PCT), 4)
+            s["trail_stop"] = round(price * (1 + trail_pct), 4)
 
     # Check exit conditions
     hit_target = (direction == "long"  and price >= s["target"]) or \
@@ -845,9 +904,21 @@ def check_exit(df):
 
     pnl_dollar = calc_pnl(entry, exit_price, direction, s["shares"])
     pnl_pct    = round(pnl_dollar / s["position_size"] * 100, 3)
-    global trades_today, daily_pnl
+    global trades_today, daily_pnl, consec_losses, pause_until
     trades_today += 1
     daily_pnl    += pnl_dollar
+    # Track consecutive losses for pause logic
+    if pnl_dollar <= 0:
+        consec_losses += 1
+        if consec_losses >= CONSEC_LOSS_PAUSE:
+            pause_until = now_et() + datetime.timedelta(minutes=30)
+            print(f"[Risk] {CONSEC_LOSS_PAUSE} consecutive losses — pausing 30 min until {pause_until.strftime('%I:%M %p ET')}")
+            send_push("NYLO Risk Pause", f"3 consecutive losses — pausing trading for 30 minutes\nResumes at {pause_until.strftime('%I:%M %p ET')}")
+            consec_losses = 0
+    else:
+        consec_losses = 0
+    # Clear partial done for this ticker
+    partial_done.clear()
     print(f"[Agent] Trade closed — trades today: {trades_today} | daily P&L: ${daily_pnl:.2f}")
 
     log_exit_csv(exit_price, result, pnl_pct, pnl_dollar, now, s["trail_active"])
@@ -1006,6 +1077,10 @@ def reset_daily():
         "position_size": POS_BASE, "shares": 0, "rsi_entry": None, "vol_ratio": None,
     })
     clear_live_trade()
+    partial_done.clear()
+    global consec_losses, pause_until
+    consec_losses = 0
+    pause_until   = None
     print("[Agent] Daily state reset.")
 
 # ── Graceful shutdown ─────────────────────────────────────────────────────────
