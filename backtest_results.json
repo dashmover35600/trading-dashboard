@@ -1,10 +1,11 @@
 {
-  "generated_at": "2026-05-21T23:05:53.747210-04:00",
-  "generated_str": "May 21, 2026 at 11:05 PM ET",
+  "generated_at": "2026-05-22T00:12:16.738745-04:00",
+  "generated_str": "May 22, 2026 at 12:12 AM ET",
   "config": {
     "tickers": [
-      "QQQ",
-      "NVDA"
+      "NVDA",
+      "AAPL",
+      "GOOGL"
     ],
     "lookback_days": 120,
     "strategy": "VWAP Reclaim + EMA Pullback + Opening Drive + Momentum v16",
@@ -33,30 +34,35 @@
   },
   "baseline": {
     "stats": {
-      "trades": 107,
-      "wins": 59,
-      "losses": 48,
-      "win_rate": 55.14,
-      "total_pnl_pct": 24.115,
-      "total_pnl_dollar": 74.82,
+      "trades": 168,
+      "wins": 94,
+      "losses": 74,
+      "win_rate": 55.95,
+      "total_pnl_pct": 38.091,
+      "total_pnl_dollar": 234.8,
       "best": 1.48,
       "worst": -0.77,
-      "max_drawdown": -2.33,
-      "sharpe": 5.665,
-      "avg_score": 8.8,
-      "profit_factor": 1.12,
-      "expectancy": 0.7,
-      "prime_win_rate": 56.0,
+      "max_drawdown": -2.737,
+      "sharpe": 5.848,
+      "avg_score": 8.7,
+      "profit_factor": 1.261,
+      "expectancy": 1.4,
+      "prime_win_rate": 54.3,
       "by_ticker": {
         "NVDA": {
           "trades": 70,
           "pnl": 83.27000000000008,
           "wins": 41
         },
-        "QQQ": {
-          "trades": 37,
-          "pnl": -8.449999999999989,
-          "wins": 18
+        "GOOGL": {
+          "trades": 56,
+          "pnl": 38.760000000000005,
+          "wins": 29
+        },
+        "AAPL": {
+          "trades": 42,
+          "pnl": 112.76999999999998,
+          "wins": 24
         }
       }
     },
@@ -103,40 +109,40 @@
       },
       {
         "date": "2026-04-23",
-        "ticker": "QQQ",
+        "ticker": "GOOGL",
         "direction": "Short",
-        "entry": 649.81,
-        "exit": 649.94,
+        "entry": 337.2725,
+        "exit": 339.87,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.02,
-        "pnl_dollar": -0.6,
-        "rsi": 39.5,
-        "vol_ratio": 1.85,
-        "entry_time": "01:36 PM",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -30.81,
+        "rsi": 31.4,
+        "vol_ratio": 1.86,
+        "entry_time": "01:41 PM",
         "hour": 13,
         "signal_type": "ema_pullback",
-        "signal_score": 8,
-        "pos_size": 3000.0,
-        "day_bias": "neutral",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "short",
         "trail_used": false,
         "prime_window": false
       },
       {
         "date": "2026-04-23",
-        "ticker": "QQQ",
-        "direction": "Short",
-        "entry": 651.4997,
-        "exit": 651.1552,
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 273.6297,
+        "exit": 274.3652,
         "result": "Time Exit",
-        "pnl_pct": 0.053,
-        "pnl_dollar": 1.59,
-        "rsi": 44.2,
-        "vol_ratio": 1.52,
-        "entry_time": "02:42 PM",
+        "pnl_pct": 0.269,
+        "pnl_dollar": 13.44,
+        "rsi": 62.0,
+        "vol_ratio": 11.78,
+        "entry_time": "02:23 PM",
         "hour": 14,
-        "signal_type": "ema_pullback",
-        "signal_score": 8,
-        "pos_size": 3000.0,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 10,
+        "pos_size": 5000.0,
         "day_bias": "neutral",
         "trail_used": false,
         "prime_window": false
@@ -163,23 +169,23 @@
       },
       {
         "date": "2026-04-23",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 655.136,
-        "exit": 650.0925,
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 273.6453,
+        "exit": 273.7,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.77,
-        "pnl_dollar": -30.79,
-        "rsi": 63.5,
-        "vol_ratio": 1.41,
-        "entry_time": "09:52 AM",
-        "hour": 9,
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.6,
+        "rsi": 36.3,
+        "vol_ratio": 1.83,
+        "entry_time": "10:38 AM",
+        "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 4000.0,
+        "signal_score": 8,
+        "pos_size": 3000.0,
         "day_bias": "neutral",
         "trail_used": false,
-        "prime_window": true
+        "prime_window": false
       },
       {
         "date": "2026-04-23",
@@ -222,6 +228,46 @@
         "prime_window": false
       },
       {
+        "date": "2026-04-23",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 340.9917,
+        "exit": 338.5019,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 7.3,
+        "rsi": 43.9,
+        "vol_ratio": 1.21,
+        "entry_time": "11:28 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 1000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-23",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 340.9917,
+        "exit": 338.4732,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.739,
+        "pnl_dollar": 7.39,
+        "rsi": 43.9,
+        "vol_ratio": 1.21,
+        "entry_time": "11:28 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 1000.0,
+        "day_bias": "short",
+        "trail_used": true,
+        "prime_window": false
+      },
+      {
         "date": "2026-04-24",
         "ticker": "NVDA",
         "direction": "Long",
@@ -238,6 +284,26 @@
         "signal_score": 9,
         "pos_size": 3000.0,
         "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-24",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 342.3516,
+        "exit": 344.6389,
+        "result": "Time Exit",
+        "pnl_pct": -0.668,
+        "pnl_dollar": -13.36,
+        "rsi": 30.6,
+        "vol_ratio": 1.43,
+        "entry_time": "01:44 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 2000.0,
+        "day_bias": "short",
         "trail_used": false,
         "prime_window": false
       },
@@ -303,23 +369,43 @@
       },
       {
         "date": "2026-04-24",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 659.8619,
-        "exit": 664.0772,
-        "result": "Time Exit",
-        "pnl_pct": 0.639,
-        "pnl_dollar": 31.94,
-        "rsi": 67.8,
-        "vol_ratio": 1.81,
-        "entry_time": "10:12 AM",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 338.2023,
+        "exit": 340.8069,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -38.51,
+        "rsi": 34.6,
+        "vol_ratio": 1.55,
+        "entry_time": "10:17 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
         "signal_score": 10,
         "pos_size": 5000.0,
-        "day_bias": "neutral",
+        "day_bias": "short",
         "trail_used": false,
         "prime_window": true
+      },
+      {
+        "date": "2026-04-24",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 271.3407,
+        "exit": 271.395,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.6,
+        "rsi": 28.1,
+        "vol_ratio": 1.4,
+        "entry_time": "10:58 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-04-24",
@@ -338,6 +424,26 @@
         "signal_score": 9,
         "pos_size": 3000.0,
         "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-24",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 270.5959,
+        "exit": 270.204,
+        "result": "Time Exit",
+        "pnl_pct": 0.145,
+        "pnl_dollar": 4.34,
+        "rsi": 29.7,
+        "vol_ratio": 1.34,
+        "entry_time": "12:35 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "short",
         "trail_used": false,
         "prime_window": false
       },
@@ -403,21 +509,41 @@
       },
       {
         "date": "2026-04-27",
-        "ticker": "QQQ",
-        "direction": "Short",
-        "entry": 661.1079,
-        "exit": 663.9028,
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 267.6835,
+        "exit": 266.6267,
         "result": "Time Exit",
-        "pnl_pct": -0.423,
-        "pnl_dollar": -12.68,
-        "rsi": 31.2,
-        "vol_ratio": 1.69,
-        "entry_time": "11:25 AM",
-        "hour": 11,
+        "pnl_pct": -0.395,
+        "pnl_dollar": -11.84,
+        "rsi": 55.1,
+        "vol_ratio": 1.53,
+        "entry_time": "10:31 AM",
+        "hour": 10,
         "signal_type": "ema_pullback",
         "signal_score": 8,
         "pos_size": 3000.0,
         "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-27",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 349.775,
+        "exit": 352.4688,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -23.1,
+        "rsi": 32.9,
+        "vol_ratio": 1.69,
+        "entry_time": "11:03 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "short",
         "trail_used": false,
         "prime_window": false
       },
@@ -462,22 +588,22 @@
         "prime_window": false
       },
       {
-        "date": "2026-04-28",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 658.1816,
-        "exit": 657.6385,
+        "date": "2026-04-27",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 351.4297,
+        "exit": 352.0154,
         "result": "Time Exit",
-        "pnl_pct": -0.083,
-        "pnl_dollar": -1.65,
-        "rsi": 65.0,
-        "vol_ratio": 1.36,
-        "entry_time": "02:52 PM",
-        "hour": 14,
+        "pnl_pct": -0.167,
+        "pnl_dollar": -3.33,
+        "rsi": 32.8,
+        "vol_ratio": 1.38,
+        "entry_time": "12:57 PM",
+        "hour": 12,
         "signal_type": "ema_pullback",
         "signal_score": 7,
         "pos_size": 2000.0,
-        "day_bias": "neutral",
+        "day_bias": "short",
         "trail_used": false,
         "prime_window": false
       },
@@ -503,26 +629,6 @@
       },
       {
         "date": "2026-04-28",
-        "ticker": "QQQ",
-        "direction": "Short",
-        "entry": 657.4385,
-        "exit": 657.57,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.02,
-        "pnl_dollar": -0.8,
-        "rsi": 43.7,
-        "vol_ratio": 1.3,
-        "entry_time": "09:55 AM",
-        "hour": 9,
-        "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 4000.0,
-        "day_bias": "neutral",
-        "trail_used": false,
-        "prime_window": true
-      },
-      {
-        "date": "2026-04-28",
         "ticker": "NVDA",
         "direction": "Long",
         "entry": 213.2335,
@@ -540,6 +646,46 @@
         "day_bias": "long",
         "trail_used": false,
         "prime_window": true
+      },
+      {
+        "date": "2026-04-28",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 350.9498,
+        "exit": 350.03,
+        "result": "Time Exit",
+        "pnl_pct": 0.262,
+        "pnl_dollar": 7.86,
+        "rsi": 42.8,
+        "vol_ratio": 1.38,
+        "entry_time": "10:51 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-28",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 271.1358,
+        "exit": 270.5441,
+        "result": "Time Exit",
+        "pnl_pct": 0.218,
+        "pnl_dollar": 4.36,
+        "rsi": 41.2,
+        "vol_ratio": 1.25,
+        "entry_time": "11:16 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 2000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-04-28",
@@ -583,6 +729,66 @@
       },
       {
         "date": "2026-04-29",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 348.7698,
+        "exit": 351.3153,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 7.3,
+        "rsi": 68.2,
+        "vol_ratio": 1.27,
+        "entry_time": "01:17 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 1000.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-29",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 348.7698,
+        "exit": 351.6696,
+        "result": "Time Exit",
+        "pnl_pct": 0.831,
+        "pnl_dollar": 8.31,
+        "rsi": 68.2,
+        "vol_ratio": 1.27,
+        "entry_time": "01:17 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 1000.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-29",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 269.951,
+        "exit": 270.3941,
+        "result": "Time Exit",
+        "pnl_pct": -0.164,
+        "pnl_dollar": -3.28,
+        "rsi": 30.6,
+        "vol_ratio": 1.2,
+        "entry_time": "01:19 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 2000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-29",
         "ticker": "NVDA",
         "direction": "Short",
         "entry": 210.078,
@@ -599,6 +805,46 @@
         "pos_size": 3750.0,
         "day_bias": "short",
         "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-04-29",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 352.5705,
+        "exit": 355.1437,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 18.25,
+        "rsi": 66.4,
+        "vol_ratio": 2.42,
+        "entry_time": "10:20 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-04-29",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 352.5705,
+        "exit": 354.4822,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.542,
+        "pnl_dollar": 13.56,
+        "rsi": 66.4,
+        "vol_ratio": 2.42,
+        "entry_time": "10:20 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "long",
+        "trail_used": true,
         "prime_window": true
       },
       {
@@ -643,20 +889,20 @@
       },
       {
         "date": "2026-04-29",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 659.967,
-        "exit": 660.9077,
-        "result": "Time Exit",
-        "pnl_pct": 0.143,
-        "pnl_dollar": 2.14,
-        "rsi": 52.2,
-        "vol_ratio": 1.32,
-        "entry_time": "12:06 PM",
-        "hour": 12,
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 268.5863,
+        "exit": 270.6548,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -15.4,
+        "rsi": 33.5,
+        "vol_ratio": 1.26,
+        "entry_time": "11:33 AM",
+        "hour": 11,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1500.0,
+        "signal_score": 7,
+        "pos_size": 2000.0,
         "day_bias": "neutral",
         "trail_used": false,
         "prime_window": false
@@ -703,43 +949,63 @@
       },
       {
         "date": "2026-04-30",
-        "ticker": "QQQ",
-        "direction": "Short",
-        "entry": 666.8866,
-        "exit": 668.0929,
-        "result": "Time Exit",
-        "pnl_pct": -0.181,
-        "pnl_dollar": -5.43,
-        "rsi": 42.3,
-        "vol_ratio": 2.08,
-        "entry_time": "02:27 PM",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 384.827,
+        "exit": 381.8644,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -11.55,
+        "rsi": 52.4,
+        "vol_ratio": 1.25,
+        "entry_time": "02:30 PM",
         "hour": 14,
         "signal_type": "ema_pullback",
-        "signal_score": 8,
-        "pos_size": 3000.0,
+        "signal_score": 6,
+        "pos_size": 1500.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-30",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 273.0404,
+        "exit": 274.2348,
+        "result": "Time Exit",
+        "pnl_pct": -0.437,
+        "pnl_dollar": -17.5,
+        "rsi": 31.6,
+        "vol_ratio": 2.78,
+        "entry_time": "02:59 PM",
+        "hour": 14,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
         "day_bias": "short",
         "trail_used": false,
         "prime_window": false
       },
       {
         "date": "2026-04-30",
-        "ticker": "QQQ",
+        "ticker": "GOOGL",
         "direction": "Short",
-        "entry": 659.763,
-        "exit": 664.8441,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.77,
-        "pnl_dollar": -38.51,
-        "rsi": 43.5,
-        "vol_ratio": 1.36,
-        "entry_time": "10:06 AM",
-        "hour": 10,
+        "entry": 382.1536,
+        "exit": 381.9715,
+        "result": "Time Exit",
+        "pnl_pct": 0.048,
+        "pnl_dollar": 0.48,
+        "rsi": 47.2,
+        "vol_ratio": 1.32,
+        "entry_time": "03:22 PM",
+        "hour": 15,
         "signal_type": "ema_pullback",
-        "signal_score": 10,
-        "pos_size": 5000.0,
-        "day_bias": "short",
+        "signal_score": 5,
+        "pos_size": 1000.0,
+        "day_bias": "neutral",
         "trail_used": false,
-        "prime_window": true
+        "prime_window": false
       },
       {
         "date": "2026-04-30",
@@ -763,6 +1029,66 @@
       },
       {
         "date": "2026-04-30",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 375.1649,
+        "exit": 375.2399,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.6,
+        "rsi": 40.4,
+        "vol_ratio": 18.76,
+        "entry_time": "11:37 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-30",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 378.3456,
+        "exit": 381.107,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 14.6,
+        "rsi": 63.1,
+        "vol_ratio": 1.5,
+        "entry_time": "12:47 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 2000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-30",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 378.3456,
+        "exit": 382.8261,
+        "result": "Trailing Stop",
+        "pnl_pct": 1.184,
+        "pnl_dollar": 23.68,
+        "rsi": 63.1,
+        "vol_ratio": 1.5,
+        "entry_time": "12:47 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 2000.0,
+        "day_bias": "neutral",
+        "trail_used": true,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-30",
         "ticker": "NVDA",
         "direction": "Short",
         "entry": 199.5901,
@@ -778,6 +1104,46 @@
         "signal_score": 10,
         "pos_size": 3750.0,
         "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-01",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 280.3589,
+        "exit": 280.0859,
+        "result": "Time Exit",
+        "pnl_pct": 0.097,
+        "pnl_dollar": 2.92,
+        "rsi": 39.3,
+        "vol_ratio": 1.24,
+        "entry_time": "03:18 PM",
+        "hour": 15,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-01",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 384.7119,
+        "exit": 384.5181,
+        "result": "Time Exit",
+        "pnl_pct": -0.05,
+        "pnl_dollar": -1.51,
+        "rsi": 64.8,
+        "vol_ratio": 1.31,
+        "entry_time": "03:22 PM",
+        "hour": 15,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "neutral",
         "trail_used": false,
         "prime_window": false
       },
@@ -823,6 +1189,46 @@
       },
       {
         "date": "2026-05-01",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 384.0968,
+        "exit": 384.02,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -1.0,
+        "rsi": 59.2,
+        "vol_ratio": 1.5,
+        "entry_time": "10:15 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-01",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 283.2034,
+        "exit": 285.3845,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -30.81,
+        "rsi": 44.2,
+        "vol_ratio": 6.66,
+        "entry_time": "10:57 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-01",
         "ticker": "NVDA",
         "direction": "Long",
         "entry": 199.5599,
@@ -843,61 +1249,141 @@
       },
       {
         "date": "2026-05-01",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 675.9552,
-        "exit": 674.765,
-        "result": "Time Exit",
-        "pnl_pct": -0.176,
-        "pnl_dollar": -7.04,
-        "rsi": 71.8,
-        "vol_ratio": 217.18,
-        "entry_time": "11:49 AM",
-        "hour": 11,
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 284.3531,
+        "exit": 282.2769,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 7.3,
+        "rsi": 41.0,
+        "vol_ratio": 1.38,
+        "entry_time": "12:06 PM",
+        "hour": 12,
         "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 4000.0,
-        "day_bias": "long",
+        "signal_score": 7,
+        "pos_size": 1000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-01",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 284.3531,
+        "exit": 280.9448,
+        "result": "Trailing Stop",
+        "pnl_pct": 1.199,
+        "pnl_dollar": 11.99,
+        "rsi": 41.0,
+        "vol_ratio": 1.38,
+        "entry_time": "12:06 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 1000.0,
+        "day_bias": "short",
+        "trail_used": true,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-01",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 384.1931,
+        "exit": 384.2699,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.3,
+        "rsi": 46.2,
+        "vol_ratio": 1.22,
+        "entry_time": "12:27 PM",
+        "hour": 12,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 6,
+        "pos_size": 1500.0,
+        "day_bias": "neutral",
         "trail_used": false,
         "prime_window": false
       },
       {
         "date": "2026-05-04",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 675.9652,
-        "exit": 670.7613,
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 383.6559,
+        "exit": 383.1566,
+        "result": "Time Exit",
+        "pnl_pct": 0.13,
+        "pnl_dollar": 2.6,
+        "rsi": 32.7,
+        "vol_ratio": 1.28,
+        "entry_time": "02:31 PM",
+        "hour": 14,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 2000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-04",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 381.9136,
+        "exit": 381.99,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.77,
-        "pnl_dollar": -30.79,
-        "rsi": 61.0,
-        "vol_ratio": 1.2,
-        "entry_time": "10:12 AM",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.8,
+        "rsi": 45.1,
+        "vol_ratio": 1.37,
+        "entry_time": "10:02 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
         "signal_score": 9,
         "pos_size": 4000.0,
-        "day_bias": "neutral",
+        "day_bias": "short",
         "trail_used": false,
         "prime_window": true
       },
       {
         "date": "2026-05-04",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 671.3742,
-        "exit": 672.5052,
-        "result": "Time Exit",
-        "pnl_pct": 0.168,
-        "pnl_dollar": 3.37,
-        "rsi": 56.1,
-        "vol_ratio": 1.58,
-        "entry_time": "12:19 PM",
-        "hour": 12,
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 274.995,
+        "exit": 277.1129,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -38.51,
+        "rsi": 33.3,
+        "vol_ratio": 1.46,
+        "entry_time": "10:04 AM",
+        "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 2000.0,
-        "day_bias": "neutral",
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-04",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 277.0346,
+        "exit": 277.5855,
+        "result": "Time Exit",
+        "pnl_pct": -0.199,
+        "pnl_dollar": -5.97,
+        "rsi": 37.1,
+        "vol_ratio": 1.29,
+        "entry_time": "11:19 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "short",
         "trail_used": false,
         "prime_window": false
       },
@@ -943,23 +1429,103 @@
       },
       {
         "date": "2026-05-05",
-        "ticker": "QQQ",
+        "ticker": "AAPL",
         "direction": "Long",
-        "entry": 681.3562,
-        "exit": 682.1136,
+        "entry": 283.0666,
+        "exit": 284.2631,
         "result": "Time Exit",
-        "pnl_pct": 0.111,
-        "pnl_dollar": 5.56,
-        "rsi": 64.2,
-        "vol_ratio": 2.25,
-        "entry_time": "10:25 AM",
-        "hour": 10,
+        "pnl_pct": 0.423,
+        "pnl_dollar": 21.13,
+        "rsi": 70.0,
+        "vol_ratio": 6.53,
+        "entry_time": "01:18 PM",
+        "hour": 13,
         "signal_type": "ema_pullback",
         "signal_score": 10,
         "pos_size": 5000.0,
-        "day_bias": "neutral",
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-05",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 386.6173,
+        "exit": 387.0326,
+        "result": "Time Exit",
+        "pnl_pct": 0.107,
+        "pnl_dollar": 4.3,
+        "rsi": 61.1,
+        "vol_ratio": 1.8,
+        "entry_time": "02:51 PM",
+        "hour": 14,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-05",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 279.6259,
+        "exit": 281.6667,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 18.25,
+        "rsi": 63.8,
+        "vol_ratio": 1.7,
+        "entry_time": "09:59 AM",
+        "hour": 9,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "long",
         "trail_used": false,
         "prime_window": true
+      },
+      {
+        "date": "2026-05-05",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 279.6259,
+        "exit": 282.0846,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.879,
+        "pnl_dollar": 21.98,
+        "rsi": 63.8,
+        "vol_ratio": 1.7,
+        "entry_time": "09:59 AM",
+        "hour": 9,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-05",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 388.9478,
+        "exit": 385.9535,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -38.49,
+        "rsi": 62.0,
+        "vol_ratio": 1.23,
+        "entry_time": "10:35 AM",
+        "hour": 10,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-05",
@@ -983,6 +1549,46 @@
       },
       {
         "date": "2026-05-05",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 280.4261,
+        "exit": 282.4728,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 10.95,
+        "rsi": 63.4,
+        "vol_ratio": 1.31,
+        "entry_time": "12:02 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 1500.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-05",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 280.4261,
+        "exit": 282.0483,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.578,
+        "pnl_dollar": 8.68,
+        "rsi": 63.4,
+        "vol_ratio": 1.31,
+        "entry_time": "12:02 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 1500.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-05",
         "ticker": "NVDA",
         "direction": "Short",
         "entry": 197.5505,
@@ -997,6 +1603,26 @@
         "signal_type": "ema_pullback",
         "signal_score": 7,
         "pos_size": 1500.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-06",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 397.1107,
+        "exit": 395.1291,
+        "result": "Time Exit",
+        "pnl_pct": 0.499,
+        "pnl_dollar": 9.98,
+        "rsi": 28.7,
+        "vol_ratio": 2.78,
+        "entry_time": "01:46 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 2000.0,
         "day_bias": "neutral",
         "trail_used": false,
         "prime_window": false
@@ -1063,23 +1689,43 @@
       },
       {
         "date": "2026-05-06",
-        "ticker": "QQQ",
+        "ticker": "GOOGL",
         "direction": "Long",
-        "entry": 690.168,
-        "exit": 694.651,
-        "result": "Time Exit",
-        "pnl_pct": 0.65,
-        "pnl_dollar": 25.98,
-        "rsi": 63.1,
-        "vol_ratio": 1.98,
-        "entry_time": "10:34 AM",
+        "entry": 395.6691,
+        "exit": 395.59,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -1.0,
+        "rsi": 60.8,
+        "vol_ratio": 1.32,
+        "entry_time": "10:11 AM",
         "hour": 10,
-        "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 4000.0,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 10,
+        "pos_size": 5000.0,
         "day_bias": "neutral",
         "trail_used": false,
-        "prime_window": false
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-06",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 285.7628,
+        "exit": 285.82,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -1.0,
+        "rsi": 43.3,
+        "vol_ratio": 1.59,
+        "entry_time": "10:24 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": true
       },
       {
         "date": "2026-05-06",
@@ -1098,6 +1744,26 @@
         "signal_score": 10,
         "pos_size": 3750.0,
         "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-06",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 397.6159,
+        "exit": 397.5364,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.8,
+        "rsi": 63.7,
+        "vol_ratio": 1.84,
+        "entry_time": "12:00 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "neutral",
         "trail_used": false,
         "prime_window": false
       },
@@ -1142,6 +1808,26 @@
         "prime_window": false
       },
       {
+        "date": "2026-05-06",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 285.9272,
+        "exit": 287.5825,
+        "result": "Time Exit",
+        "pnl_pct": 0.579,
+        "pnl_dollar": 17.37,
+        "rsi": 61.6,
+        "vol_ratio": 1.54,
+        "entry_time": "12:24 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
         "date": "2026-05-07",
         "ticker": "NVDA",
         "direction": "Short",
@@ -1163,19 +1849,99 @@
       },
       {
         "date": "2026-05-07",
-        "ticker": "QQQ",
+        "ticker": "GOOGL",
         "direction": "Short",
-        "entry": 694.4111,
-        "exit": 693.3786,
+        "entry": 396.3407,
+        "exit": 395.8092,
         "result": "Time Exit",
-        "pnl_pct": 0.149,
-        "pnl_dollar": 2.97,
-        "rsi": 47.2,
-        "vol_ratio": 2.13,
-        "entry_time": "02:09 PM",
+        "pnl_pct": 0.134,
+        "pnl_dollar": 2.01,
+        "rsi": 43.4,
+        "vol_ratio": 1.3,
+        "entry_time": "02:24 PM",
         "hour": 14,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
+        "signal_score": 6,
+        "pos_size": 1500.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-07",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 290.128,
+        "exit": 290.07,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -1.0,
+        "rsi": 60.6,
+        "vol_ratio": 1.42,
+        "entry_time": "09:57 AM",
+        "hour": 9,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-07",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 396.8106,
+        "exit": 393.9133,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 18.25,
+        "rsi": 42.9,
+        "vol_ratio": 1.27,
+        "entry_time": "10:09 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-07",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 396.8106,
+        "exit": 393.6395,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.799,
+        "pnl_dollar": 19.98,
+        "rsi": 42.9,
+        "vol_ratio": 1.27,
+        "entry_time": "10:09 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "short",
+        "trail_used": true,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-07",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 290.107,
+        "exit": 287.9888,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 14.6,
+        "rsi": 39.5,
+        "vol_ratio": 18.17,
+        "entry_time": "10:39 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
         "pos_size": 2000.0,
         "day_bias": "neutral",
         "trail_used": false,
@@ -1183,43 +1949,23 @@
       },
       {
         "date": "2026-05-07",
-        "ticker": "QQQ",
+        "ticker": "AAPL",
         "direction": "Short",
-        "entry": 693.0164,
-        "exit": 693.2136,
-        "result": "Time Exit",
-        "pnl_pct": -0.028,
-        "pnl_dollar": -1.14,
-        "rsi": 39.0,
-        "vol_ratio": 3.95,
-        "entry_time": "03:22 PM",
-        "hour": 15,
-        "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 4000.0,
-        "day_bias": "neutral",
-        "trail_used": false,
-        "prime_window": false
-      },
-      {
-        "date": "2026-05-07",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 698.0796,
-        "exit": 692.7054,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.77,
-        "pnl_dollar": -30.79,
-        "rsi": 66.2,
-        "vol_ratio": 1.22,
-        "entry_time": "10:04 AM",
+        "entry": 290.107,
+        "exit": 286.6393,
+        "result": "Trailing Stop",
+        "pnl_pct": 1.195,
+        "pnl_dollar": 23.91,
+        "rsi": 39.5,
+        "vol_ratio": 18.17,
+        "entry_time": "10:39 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
         "signal_score": 9,
-        "pos_size": 4000.0,
+        "pos_size": 2000.0,
         "day_bias": "neutral",
-        "trail_used": false,
-        "prime_window": true
+        "trail_used": true,
+        "prime_window": false
       },
       {
         "date": "2026-05-07",
@@ -1258,6 +2004,126 @@
         "signal_score": 7,
         "pos_size": 1500.0,
         "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-07",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 393.9762,
+        "exit": 397.0104,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -23.1,
+        "rsi": 40.9,
+        "vol_ratio": 1.46,
+        "entry_time": "12:57 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-08",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 398.5997,
+        "exit": 399.2201,
+        "result": "Time Exit",
+        "pnl_pct": 0.156,
+        "pnl_dollar": 3.11,
+        "rsi": 67.4,
+        "vol_ratio": 2.02,
+        "entry_time": "01:53 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 2000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-08",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 292.5735,
+        "exit": 293.3413,
+        "result": "Time Exit",
+        "pnl_pct": 0.262,
+        "pnl_dollar": 10.5,
+        "rsi": 63.3,
+        "vol_ratio": 1.54,
+        "entry_time": "02:11 PM",
+        "hour": 14,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-08",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 399.5199,
+        "exit": 399.3001,
+        "result": "Time Exit",
+        "pnl_pct": -0.055,
+        "pnl_dollar": -2.75,
+        "rsi": 61.5,
+        "vol_ratio": 2.57,
+        "entry_time": "03:23 PM",
+        "hour": 15,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-08",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 400.9602,
+        "exit": 397.8734,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -23.1,
+        "rsi": 72.0,
+        "vol_ratio": 1.21,
+        "entry_time": "10:09 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-08",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 294.2889,
+        "exit": 292.0233,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -38.49,
+        "rsi": 65.1,
+        "vol_ratio": 1.54,
+        "entry_time": "10:33 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "long",
         "trail_used": false,
         "prime_window": false
       },
@@ -1303,26 +2169,6 @@
       },
       {
         "date": "2026-05-08",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 707.1814,
-        "exit": 709.808,
-        "result": "Time Exit",
-        "pnl_pct": 0.371,
-        "pnl_dollar": 11.14,
-        "rsi": 67.5,
-        "vol_ratio": 1.24,
-        "entry_time": "11:06 AM",
-        "hour": 11,
-        "signal_type": "ema_pullback",
-        "signal_score": 8,
-        "pos_size": 3000.0,
-        "day_bias": "neutral",
-        "trail_used": false,
-        "prime_window": false
-      },
-      {
-        "date": "2026-05-08",
         "ticker": "NVDA",
         "direction": "Long",
         "entry": 215.9732,
@@ -1340,6 +2186,66 @@
         "day_bias": "long",
         "trail_used": false,
         "prime_window": false
+      },
+      {
+        "date": "2026-05-11",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 291.4717,
+        "exit": 291.0182,
+        "result": "Time Exit",
+        "pnl_pct": 0.156,
+        "pnl_dollar": 4.67,
+        "rsi": 29.0,
+        "vol_ratio": 2.0,
+        "entry_time": "02:45 PM",
+        "hour": 14,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-11",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 390.3549,
+        "exit": 390.4882,
+        "result": "Time Exit",
+        "pnl_pct": -0.034,
+        "pnl_dollar": -1.37,
+        "rsi": 31.0,
+        "vol_ratio": 1.63,
+        "entry_time": "03:21 PM",
+        "hour": 15,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-11",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 394.801,
+        "exit": 394.88,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -1.0,
+        "rsi": 34.4,
+        "vol_ratio": 1.4,
+        "entry_time": "10:10 AM",
+        "hour": 10,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": true
       },
       {
         "date": "2026-05-11",
@@ -1403,42 +2309,42 @@
       },
       {
         "date": "2026-05-11",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 713.4127,
-        "exit": 712.4275,
-        "result": "Time Exit",
-        "pnl_pct": -0.138,
-        "pnl_dollar": -4.14,
-        "rsi": 71.4,
-        "vol_ratio": 6.76,
-        "entry_time": "11:29 AM",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 394.0192,
+        "exit": 391.1423,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 14.6,
+        "rsi": 48.0,
+        "vol_ratio": 18.36,
+        "entry_time": "11:11 AM",
         "hour": 11,
         "signal_type": "ema_pullback",
-        "signal_score": 8,
-        "pos_size": 3000.0,
+        "signal_score": 9,
+        "pos_size": 2000.0,
         "day_bias": "neutral",
         "trail_used": false,
         "prime_window": false
       },
       {
-        "date": "2026-05-12",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 700.7914,
-        "exit": 703.5992,
+        "date": "2026-05-11",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 394.0192,
+        "exit": 390.7881,
         "result": "Time Exit",
-        "pnl_pct": 0.401,
-        "pnl_dollar": 12.02,
-        "rsi": 59.5,
-        "vol_ratio": 10.13,
-        "entry_time": "01:40 PM",
-        "hour": 13,
+        "pnl_pct": 0.82,
+        "pnl_dollar": 16.4,
+        "rsi": 48.0,
+        "vol_ratio": 18.36,
+        "entry_time": "11:11 AM",
+        "hour": 11,
         "signal_type": "ema_pullback",
-        "signal_score": 8,
-        "pos_size": 3000.0,
+        "signal_score": 9,
+        "pos_size": 2000.0,
         "day_bias": "neutral",
-        "trail_used": false,
+        "trail_used": true,
         "prime_window": false
       },
       {
@@ -1483,42 +2389,122 @@
       },
       {
         "date": "2026-05-12",
-        "ticker": "QQQ",
+        "ticker": "GOOGL",
         "direction": "Short",
-        "entry": 704.5141,
-        "exit": 699.3701,
-        "result": "Partial Exit (partial)",
-        "pnl_pct": 0.73,
-        "pnl_dollar": 18.25,
-        "rsi": 40.9,
-        "vol_ratio": 3.41,
-        "entry_time": "10:45 AM",
-        "hour": 10,
+        "entry": 385.003,
+        "exit": 385.8672,
+        "result": "Time Exit",
+        "pnl_pct": -0.224,
+        "pnl_dollar": -8.98,
+        "rsi": 39.5,
+        "vol_ratio": 1.23,
+        "entry_time": "02:44 PM",
+        "hour": 14,
         "signal_type": "ema_pullback",
-        "signal_score": 10,
-        "pos_size": 2500.0,
-        "day_bias": "neutral",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "short",
         "trail_used": false,
         "prime_window": false
       },
       {
         "date": "2026-05-12",
-        "ticker": "QQQ",
-        "direction": "Short",
-        "entry": 704.5141,
-        "exit": 698.2431,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.89,
-        "pnl_dollar": 22.25,
-        "rsi": 40.9,
-        "vol_ratio": 3.41,
-        "entry_time": "10:45 AM",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 294.3189,
+        "exit": 294.4111,
+        "result": "Time Exit",
+        "pnl_pct": 0.031,
+        "pnl_dollar": 1.57,
+        "rsi": 64.0,
+        "vol_ratio": 1.76,
+        "entry_time": "10:08 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
         "signal_score": 10,
-        "pos_size": 2500.0,
+        "pos_size": 5000.0,
         "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-12",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 386.6527,
+        "exit": 383.8296,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 18.25,
+        "rsi": 42.0,
+        "vol_ratio": 18.97,
+        "entry_time": "12:04 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-12",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 386.6527,
+        "exit": 383.6724,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.771,
+        "pnl_dollar": 19.27,
+        "rsi": 42.0,
+        "vol_ratio": 18.97,
+        "entry_time": "12:04 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "short",
         "trail_used": true,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-13",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 300.185,
+        "exit": 298.8532,
+        "result": "Time Exit",
+        "pnl_pct": -0.444,
+        "pnl_dollar": -13.31,
+        "rsi": 62.0,
+        "vol_ratio": 1.3,
+        "entry_time": "01:29 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-13",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 402.0554,
+        "exit": 402.4195,
+        "result": "Time Exit",
+        "pnl_pct": 0.091,
+        "pnl_dollar": 2.72,
+        "rsi": 62.0,
+        "vol_ratio": 1.41,
+        "entry_time": "01:46 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "long",
+        "trail_used": false,
         "prime_window": false
       },
       {
@@ -1543,63 +2529,123 @@
       },
       {
         "date": "2026-05-13",
-        "ticker": "QQQ",
+        "ticker": "GOOGL",
         "direction": "Long",
-        "entry": 715.6531,
-        "exit": 715.5369,
-        "result": "Time Exit",
-        "pnl_pct": -0.016,
-        "pnl_dollar": -0.49,
-        "rsi": 60.6,
-        "vol_ratio": 1.34,
-        "entry_time": "03:09 PM",
-        "hour": 15,
+        "entry": 394.834,
+        "exit": 397.7157,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 18.25,
+        "rsi": 59.1,
+        "vol_ratio": 5.04,
+        "entry_time": "10:44 AM",
+        "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 8,
-        "pos_size": 3000.0,
-        "day_bias": "neutral",
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "long",
         "trail_used": false,
         "prime_window": false
       },
       {
         "date": "2026-05-13",
-        "ticker": "QQQ",
+        "ticker": "GOOGL",
         "direction": "Long",
-        "entry": 707.6014,
-        "exit": 712.7658,
-        "result": "Partial Exit (partial)",
-        "pnl_pct": 0.73,
-        "pnl_dollar": 14.6,
-        "rsi": 56.9,
-        "vol_ratio": 1.22,
-        "entry_time": "10:13 AM",
+        "entry": 394.834,
+        "exit": 397.5885,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.698,
+        "pnl_dollar": 17.44,
+        "rsi": 59.1,
+        "vol_ratio": 5.04,
+        "entry_time": "10:44 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 2000.0,
-        "day_bias": "neutral",
-        "trail_used": false,
-        "prime_window": true
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": false
       },
       {
         "date": "2026-05-13",
-        "ticker": "QQQ",
+        "ticker": "AAPL",
         "direction": "Long",
-        "entry": 707.6014,
-        "exit": 715.0007,
-        "result": "Trailing Stop",
-        "pnl_pct": 1.046,
-        "pnl_dollar": 20.91,
-        "rsi": 56.9,
-        "vol_ratio": 1.22,
-        "entry_time": "10:13 AM",
+        "entry": 296.7493,
+        "exit": 298.9151,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 18.25,
+        "rsi": 67.6,
+        "vol_ratio": 10.16,
+        "entry_time": "10:47 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 2000.0,
-        "day_bias": "neutral",
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-13",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 296.7493,
+        "exit": 299.5896,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.957,
+        "pnl_dollar": 23.93,
+        "rsi": 67.6,
+        "vol_ratio": 10.16,
+        "entry_time": "10:47 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "long",
         "trail_used": true,
-        "prime_window": true
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-13",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 398.4697,
+        "exit": 401.3779,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 7.3,
+        "rsi": 64.8,
+        "vol_ratio": 1.23,
+        "entry_time": "11:47 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 1000.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-13",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 398.4697,
+        "exit": 401.3053,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.712,
+        "pnl_dollar": 7.12,
+        "rsi": 64.8,
+        "vol_ratio": 1.23,
+        "entry_time": "11:47 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 1000.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": false
       },
       {
         "date": "2026-05-13",
@@ -1618,6 +2664,26 @@
         "signal_score": 9,
         "pos_size": 3000.0,
         "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-14",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 297.9704,
+        "exit": 299.1098,
+        "result": "Time Exit",
+        "pnl_pct": -0.382,
+        "pnl_dollar": -7.65,
+        "rsi": 48.0,
+        "vol_ratio": 1.33,
+        "entry_time": "01:42 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 2000.0,
+        "day_bias": "short",
         "trail_used": false,
         "prime_window": false
       },
@@ -1663,43 +2729,43 @@
       },
       {
         "date": "2026-05-14",
-        "ticker": "QQQ",
+        "ticker": "GOOGL",
         "direction": "Long",
-        "entry": 720.7541,
-        "exit": 720.6959,
+        "entry": 400.1801,
+        "exit": 401.0498,
         "result": "Time Exit",
-        "pnl_pct": -0.008,
-        "pnl_dollar": -0.32,
-        "rsi": 59.5,
-        "vol_ratio": 2.03,
-        "entry_time": "03:21 PM",
-        "hour": 15,
+        "pnl_pct": 0.217,
+        "pnl_dollar": 4.35,
+        "rsi": 54.7,
+        "vol_ratio": 1.23,
+        "entry_time": "02:51 PM",
+        "hour": 14,
         "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 4000.0,
+        "signal_score": 7,
+        "pos_size": 2000.0,
         "day_bias": "long",
         "trail_used": false,
         "prime_window": false
       },
       {
         "date": "2026-05-14",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 719.924,
-        "exit": 720.3459,
-        "result": "Time Exit",
-        "pnl_pct": 0.059,
-        "pnl_dollar": 1.76,
-        "rsi": 71.6,
-        "vol_ratio": 1.6,
-        "entry_time": "10:45 AM",
-        "hour": 10,
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 297.3305,
+        "exit": 297.39,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -1.0,
+        "rsi": 35.3,
+        "vol_ratio": 1.27,
+        "entry_time": "09:59 AM",
+        "hour": 9,
         "signal_type": "ema_pullback",
-        "signal_score": 8,
-        "pos_size": 3000.0,
-        "day_bias": "long",
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "short",
         "trail_used": false,
-        "prime_window": false
+        "prime_window": true
       },
       {
         "date": "2026-05-14",
@@ -1717,6 +2783,46 @@
         "signal_type": "ema_pullback",
         "signal_score": 10,
         "pos_size": 3750.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-14",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 399.3248,
+        "exit": 399.2449,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.6,
+        "rsi": 72.0,
+        "vol_ratio": 2.34,
+        "entry_time": "11:41 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-14",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 400.6751,
+        "exit": 400.595,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.8,
+        "rsi": 65.1,
+        "vol_ratio": 3.73,
+        "entry_time": "12:46 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
         "day_bias": "long",
         "trail_used": false,
         "prime_window": false
@@ -1743,6 +2849,86 @@
       },
       {
         "date": "2026-05-15",
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 302.3195,
+        "exit": 300.5201,
+        "result": "Time Exit",
+        "pnl_pct": 0.595,
+        "pnl_dollar": 23.81,
+        "rsi": 35.7,
+        "vol_ratio": 6.11,
+        "entry_time": "01:50 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-15",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 298.0696,
+        "exit": 300.2451,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 14.6,
+        "rsi": 60.6,
+        "vol_ratio": 1.25,
+        "entry_time": "09:52 AM",
+        "hour": 9,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 2000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-15",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 298.0696,
+        "exit": 302.4801,
+        "result": "Target Hit",
+        "pnl_pct": 1.48,
+        "pnl_dollar": 29.59,
+        "rsi": 60.6,
+        "vol_ratio": 1.25,
+        "entry_time": "09:52 AM",
+        "hour": 9,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 2000.0,
+        "day_bias": "neutral",
+        "trail_used": true,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-15",
+        "ticker": "GOOGL",
+        "direction": "Short",
+        "entry": 397.0706,
+        "exit": 397.15,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -1.0,
+        "rsi": 32.8,
+        "vol_ratio": 2.59,
+        "entry_time": "10:48 AM",
+        "hour": 10,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-15",
         "ticker": "NVDA",
         "direction": "Short",
         "entry": 226.4197,
@@ -1763,21 +2949,41 @@
       },
       {
         "date": "2026-05-15",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 711.2122,
-        "exit": 711.07,
+        "ticker": "AAPL",
+        "direction": "Short",
+        "entry": 300.8498,
+        "exit": 303.1668,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.02,
-        "pnl_dollar": -1.0,
-        "rsi": 57.6,
-        "vol_ratio": 5.17,
-        "entry_time": "11:09 AM",
-        "hour": 11,
+        "pnl_pct": -0.77,
+        "pnl_dollar": -23.1,
+        "rsi": 40.5,
+        "vol_ratio": 1.44,
+        "entry_time": "12:10 PM",
+        "hour": 12,
         "signal_type": "vwap_reclaim",
-        "signal_score": 10,
-        "pos_size": 5000.0,
+        "signal_score": 8,
+        "pos_size": 3000.0,
         "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-18",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 401.8153,
+        "exit": 398.7219,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -23.1,
+        "rsi": 57.5,
+        "vol_ratio": 1.49,
+        "entry_time": "01:06 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "long",
         "trail_used": false,
         "prime_window": false
       },
@@ -1823,42 +3029,62 @@
       },
       {
         "date": "2026-05-18",
-        "ticker": "QQQ",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 399.4299,
+        "exit": 398.0305,
+        "result": "Time Exit",
+        "pnl_pct": -0.35,
+        "pnl_dollar": -10.51,
+        "rsi": 70.9,
+        "vol_ratio": 5.13,
+        "entry_time": "03:01 PM",
+        "hour": 15,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-18",
+        "ticker": "AAPL",
         "direction": "Short",
-        "entry": 707.2196,
-        "exit": 702.0558,
-        "result": "Partial Exit (partial)",
-        "pnl_pct": 0.73,
-        "pnl_dollar": 18.25,
-        "rsi": 35.3,
-        "vol_ratio": 1.5,
-        "entry_time": "10:01 AM",
+        "entry": 297.2405,
+        "exit": 297.2999,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -1.0,
+        "rsi": 38.0,
+        "vol_ratio": 1.36,
+        "entry_time": "10:03 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
         "signal_score": 10,
-        "pos_size": 2500.0,
-        "day_bias": "neutral",
+        "pos_size": 5000.0,
+        "day_bias": "short",
         "trail_used": false,
         "prime_window": true
       },
       {
         "date": "2026-05-18",
-        "ticker": "QQQ",
-        "direction": "Short",
-        "entry": 707.2196,
-        "exit": 701.2847,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.839,
-        "pnl_dollar": 20.98,
-        "rsi": 35.3,
-        "vol_ratio": 1.5,
-        "entry_time": "10:01 AM",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 406.4239,
+        "exit": 406.3426,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.8,
+        "rsi": 65.8,
+        "vol_ratio": 1.27,
+        "entry_time": "10:06 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 10,
-        "pos_size": 2500.0,
-        "day_bias": "neutral",
-        "trail_used": true,
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "long",
+        "trail_used": false,
         "prime_window": true
       },
       {
@@ -1903,6 +3129,26 @@
       },
       {
         "date": "2026-05-18",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 405.461,
+        "exit": 402.3395,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -30.79,
+        "rsi": 54.5,
+        "vol_ratio": 1.59,
+        "entry_time": "10:51 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-18",
         "ticker": "NVDA",
         "direction": "Short",
         "entry": 221.6357,
@@ -1942,42 +3188,22 @@
         "prime_window": false
       },
       {
-        "date": "2026-05-18",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 702.7405,
-        "exit": 701.9695,
-        "result": "Time Exit",
-        "pnl_pct": -0.11,
-        "pnl_dollar": -1.65,
-        "rsi": 59.8,
-        "vol_ratio": 1.22,
-        "entry_time": "12:51 PM",
-        "hour": 12,
-        "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1500.0,
-        "day_bias": "neutral",
-        "trail_used": false,
-        "prime_window": false
-      },
-      {
         "date": "2026-05-19",
-        "ticker": "QQQ",
+        "ticker": "GOOGL",
         "direction": "Short",
-        "entry": 704.4791,
-        "exit": 703.5107,
+        "entry": 391.1818,
+        "exit": 389.958,
         "result": "Time Exit",
-        "pnl_pct": 0.137,
-        "pnl_dollar": 2.06,
-        "rsi": 30.4,
-        "vol_ratio": 1.32,
-        "entry_time": "01:46 PM",
+        "pnl_pct": 0.313,
+        "pnl_dollar": 15.64,
+        "rsi": 43.2,
+        "vol_ratio": 8.71,
+        "entry_time": "01:26 PM",
         "hour": 13,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1500.0,
-        "day_bias": "neutral",
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "short",
         "trail_used": false,
         "prime_window": false
       },
@@ -2018,26 +3244,6 @@
         "signal_score": 10,
         "pos_size": 3750.0,
         "day_bias": "long",
-        "trail_used": false,
-        "prime_window": true
-      },
-      {
-        "date": "2026-05-19",
-        "ticker": "QQQ",
-        "direction": "Short",
-        "entry": 698.5902,
-        "exit": 703.9704,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.77,
-        "pnl_dollar": -30.81,
-        "rsi": 35.6,
-        "vol_ratio": 1.45,
-        "entry_time": "10:12 AM",
-        "hour": 10,
-        "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 4000.0,
-        "day_bias": "neutral",
         "trail_used": false,
         "prime_window": true
       },
@@ -2103,61 +3309,81 @@
       },
       {
         "date": "2026-05-20",
-        "ticker": "QQQ",
+        "ticker": "AAPL",
         "direction": "Long",
-        "entry": 712.1024,
-        "exit": 711.7076,
+        "entry": 302.3455,
+        "exit": 301.8946,
         "result": "Time Exit",
-        "pnl_pct": -0.055,
-        "pnl_dollar": -2.22,
-        "rsi": 69.2,
-        "vol_ratio": 2.04,
-        "entry_time": "03:23 PM",
+        "pnl_pct": -0.149,
+        "pnl_dollar": -4.47,
+        "rsi": 58.3,
+        "vol_ratio": 1.35,
+        "entry_time": "03:16 PM",
         "hour": 15,
         "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 4000.0,
-        "day_bias": "neutral",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "long",
         "trail_used": false,
         "prime_window": false
       },
       {
         "date": "2026-05-20",
-        "ticker": "QQQ",
-        "direction": "Short",
-        "entry": 704.0281,
-        "exit": 709.4502,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.77,
-        "pnl_dollar": -30.81,
-        "rsi": 31.4,
-        "vol_ratio": 1.25,
-        "entry_time": "10:12 AM",
+        "ticker": "AAPL",
+        "direction": "Long",
+        "entry": 300.2601,
+        "exit": 302.4515,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 10.95,
+        "rsi": 53.5,
+        "vol_ratio": 1.28,
+        "entry_time": "10:16 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 4000.0,
-        "day_bias": "neutral",
+        "signal_score": 8,
+        "pos_size": 1500.0,
+        "day_bias": "long",
         "trail_used": false,
         "prime_window": true
       },
       {
         "date": "2026-05-20",
-        "ticker": "QQQ",
+        "ticker": "AAPL",
         "direction": "Long",
-        "entry": 710.272,
-        "exit": 711.5926,
-        "result": "Time Exit",
-        "pnl_pct": 0.186,
-        "pnl_dollar": 7.44,
-        "rsi": 66.4,
-        "vol_ratio": 1.68,
-        "entry_time": "10:57 AM",
+        "entry": 300.2601,
+        "exit": 302.1041,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.614,
+        "pnl_dollar": 9.21,
+        "rsi": 53.5,
+        "vol_ratio": 1.28,
+        "entry_time": "10:16 AM",
         "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 1500.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-20",
+        "ticker": "GOOGL",
+        "direction": "Long",
+        "entry": 385.7571,
+        "exit": 387.8324,
+        "result": "Time Exit",
+        "pnl_pct": 0.538,
+        "pnl_dollar": 21.52,
+        "rsi": 63.7,
+        "vol_ratio": 2.72,
+        "entry_time": "11:15 AM",
+        "hour": 11,
         "signal_type": "ema_pullback",
         "signal_score": 9,
         "pos_size": 4000.0,
-        "day_bias": "neutral",
+        "day_bias": "long",
         "trail_used": false,
         "prime_window": false
       },
@@ -2206,29 +3432,34 @@
   "out_of_sample": {
     "train": {
       "stats": {
-        "trades": 36,
-        "wins": 17,
-        "losses": 19,
-        "win_rate": 47.22,
-        "total_pnl_pct": 7.668,
-        "total_pnl_dollar": 11.82,
+        "trades": 52,
+        "wins": 27,
+        "losses": 25,
+        "win_rate": 51.92,
+        "total_pnl_pct": 10.517,
+        "total_pnl_dollar": 27.0,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -1.973,
-        "sharpe": 4.906,
-        "avg_score": 8.8,
-        "profit_factor": 1.054,
-        "expectancy": 0.33,
-        "prime_win_rate": 33.3,
+        "max_drawdown": -2.209,
+        "sharpe": 4.741,
+        "avg_score": 8.4,
+        "profit_factor": 1.091,
+        "expectancy": 0.52,
+        "prime_win_rate": 50.0,
         "by_ticker": {
           "NVDA": {
             "trades": 26,
             "pnl": 66.61000000000001,
             "wins": 14
           },
-          "QQQ": {
-            "trades": 10,
-            "pnl": -54.79,
+          "GOOGL": {
+            "trades": 17,
+            "pnl": -12.530000000000001,
+            "wins": 10
+          },
+          "AAPL": {
+            "trades": 9,
+            "pnl": -27.080000000000002,
             "wins": 3
           }
         }
@@ -2236,30 +3467,35 @@
     },
     "test": {
       "stats": {
-        "trades": 71,
-        "wins": 42,
-        "losses": 29,
-        "win_rate": 59.15,
-        "total_pnl_pct": 16.447,
-        "total_pnl_dollar": 63.0,
+        "trades": 116,
+        "wins": 67,
+        "losses": 49,
+        "win_rate": 57.76,
+        "total_pnl_pct": 27.574,
+        "total_pnl_dollar": 207.8,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -2.33,
-        "sharpe": 6.076,
+        "max_drawdown": -2.737,
+        "sharpe": 6.412,
         "avg_score": 8.8,
-        "profit_factor": 1.156,
-        "expectancy": 0.89,
-        "prime_win_rate": 68.8,
+        "profit_factor": 1.345,
+        "expectancy": 1.79,
+        "prime_win_rate": 55.6,
         "by_ticker": {
+          "AAPL": {
+            "trades": 33,
+            "pnl": 139.85,
+            "wins": 21
+          },
+          "GOOGL": {
+            "trades": 39,
+            "pnl": 51.290000000000006,
+            "wins": 19
+          },
           "NVDA": {
             "trades": 44,
             "pnl": 16.65999999999997,
             "wins": 27
-          },
-          "QQQ": {
-            "trades": 27,
-            "pnl": 46.33999999999999,
-            "wins": 15
           }
         }
       }
@@ -2269,22 +3505,256 @@
   "sweep": [
     {
       "rsi_buy": 58,
-      "rsi_sell": 45,
-      "min_score": 4,
+      "rsi_sell": 42,
+      "min_score": 5,
       "stats": {
-        "trades": 102,
-        "wins": 58,
-        "losses": 44,
-        "win_rate": 56.86,
-        "total_pnl_pct": 25.061,
-        "total_pnl_dollar": 115.06,
+        "trades": 158,
+        "wins": 95,
+        "losses": 63,
+        "win_rate": 60.13,
+        "total_pnl_pct": 41.406,
+        "total_pnl_dollar": 373.13,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -3.021,
-        "sharpe": 6.222,
+        "max_drawdown": -4.498,
+        "sharpe": 6.904,
         "avg_score": 8.6,
-        "profit_factor": 1.212,
-        "expectancy": 1.13,
+        "profit_factor": 1.518,
+        "expectancy": 2.36,
+        "prime_win_rate": 59.4,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 62,
+            "pnl": 173.05000000000004,
+            "wins": 41
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 179.39999999999998,
+            "wins": 27
+          },
+          "GOOGL": {
+            "trades": 54,
+            "pnl": 20.680000000000007,
+            "wins": 27
+          }
+        }
+      },
+      "score": 40.412
+    },
+    {
+      "rsi_buy": 58,
+      "rsi_sell": 42,
+      "min_score": 3,
+      "stats": {
+        "trades": 159,
+        "wins": 95,
+        "losses": 64,
+        "win_rate": 59.75,
+        "total_pnl_pct": 41.345,
+        "total_pnl_dollar": 372.67,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -4.498,
+        "sharpe": 6.866,
+        "avg_score": 8.5,
+        "profit_factor": 1.517,
+        "expectancy": 2.34,
+        "prime_win_rate": 59.4,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 62,
+            "pnl": 173.05000000000004,
+            "wins": 41
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 179.39999999999998,
+            "wins": 27
+          },
+          "GOOGL": {
+            "trades": 55,
+            "pnl": 20.220000000000013,
+            "wins": 27
+          }
+        }
+      },
+      "score": 40.24
+    },
+    {
+      "rsi_buy": 58,
+      "rsi_sell": 42,
+      "min_score": 4,
+      "stats": {
+        "trades": 159,
+        "wins": 95,
+        "losses": 64,
+        "win_rate": 59.75,
+        "total_pnl_pct": 41.345,
+        "total_pnl_dollar": 372.67,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -4.498,
+        "sharpe": 6.866,
+        "avg_score": 8.5,
+        "profit_factor": 1.517,
+        "expectancy": 2.34,
+        "prime_win_rate": 59.4,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 62,
+            "pnl": 173.05000000000004,
+            "wins": 41
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 179.39999999999998,
+            "wins": 27
+          },
+          "GOOGL": {
+            "trades": 55,
+            "pnl": 20.220000000000013,
+            "wins": 27
+          }
+        }
+      },
+      "score": 40.24
+    },
+    {
+      "rsi_buy": 58,
+      "rsi_sell": 48,
+      "min_score": 3,
+      "stats": {
+        "trades": 161,
+        "wins": 95,
+        "losses": 66,
+        "win_rate": 59.01,
+        "total_pnl_pct": 40.638,
+        "total_pnl_dollar": 377.39,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -4.498,
+        "sharpe": 6.604,
+        "avg_score": 8.7,
+        "profit_factor": 1.487,
+        "expectancy": 2.34,
+        "prime_win_rate": 58.3,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 64,
+            "pnl": 148.62000000000003,
+            "wins": 41
+          },
+          "GOOGL": {
+            "trades": 55,
+            "pnl": 84.86999999999999,
+            "wins": 29
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 143.9,
+            "wins": 25
+          }
+        }
+      },
+      "score": 39.644
+    },
+    {
+      "rsi_buy": 58,
+      "rsi_sell": 48,
+      "min_score": 4,
+      "stats": {
+        "trades": 161,
+        "wins": 95,
+        "losses": 66,
+        "win_rate": 59.01,
+        "total_pnl_pct": 40.638,
+        "total_pnl_dollar": 377.39,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -4.498,
+        "sharpe": 6.604,
+        "avg_score": 8.7,
+        "profit_factor": 1.487,
+        "expectancy": 2.34,
+        "prime_win_rate": 58.3,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 64,
+            "pnl": 148.62000000000003,
+            "wins": 41
+          },
+          "GOOGL": {
+            "trades": 55,
+            "pnl": 84.86999999999999,
+            "wins": 29
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 143.9,
+            "wins": 25
+          }
+        }
+      },
+      "score": 39.644
+    },
+    {
+      "rsi_buy": 58,
+      "rsi_sell": 48,
+      "min_score": 5,
+      "stats": {
+        "trades": 161,
+        "wins": 95,
+        "losses": 66,
+        "win_rate": 59.01,
+        "total_pnl_pct": 40.638,
+        "total_pnl_dollar": 377.39,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -4.498,
+        "sharpe": 6.604,
+        "avg_score": 8.7,
+        "profit_factor": 1.487,
+        "expectancy": 2.34,
+        "prime_win_rate": 58.3,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 64,
+            "pnl": 148.62000000000003,
+            "wins": 41
+          },
+          "GOOGL": {
+            "trades": 55,
+            "pnl": 84.86999999999999,
+            "wins": 29
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 143.9,
+            "wins": 25
+          }
+        }
+      },
+      "score": 39.644
+    },
+    {
+      "rsi_buy": 58,
+      "rsi_sell": 45,
+      "min_score": 3,
+      "stats": {
+        "trades": 163,
+        "wins": 97,
+        "losses": 66,
+        "win_rate": 59.51,
+        "total_pnl_pct": 40.422,
+        "total_pnl_dollar": 320.83,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -4.498,
+        "sharpe": 6.355,
+        "avg_score": 8.6,
+        "profit_factor": 1.383,
+        "expectancy": 1.97,
         "prime_win_rate": 60.0,
         "by_ticker": {
           "NVDA": {
@@ -2292,33 +3762,38 @@
             "pnl": 153.64000000000004,
             "wins": 43
           },
-          "QQQ": {
-            "trades": 36,
-            "pnl": -38.579999999999984,
-            "wins": 15
+          "GOOGL": {
+            "trades": 55,
+            "pnl": 15.610000000000007,
+            "wins": 28
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 151.58000000000004,
+            "wins": 26
           }
         }
       },
-      "score": 35.429
+      "score": 38.619
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 45,
-      "min_score": 5,
+      "min_score": 4,
       "stats": {
-        "trades": 102,
-        "wins": 58,
-        "losses": 44,
-        "win_rate": 56.86,
-        "total_pnl_pct": 25.061,
-        "total_pnl_dollar": 115.06,
+        "trades": 163,
+        "wins": 97,
+        "losses": 66,
+        "win_rate": 59.51,
+        "total_pnl_pct": 40.422,
+        "total_pnl_dollar": 320.83,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -3.021,
-        "sharpe": 6.222,
+        "max_drawdown": -4.498,
+        "sharpe": 6.355,
         "avg_score": 8.6,
-        "profit_factor": 1.212,
-        "expectancy": 1.13,
+        "profit_factor": 1.383,
+        "expectancy": 1.97,
         "prime_win_rate": 60.0,
         "by_ticker": {
           "NVDA": {
@@ -2326,1578 +3801,1579 @@
             "pnl": 153.64000000000004,
             "wins": 43
           },
-          "QQQ": {
-            "trades": 36,
-            "pnl": -38.579999999999984,
-            "wins": 15
-          }
-        }
-      },
-      "score": 35.429
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 48,
-      "min_score": 6,
-      "stats": {
-        "trades": 100,
-        "wins": 57,
-        "losses": 43,
-        "win_rate": 57.0,
-        "total_pnl_pct": 23.71,
-        "total_pnl_dollar": 108.87,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.724,
-        "sharpe": 6.024,
-        "avg_score": 8.7,
-        "profit_factor": 1.199,
-        "expectancy": 1.09,
-        "prime_win_rate": 60.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 64,
-            "pnl": 148.62000000000003,
-            "wins": 41
+          "GOOGL": {
+            "trades": 55,
+            "pnl": 15.610000000000007,
+            "wins": 28
           },
-          "QQQ": {
-            "trades": 36,
-            "pnl": -39.75000000000001,
-            "wins": 16
+          "AAPL": {
+            "trades": 42,
+            "pnl": 151.58000000000004,
+            "wins": 26
           }
         }
       },
-      "score": 35.335
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 48,
-      "min_score": 4,
-      "stats": {
-        "trades": 100,
-        "wins": 57,
-        "losses": 43,
-        "win_rate": 57.0,
-        "total_pnl_pct": 23.62,
-        "total_pnl_dollar": 108.07,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.724,
-        "sharpe": 5.997,
-        "avg_score": 8.7,
-        "profit_factor": 1.198,
-        "expectancy": 1.08,
-        "prime_win_rate": 60.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 64,
-            "pnl": 148.62000000000003,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 36,
-            "pnl": -40.55000000000001,
-            "wins": 16
-          }
-        }
-      },
-      "score": 35.32
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 48,
-      "min_score": 5,
-      "stats": {
-        "trades": 100,
-        "wins": 57,
-        "losses": 43,
-        "win_rate": 57.0,
-        "total_pnl_pct": 23.62,
-        "total_pnl_dollar": 108.07,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.724,
-        "sharpe": 5.997,
-        "avg_score": 8.7,
-        "profit_factor": 1.198,
-        "expectancy": 1.08,
-        "prime_win_rate": 60.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 64,
-            "pnl": 148.62000000000003,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 36,
-            "pnl": -40.55000000000001,
-            "wins": 16
-          }
-        }
-      },
-      "score": 35.32
+      "score": 38.619
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 45,
-      "min_score": 6,
+      "min_score": 5,
       "stats": {
-        "trades": 101,
-        "wins": 56,
-        "losses": 45,
-        "win_rate": 55.45,
-        "total_pnl_pct": 23.364,
-        "total_pnl_dollar": 108.63,
+        "trades": 163,
+        "wins": 97,
+        "losses": 66,
+        "win_rate": 59.51,
+        "total_pnl_pct": 40.422,
+        "total_pnl_dollar": 320.83,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -3.021,
-        "sharpe": 5.889,
+        "max_drawdown": -4.498,
+        "sharpe": 6.355,
         "avg_score": 8.6,
-        "profit_factor": 1.2,
-        "expectancy": 1.08,
+        "profit_factor": 1.383,
+        "expectancy": 1.97,
         "prime_win_rate": 60.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 65,
-            "pnl": 146.41000000000005,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 36,
-            "pnl": -37.77999999999998,
-            "wins": 15
-          }
-        }
-      },
-      "score": 34.72
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 45,
-      "min_score": 4,
-      "stats": {
-        "trades": 110,
-        "wins": 62,
-        "losses": 48,
-        "win_rate": 56.36,
-        "total_pnl_pct": 27.442,
-        "total_pnl_dollar": 99.14,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -1.973,
-        "sharpe": 6.279,
-        "avg_score": 8.6,
-        "profit_factor": 1.165,
-        "expectancy": 0.9,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 73,
-            "pnl": 104.14000000000004,
-            "wins": 45
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -4.9999999999999725,
-            "wins": 17
-          }
-        }
-      },
-      "score": 34.644
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 45,
-      "min_score": 5,
-      "stats": {
-        "trades": 110,
-        "wins": 62,
-        "losses": 48,
-        "win_rate": 56.36,
-        "total_pnl_pct": 27.442,
-        "total_pnl_dollar": 99.14,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -1.973,
-        "sharpe": 6.279,
-        "avg_score": 8.6,
-        "profit_factor": 1.165,
-        "expectancy": 0.9,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 73,
-            "pnl": 104.14000000000004,
-            "wins": 45
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -4.9999999999999725,
-            "wins": 17
-          }
-        }
-      },
-      "score": 34.644
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 48,
-      "min_score": 4,
-      "stats": {
-        "trades": 108,
-        "wins": 61,
-        "losses": 47,
-        "win_rate": 56.48,
-        "total_pnl_pct": 26.001,
-        "total_pnl_dollar": 92.15,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.429,
-        "sharpe": 6.072,
-        "avg_score": 8.7,
-        "profit_factor": 1.152,
-        "expectancy": 0.85,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 71,
-            "pnl": 99.12000000000003,
-            "wins": 43
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -6.9699999999999855,
-            "wins": 18
-          }
-        }
-      },
-      "score": 34.537
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 48,
-      "min_score": 5,
-      "stats": {
-        "trades": 108,
-        "wins": 61,
-        "losses": 47,
-        "win_rate": 56.48,
-        "total_pnl_pct": 26.001,
-        "total_pnl_dollar": 92.15,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.429,
-        "sharpe": 6.072,
-        "avg_score": 8.7,
-        "profit_factor": 1.152,
-        "expectancy": 0.85,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 71,
-            "pnl": 99.12000000000003,
-            "wins": 43
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -6.9699999999999855,
-            "wins": 18
-          }
-        }
-      },
-      "score": 34.537
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 48,
-      "min_score": 6,
-      "stats": {
-        "trades": 108,
-        "wins": 61,
-        "losses": 47,
-        "win_rate": 56.48,
-        "total_pnl_pct": 26.001,
-        "total_pnl_dollar": 92.15,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.429,
-        "sharpe": 6.072,
-        "avg_score": 8.7,
-        "profit_factor": 1.152,
-        "expectancy": 0.85,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 71,
-            "pnl": 99.12000000000003,
-            "wins": 43
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -6.9699999999999855,
-            "wins": 18
-          }
-        }
-      },
-      "score": 34.537
-    },
-    {
-      "rsi_buy": 55,
-      "rsi_sell": 48,
-      "min_score": 6,
-      "stats": {
-        "trades": 103,
-        "wins": 58,
-        "losses": 45,
-        "win_rate": 56.31,
-        "total_pnl_pct": 23.981,
-        "total_pnl_dollar": 70.33,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.724,
-        "sharpe": 5.808,
-        "avg_score": 8.8,
-        "profit_factor": 1.115,
-        "expectancy": 0.68,
-        "prime_win_rate": 59.3,
         "by_ticker": {
           "NVDA": {
             "trades": 66,
-            "pnl": 104.48000000000008,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -34.15,
-            "wins": 17
-          }
-        }
-      },
-      "score": 34.014
-    },
-    {
-      "rsi_buy": 55,
-      "rsi_sell": 45,
-      "min_score": 4,
-      "stats": {
-        "trades": 105,
-        "wins": 59,
-        "losses": 46,
-        "win_rate": 56.19,
-        "total_pnl_pct": 25.428,
-        "total_pnl_dollar": 71.57,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -3.021,
-        "sharpe": 6.028,
-        "avg_score": 8.7,
-        "profit_factor": 1.118,
-        "expectancy": 0.68,
-        "prime_win_rate": 59.3,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 68,
-            "pnl": 109.50000000000009,
+            "pnl": 153.64000000000004,
             "wins": 43
           },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -37.92999999999997,
-            "wins": 16
-          }
-        }
-      },
-      "score": 33.996
-    },
-    {
-      "rsi_buy": 55,
-      "rsi_sell": 45,
-      "min_score": 5,
-      "stats": {
-        "trades": 105,
-        "wins": 59,
-        "losses": 46,
-        "win_rate": 56.19,
-        "total_pnl_pct": 25.428,
-        "total_pnl_dollar": 71.57,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -3.021,
-        "sharpe": 6.028,
-        "avg_score": 8.7,
-        "profit_factor": 1.118,
-        "expectancy": 0.68,
-        "prime_win_rate": 59.3,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 68,
-            "pnl": 109.50000000000009,
-            "wins": 43
+          "GOOGL": {
+            "trades": 55,
+            "pnl": 15.610000000000007,
+            "wins": 28
           },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -37.92999999999997,
-            "wins": 16
+          "AAPL": {
+            "trades": 42,
+            "pnl": 151.58000000000004,
+            "wins": 26
           }
         }
       },
-      "score": 33.996
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 45,
-      "min_score": 6,
-      "stats": {
-        "trades": 109,
-        "wins": 60,
-        "losses": 49,
-        "win_rate": 55.05,
-        "total_pnl_pct": 25.655,
-        "total_pnl_dollar": 91.91,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.476,
-        "sharpe": 5.948,
-        "avg_score": 8.7,
-        "profit_factor": 1.152,
-        "expectancy": 0.84,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 72,
-            "pnl": 96.91000000000003,
-            "wins": 43
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -4.9999999999999725,
-            "wins": 17
-          }
-        }
-      },
-      "score": 33.96
-    },
-    {
-      "rsi_buy": 55,
-      "rsi_sell": 48,
-      "min_score": 4,
-      "stats": {
-        "trades": 103,
-        "wins": 58,
-        "losses": 45,
-        "win_rate": 56.31,
-        "total_pnl_pct": 23.987,
-        "total_pnl_dollar": 64.58,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.724,
-        "sharpe": 5.809,
-        "avg_score": 8.8,
-        "profit_factor": 1.105,
-        "expectancy": 0.63,
-        "prime_win_rate": 59.3,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 66,
-            "pnl": 104.48000000000008,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -39.89999999999999,
-            "wins": 17
-          }
-        }
-      },
-      "score": 33.889
-    },
-    {
-      "rsi_buy": 55,
-      "rsi_sell": 48,
-      "min_score": 5,
-      "stats": {
-        "trades": 103,
-        "wins": 58,
-        "losses": 45,
-        "win_rate": 56.31,
-        "total_pnl_pct": 23.987,
-        "total_pnl_dollar": 64.58,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.724,
-        "sharpe": 5.809,
-        "avg_score": 8.8,
-        "profit_factor": 1.105,
-        "expectancy": 0.63,
-        "prime_win_rate": 59.3,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 66,
-            "pnl": 104.48000000000008,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -39.89999999999999,
-            "wins": 17
-          }
-        }
-      },
-      "score": 33.889
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 42,
-      "min_score": 4,
-      "stats": {
-        "trades": 99,
-        "wins": 55,
-        "losses": 44,
-        "win_rate": 55.56,
-        "total_pnl_pct": 22.152,
-        "total_pnl_dollar": 67.35,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -3.046,
-        "sharpe": 5.628,
-        "avg_score": 8.5,
-        "profit_factor": 1.122,
-        "expectancy": 0.68,
-        "prime_win_rate": 56.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 62,
-            "pnl": 173.05000000000004,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -105.70000000000003,
-            "wins": 14
-          }
-        }
-      },
-      "score": 33.784
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 42,
-      "min_score": 5,
-      "stats": {
-        "trades": 99,
-        "wins": 55,
-        "losses": 44,
-        "win_rate": 55.56,
-        "total_pnl_pct": 22.152,
-        "total_pnl_dollar": 67.35,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -3.046,
-        "sharpe": 5.628,
-        "avg_score": 8.5,
-        "profit_factor": 1.122,
-        "expectancy": 0.68,
-        "prime_win_rate": 56.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 62,
-            "pnl": 173.05000000000004,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -105.70000000000003,
-            "wins": 14
-          }
-        }
-      },
-      "score": 33.784
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 45,
-      "min_score": 4,
-      "stats": {
-        "trades": 109,
-        "wins": 60,
-        "losses": 49,
-        "win_rate": 55.05,
-        "total_pnl_pct": 25.556,
-        "total_pnl_dollar": 81.81,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.066,
-        "sharpe": 5.879,
-        "avg_score": 8.7,
-        "profit_factor": 1.132,
-        "expectancy": 0.75,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 72,
-            "pnl": 88.29000000000008,
-            "wins": 43
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -6.479999999999987,
-            "wins": 17
-          }
-        }
-      },
-      "score": 33.715
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 45,
-      "min_score": 5,
-      "stats": {
-        "trades": 109,
-        "wins": 60,
-        "losses": 49,
-        "win_rate": 55.05,
-        "total_pnl_pct": 25.556,
-        "total_pnl_dollar": 81.81,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.066,
-        "sharpe": 5.879,
-        "avg_score": 8.7,
-        "profit_factor": 1.132,
-        "expectancy": 0.75,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 72,
-            "pnl": 88.29000000000008,
-            "wins": 43
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -6.479999999999987,
-            "wins": 17
-          }
-        }
-      },
-      "score": 33.715
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 48,
-      "min_score": 4,
-      "stats": {
-        "trades": 107,
-        "wins": 59,
-        "losses": 48,
-        "win_rate": 55.14,
-        "total_pnl_pct": 24.115,
-        "total_pnl_dollar": 74.82,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.33,
-        "sharpe": 5.665,
-        "avg_score": 8.8,
-        "profit_factor": 1.12,
-        "expectancy": 0.7,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 70,
-            "pnl": 83.27000000000008,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -8.449999999999989,
-            "wins": 18
-          }
-        }
-      },
-      "score": 33.606
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 48,
-      "min_score": 5,
-      "stats": {
-        "trades": 107,
-        "wins": 59,
-        "losses": 48,
-        "win_rate": 55.14,
-        "total_pnl_pct": 24.115,
-        "total_pnl_dollar": 74.82,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.33,
-        "sharpe": 5.665,
-        "avg_score": 8.8,
-        "profit_factor": 1.12,
-        "expectancy": 0.7,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 70,
-            "pnl": 83.27000000000008,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -8.449999999999989,
-            "wins": 18
-          }
-        }
-      },
-      "score": 33.606
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 48,
-      "min_score": 6,
-      "stats": {
-        "trades": 107,
-        "wins": 59,
-        "losses": 48,
-        "win_rate": 55.14,
-        "total_pnl_pct": 24.115,
-        "total_pnl_dollar": 74.82,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.33,
-        "sharpe": 5.665,
-        "avg_score": 8.8,
-        "profit_factor": 1.12,
-        "expectancy": 0.7,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 70,
-            "pnl": 83.27000000000008,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -8.449999999999989,
-            "wins": 18
-          }
-        }
-      },
-      "score": 33.606
-    },
-    {
-      "rsi_buy": 55,
-      "rsi_sell": 45,
-      "min_score": 6,
-      "stats": {
-        "trades": 104,
-        "wins": 57,
-        "losses": 47,
-        "win_rate": 54.81,
-        "total_pnl_pct": 23.635,
-        "total_pnl_dollar": 70.09,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -3.021,
-        "sharpe": 5.681,
-        "avg_score": 8.8,
-        "profit_factor": 1.115,
-        "expectancy": 0.67,
-        "prime_win_rate": 59.3,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 67,
-            "pnl": 102.2700000000001,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -32.17999999999997,
-            "wins": 16
-          }
-        }
-      },
-      "score": 33.409
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 45,
-      "min_score": 6,
-      "stats": {
-        "trades": 108,
-        "wins": 58,
-        "losses": 50,
-        "win_rate": 53.7,
-        "total_pnl_pct": 23.769,
-        "total_pnl_dollar": 74.58,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.377,
-        "sharpe": 5.544,
-        "avg_score": 8.8,
-        "profit_factor": 1.12,
-        "expectancy": 0.69,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 71,
-            "pnl": 81.06000000000007,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -6.479999999999987,
-            "wins": 17
-          }
-        }
-      },
-      "score": 33.025
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 42,
-      "min_score": 6,
-      "stats": {
-        "trades": 98,
-        "wins": 53,
-        "losses": 45,
-        "win_rate": 54.08,
-        "total_pnl_pct": 20.364,
-        "total_pnl_dollar": 57.88,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -3.046,
-        "sharpe": 5.256,
-        "avg_score": 8.6,
-        "profit_factor": 1.105,
-        "expectancy": 0.59,
-        "prime_win_rate": 56.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 61,
-            "pnl": 165.82000000000005,
-            "wins": 39
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -107.94000000000004,
-            "wins": 14
-          }
-        }
-      },
-      "score": 32.977
+      "score": 38.619
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 40,
-      "min_score": 4,
+      "min_score": 5,
       "stats": {
-        "trades": 94,
-        "wins": 52,
-        "losses": 42,
-        "win_rate": 55.32,
-        "total_pnl_pct": 20.445,
-        "total_pnl_dollar": 32.19,
+        "trades": 150,
+        "wins": 86,
+        "losses": 64,
+        "win_rate": 57.33,
+        "total_pnl_pct": 37.914,
+        "total_pnl_dollar": 295.76,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -3.021,
-        "sharpe": 5.389,
-        "avg_score": 8.4,
-        "profit_factor": 1.061,
-        "expectancy": 0.34,
-        "prime_win_rate": 52.4,
+        "max_drawdown": -3.748,
+        "sharpe": 6.627,
+        "avg_score": 8.5,
+        "profit_factor": 1.434,
+        "expectancy": 1.97,
+        "prime_win_rate": 53.6,
         "by_ticker": {
           "NVDA": {
             "trades": 57,
             "pnl": 156.95000000000002,
             "wins": 38
           },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -124.76000000000005,
-            "wins": 14
+          "AAPL": {
+            "trades": 42,
+            "pnl": 144.77999999999997,
+            "wins": 25
+          },
+          "GOOGL": {
+            "trades": 51,
+            "pnl": -5.970000000000002,
+            "wins": 23
           }
         }
       },
-      "score": 32.908
+      "score": 38.257
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 40,
-      "min_score": 5,
+      "min_score": 3,
       "stats": {
-        "trades": 94,
-        "wins": 52,
-        "losses": 42,
-        "win_rate": 55.32,
-        "total_pnl_pct": 20.445,
-        "total_pnl_dollar": 32.19,
+        "trades": 151,
+        "wins": 86,
+        "losses": 65,
+        "win_rate": 56.95,
+        "total_pnl_pct": 37.853,
+        "total_pnl_dollar": 295.3,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -3.021,
-        "sharpe": 5.389,
-        "avg_score": 8.4,
-        "profit_factor": 1.061,
-        "expectancy": 0.34,
-        "prime_win_rate": 52.4,
+        "max_drawdown": -3.748,
+        "sharpe": 6.589,
+        "avg_score": 8.5,
+        "profit_factor": 1.433,
+        "expectancy": 1.96,
+        "prime_win_rate": 53.6,
         "by_ticker": {
           "NVDA": {
             "trades": 57,
             "pnl": 156.95000000000002,
             "wins": 38
           },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -124.76000000000005,
-            "wins": 14
-          }
-        }
-      },
-      "score": 32.908
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 42,
-      "min_score": 4,
-      "stats": {
-        "trades": 107,
-        "wins": 58,
-        "losses": 49,
-        "win_rate": 54.21,
-        "total_pnl_pct": 24.161,
-        "total_pnl_dollar": 30.64,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -3.046,
-        "sharpe": 5.631,
-        "avg_score": 8.6,
-        "profit_factor": 1.049,
-        "expectancy": 0.29,
-        "prime_win_rate": 52.2,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 69,
-            "pnl": 123.55000000000004,
-            "wins": 43
+          "AAPL": {
+            "trades": 42,
+            "pnl": 144.77999999999997,
+            "wins": 25
           },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -92.90999999999998,
-            "wins": 15
+          "GOOGL": {
+            "trades": 52,
+            "pnl": -6.429999999999982,
+            "wins": 23
           }
         }
       },
-      "score": 32.319
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 42,
-      "min_score": 5,
-      "stats": {
-        "trades": 107,
-        "wins": 58,
-        "losses": 49,
-        "win_rate": 54.21,
-        "total_pnl_pct": 24.161,
-        "total_pnl_dollar": 30.64,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -3.046,
-        "sharpe": 5.631,
-        "avg_score": 8.6,
-        "profit_factor": 1.049,
-        "expectancy": 0.29,
-        "prime_win_rate": 52.2,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 69,
-            "pnl": 123.55000000000004,
-            "wins": 43
-          },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -92.90999999999998,
-            "wins": 15
-          }
-        }
-      },
-      "score": 32.319
-    },
-    {
-      "rsi_buy": 55,
-      "rsi_sell": 42,
-      "min_score": 4,
-      "stats": {
-        "trades": 102,
-        "wins": 56,
-        "losses": 46,
-        "win_rate": 54.9,
-        "total_pnl_pct": 22.545,
-        "total_pnl_dollar": 16.8,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -3.046,
-        "sharpe": 5.466,
-        "avg_score": 8.6,
-        "profit_factor": 1.027,
-        "expectancy": 0.16,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 64,
-            "pnl": 128.91000000000005,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -112.10999999999999,
-            "wins": 15
-          }
-        }
-      },
-      "score": 32.31
-    },
-    {
-      "rsi_buy": 55,
-      "rsi_sell": 42,
-      "min_score": 5,
-      "stats": {
-        "trades": 102,
-        "wins": 56,
-        "losses": 46,
-        "win_rate": 54.9,
-        "total_pnl_pct": 22.545,
-        "total_pnl_dollar": 16.8,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -3.046,
-        "sharpe": 5.466,
-        "avg_score": 8.6,
-        "profit_factor": 1.027,
-        "expectancy": 0.16,
-        "prime_win_rate": 56.0,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 64,
-            "pnl": 128.91000000000005,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -112.10999999999999,
-            "wins": 15
-          }
-        }
-      },
-      "score": 32.31
+      "score": 38.09
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 40,
-      "min_score": 6,
+      "min_score": 4,
       "stats": {
-        "trades": 93,
-        "wins": 50,
-        "losses": 43,
-        "win_rate": 53.76,
-        "total_pnl_pct": 18.657,
-        "total_pnl_dollar": 22.72,
+        "trades": 151,
+        "wins": 86,
+        "losses": 65,
+        "win_rate": 56.95,
+        "total_pnl_pct": 37.853,
+        "total_pnl_dollar": 295.3,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -3.021,
-        "sharpe": 4.999,
+        "max_drawdown": -3.748,
+        "sharpe": 6.589,
         "avg_score": 8.5,
-        "profit_factor": 1.043,
-        "expectancy": 0.24,
-        "prime_win_rate": 52.4,
+        "profit_factor": 1.433,
+        "expectancy": 1.96,
+        "prime_win_rate": 53.6,
         "by_ticker": {
           "NVDA": {
+            "trades": 57,
+            "pnl": 156.95000000000002,
+            "wins": 38
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 144.77999999999997,
+            "wins": 25
+          },
+          "GOOGL": {
+            "trades": 52,
+            "pnl": -6.429999999999982,
+            "wins": 23
+          }
+        }
+      },
+      "score": 38.09
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 42,
+      "min_score": 5,
+      "stats": {
+        "trades": 161,
+        "wins": 94,
+        "losses": 67,
+        "win_rate": 58.39,
+        "total_pnl_pct": 38.797,
+        "total_pnl_dollar": 299.45,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -4.498,
+        "sharpe": 6.219,
+        "avg_score": 8.6,
+        "profit_factor": 1.367,
+        "expectancy": 1.86,
+        "prime_win_rate": 60.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 64,
+            "pnl": 128.91000000000005,
+            "wins": 41
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 167.34,
+            "wins": 26
+          },
+          "GOOGL": {
+            "trades": 55,
+            "pnl": 3.2000000000000206,
+            "wins": 27
+          }
+        }
+      },
+      "score": 37.956
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 42,
+      "min_score": 3,
+      "stats": {
+        "trades": 162,
+        "wins": 94,
+        "losses": 68,
+        "win_rate": 58.02,
+        "total_pnl_pct": 38.736,
+        "total_pnl_dollar": 298.99,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -4.498,
+        "sharpe": 6.185,
+        "avg_score": 8.6,
+        "profit_factor": 1.366,
+        "expectancy": 1.85,
+        "prime_win_rate": 60.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 64,
+            "pnl": 128.91000000000005,
+            "wins": 41
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 167.34,
+            "wins": 26
+          },
+          "GOOGL": {
             "trades": 56,
-            "pnl": 149.72000000000003,
-            "wins": 36
-          },
-          "QQQ": {
-            "trades": 37,
-            "pnl": -127.00000000000006,
-            "wins": 14
+            "pnl": 2.7400000000000126,
+            "wins": 27
           }
         }
       },
-      "score": 32.054
+      "score": 37.793
     },
     {
       "rsi_buy": 55,
       "rsi_sell": 42,
-      "min_score": 6,
+      "min_score": 4,
       "stats": {
-        "trades": 101,
-        "wins": 54,
-        "losses": 47,
-        "win_rate": 53.47,
-        "total_pnl_pct": 20.752,
-        "total_pnl_dollar": 15.32,
+        "trades": 162,
+        "wins": 94,
+        "losses": 68,
+        "win_rate": 58.02,
+        "total_pnl_pct": 38.736,
+        "total_pnl_dollar": 298.99,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -3.046,
-        "sharpe": 5.108,
-        "avg_score": 8.7,
-        "profit_factor": 1.025,
-        "expectancy": 0.15,
-        "prime_win_rate": 56.0,
+        "max_drawdown": -4.498,
+        "sharpe": 6.185,
+        "avg_score": 8.6,
+        "profit_factor": 1.366,
+        "expectancy": 1.85,
+        "prime_win_rate": 60.0,
         "by_ticker": {
           "NVDA": {
-            "trades": 63,
-            "pnl": 121.68000000000006,
-            "wins": 39
+            "trades": 64,
+            "pnl": 128.91000000000005,
+            "wins": 41
           },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -106.36000000000001,
-            "wins": 15
+          "AAPL": {
+            "trades": 42,
+            "pnl": 167.34,
+            "wins": 26
+          },
+          "GOOGL": {
+            "trades": 56,
+            "pnl": 2.7400000000000126,
+            "wins": 27
           }
         }
       },
-      "score": 31.713
+      "score": 37.793
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 48,
+      "min_score": 3,
+      "stats": {
+        "trades": 164,
+        "wins": 94,
+        "losses": 70,
+        "win_rate": 57.32,
+        "total_pnl_pct": 38.029,
+        "total_pnl_dollar": 303.71,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -4.498,
+        "sharpe": 5.95,
+        "avg_score": 8.7,
+        "profit_factor": 1.349,
+        "expectancy": 1.85,
+        "prime_win_rate": 59.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 66,
+            "pnl": 104.48000000000008,
+            "wins": 41
+          },
+          "GOOGL": {
+            "trades": 56,
+            "pnl": 67.38999999999999,
+            "wins": 29
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 131.83999999999997,
+            "wins": 24
+          }
+        }
+      },
+      "score": 37.343
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 48,
+      "min_score": 4,
+      "stats": {
+        "trades": 164,
+        "wins": 94,
+        "losses": 70,
+        "win_rate": 57.32,
+        "total_pnl_pct": 38.029,
+        "total_pnl_dollar": 303.71,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -4.498,
+        "sharpe": 5.95,
+        "avg_score": 8.7,
+        "profit_factor": 1.349,
+        "expectancy": 1.85,
+        "prime_win_rate": 59.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 66,
+            "pnl": 104.48000000000008,
+            "wins": 41
+          },
+          "GOOGL": {
+            "trades": 56,
+            "pnl": 67.38999999999999,
+            "wins": 29
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 131.83999999999997,
+            "wins": 24
+          }
+        }
+      },
+      "score": 37.343
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 48,
+      "min_score": 5,
+      "stats": {
+        "trades": 164,
+        "wins": 94,
+        "losses": 70,
+        "win_rate": 57.32,
+        "total_pnl_pct": 38.029,
+        "total_pnl_dollar": 303.71,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -4.498,
+        "sharpe": 5.95,
+        "avg_score": 8.7,
+        "profit_factor": 1.349,
+        "expectancy": 1.85,
+        "prime_win_rate": 59.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 66,
+            "pnl": 104.48000000000008,
+            "wins": 41
+          },
+          "GOOGL": {
+            "trades": 56,
+            "pnl": 67.38999999999999,
+            "wins": 29
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 131.83999999999997,
+            "wins": 24
+          }
+        }
+      },
+      "score": 37.343
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 48,
+      "min_score": 3,
+      "stats": {
+        "trades": 167,
+        "wins": 95,
+        "losses": 72,
+        "win_rate": 56.89,
+        "total_pnl_pct": 41.337,
+        "total_pnl_dollar": 294.93,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.221,
+        "sharpe": 6.4,
+        "avg_score": 8.7,
+        "profit_factor": 1.346,
+        "expectancy": 1.77,
+        "prime_win_rate": 54.3,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 71,
+            "pnl": 99.12000000000003,
+            "wins": 43
+          },
+          "GOOGL": {
+            "trades": 54,
+            "pnl": 63.41,
+            "wins": 28
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 132.4,
+            "wins": 24
+          }
+        }
+      },
+      "score": 37.101
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 48,
+      "min_score": 4,
+      "stats": {
+        "trades": 167,
+        "wins": 95,
+        "losses": 72,
+        "win_rate": 56.89,
+        "total_pnl_pct": 41.337,
+        "total_pnl_dollar": 294.93,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.221,
+        "sharpe": 6.4,
+        "avg_score": 8.7,
+        "profit_factor": 1.346,
+        "expectancy": 1.77,
+        "prime_win_rate": 54.3,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 71,
+            "pnl": 99.12000000000003,
+            "wins": 43
+          },
+          "GOOGL": {
+            "trades": 54,
+            "pnl": 63.41,
+            "wins": 28
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 132.4,
+            "wins": 24
+          }
+        }
+      },
+      "score": 37.101
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 48,
+      "min_score": 5,
+      "stats": {
+        "trades": 167,
+        "wins": 95,
+        "losses": 72,
+        "win_rate": 56.89,
+        "total_pnl_pct": 41.337,
+        "total_pnl_dollar": 294.93,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.221,
+        "sharpe": 6.4,
+        "avg_score": 8.7,
+        "profit_factor": 1.346,
+        "expectancy": 1.77,
+        "prime_win_rate": 54.3,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 71,
+            "pnl": 99.12000000000003,
+            "wins": 43
+          },
+          "GOOGL": {
+            "trades": 54,
+            "pnl": 63.41,
+            "wins": 28
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 132.4,
+            "wins": 24
+          }
+        }
+      },
+      "score": 37.101
     },
     {
       "rsi_buy": 50,
       "rsi_sell": 42,
-      "min_score": 6,
+      "min_score": 3,
       "stats": {
-        "trades": 106,
-        "wins": 56,
-        "losses": 50,
-        "win_rate": 52.83,
-        "total_pnl_pct": 22.374,
-        "total_pnl_dollar": 23.41,
+        "trades": 166,
+        "wins": 96,
+        "losses": 70,
+        "win_rate": 57.83,
+        "total_pnl_pct": 40.404,
+        "total_pnl_dollar": 258.11,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -3.046,
-        "sharpe": 5.289,
-        "avg_score": 8.6,
-        "profit_factor": 1.037,
-        "expectancy": 0.22,
-        "prime_win_rate": 52.2,
+        "max_drawdown": -2.379,
+        "sharpe": 6.343,
+        "avg_score": 8.5,
+        "profit_factor": 1.319,
+        "expectancy": 1.55,
+        "prime_win_rate": 54.8,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 69,
+            "pnl": 123.55000000000004,
+            "wins": 43
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 167.89999999999998,
+            "wins": 26
+          },
+          "GOOGL": {
+            "trades": 55,
+            "pnl": -33.34,
+            "wins": 27
+          }
+        }
+      },
+      "score": 37.097
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 42,
+      "min_score": 4,
+      "stats": {
+        "trades": 166,
+        "wins": 96,
+        "losses": 70,
+        "win_rate": 57.83,
+        "total_pnl_pct": 40.404,
+        "total_pnl_dollar": 258.11,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.379,
+        "sharpe": 6.343,
+        "avg_score": 8.5,
+        "profit_factor": 1.319,
+        "expectancy": 1.55,
+        "prime_win_rate": 54.8,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 69,
+            "pnl": 123.55000000000004,
+            "wins": 43
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 167.89999999999998,
+            "wins": 26
+          },
+          "GOOGL": {
+            "trades": 55,
+            "pnl": -33.34,
+            "wins": 27
+          }
+        }
+      },
+      "score": 37.097
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 42,
+      "min_score": 5,
+      "stats": {
+        "trades": 166,
+        "wins": 96,
+        "losses": 70,
+        "win_rate": 57.83,
+        "total_pnl_pct": 40.404,
+        "total_pnl_dollar": 258.11,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.379,
+        "sharpe": 6.343,
+        "avg_score": 8.5,
+        "profit_factor": 1.319,
+        "expectancy": 1.55,
+        "prime_win_rate": 54.8,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 69,
+            "pnl": 123.55000000000004,
+            "wins": 43
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 167.89999999999998,
+            "wins": 26
+          },
+          "GOOGL": {
+            "trades": 55,
+            "pnl": -33.34,
+            "wins": 27
+          }
+        }
+      },
+      "score": 37.097
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 45,
+      "min_score": 3,
+      "stats": {
+        "trades": 166,
+        "wins": 96,
+        "losses": 70,
+        "win_rate": 57.83,
+        "total_pnl_pct": 37.813,
+        "total_pnl_dollar": 247.15,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -4.498,
+        "sharpe": 5.734,
+        "avg_score": 8.7,
+        "profit_factor": 1.265,
+        "expectancy": 1.49,
+        "prime_win_rate": 60.5,
         "by_ticker": {
           "NVDA": {
             "trades": 68,
-            "pnl": 116.32000000000005,
-            "wins": 41
+            "pnl": 109.50000000000009,
+            "wins": 43
           },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -92.90999999999998,
-            "wins": 15
+          "GOOGL": {
+            "trades": 56,
+            "pnl": -1.8700000000000188,
+            "wins": 28
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 139.51999999999998,
+            "wins": 25
           }
         }
       },
-      "score": 31.612
+      "score": 36.527
     },
     {
-      "rsi_buy": 50,
-      "rsi_sell": 40,
+      "rsi_buy": 55,
+      "rsi_sell": 45,
       "min_score": 4,
       "stats": {
-        "trades": 102,
-        "wins": 55,
-        "losses": 47,
-        "win_rate": 53.92,
-        "total_pnl_pct": 22.454,
-        "total_pnl_dollar": -4.52,
+        "trades": 166,
+        "wins": 96,
+        "losses": 70,
+        "win_rate": 57.83,
+        "total_pnl_pct": 37.813,
+        "total_pnl_dollar": 247.15,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -2.715,
-        "sharpe": 5.412,
-        "avg_score": 8.5,
-        "profit_factor": 0.993,
-        "expectancy": -0.04,
-        "prime_win_rate": 47.6,
+        "max_drawdown": -4.498,
+        "sharpe": 5.734,
+        "avg_score": 8.7,
+        "profit_factor": 1.265,
+        "expectancy": 1.49,
+        "prime_win_rate": 60.5,
         "by_ticker": {
           "NVDA": {
-            "trades": 64,
-            "pnl": 107.45000000000005,
-            "wins": 40
+            "trades": 68,
+            "pnl": 109.50000000000009,
+            "wins": 43
           },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -111.97,
-            "wins": 15
+          "GOOGL": {
+            "trades": 56,
+            "pnl": -1.8700000000000188,
+            "wins": 28
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 139.51999999999998,
+            "wins": 25
           }
         }
       },
-      "score": 31.478
+      "score": 36.527
     },
     {
-      "rsi_buy": 50,
-      "rsi_sell": 40,
+      "rsi_buy": 55,
+      "rsi_sell": 45,
       "min_score": 5,
       "stats": {
-        "trades": 102,
-        "wins": 55,
-        "losses": 47,
-        "win_rate": 53.92,
-        "total_pnl_pct": 22.454,
-        "total_pnl_dollar": -4.52,
+        "trades": 166,
+        "wins": 96,
+        "losses": 70,
+        "win_rate": 57.83,
+        "total_pnl_pct": 37.813,
+        "total_pnl_dollar": 247.15,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -2.715,
-        "sharpe": 5.412,
-        "avg_score": 8.5,
-        "profit_factor": 0.993,
-        "expectancy": -0.04,
-        "prime_win_rate": 47.6,
+        "max_drawdown": -4.498,
+        "sharpe": 5.734,
+        "avg_score": 8.7,
+        "profit_factor": 1.265,
+        "expectancy": 1.49,
+        "prime_win_rate": 60.5,
         "by_ticker": {
           "NVDA": {
-            "trades": 64,
-            "pnl": 107.45000000000005,
-            "wins": 40
+            "trades": 68,
+            "pnl": 109.50000000000009,
+            "wins": 43
           },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -111.97,
-            "wins": 15
+          "GOOGL": {
+            "trades": 56,
+            "pnl": -1.8700000000000188,
+            "wins": 28
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 139.51999999999998,
+            "wins": 25
           }
         }
       },
-      "score": 31.478
+      "score": 36.527
     },
     {
       "rsi_buy": 55,
       "rsi_sell": 40,
-      "min_score": 4,
+      "min_score": 5,
       "stats": {
-        "trades": 97,
-        "wins": 53,
-        "losses": 44,
-        "win_rate": 54.64,
-        "total_pnl_pct": 20.838,
-        "total_pnl_dollar": -18.36,
+        "trades": 153,
+        "wins": 85,
+        "losses": 68,
+        "win_rate": 55.56,
+        "total_pnl_pct": 35.358,
+        "total_pnl_dollar": 223.14,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -3.021,
-        "sharpe": 5.233,
-        "avg_score": 8.5,
-        "profit_factor": 0.97,
-        "expectancy": -0.19,
-        "prime_win_rate": 52.2,
+        "max_drawdown": -3.748,
+        "sharpe": 5.937,
+        "avg_score": 8.6,
+        "profit_factor": 1.287,
+        "expectancy": 1.46,
+        "prime_win_rate": 54.8,
         "by_ticker": {
           "NVDA": {
             "trades": 59,
             "pnl": 112.81000000000009,
             "wins": 38
           },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -131.17000000000002,
-            "wins": 15
+          "AAPL": {
+            "trades": 42,
+            "pnl": 133.78,
+            "wins": 24
+          },
+          "GOOGL": {
+            "trades": 52,
+            "pnl": -23.45,
+            "wins": 23
           }
         }
       },
-      "score": 31.461
+      "score": 35.824
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 48,
+      "min_score": 3,
+      "stats": {
+        "trades": 168,
+        "wins": 94,
+        "losses": 74,
+        "win_rate": 55.95,
+        "total_pnl_pct": 38.091,
+        "total_pnl_dollar": 234.8,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.737,
+        "sharpe": 5.848,
+        "avg_score": 8.7,
+        "profit_factor": 1.261,
+        "expectancy": 1.4,
+        "prime_win_rate": 54.3,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 70,
+            "pnl": 83.27000000000008,
+            "wins": 41
+          },
+          "GOOGL": {
+            "trades": 56,
+            "pnl": 38.760000000000005,
+            "wins": 29
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 112.76999999999998,
+            "wins": 24
+          }
+        }
+      },
+      "score": 35.69
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 48,
+      "min_score": 4,
+      "stats": {
+        "trades": 168,
+        "wins": 94,
+        "losses": 74,
+        "win_rate": 55.95,
+        "total_pnl_pct": 38.091,
+        "total_pnl_dollar": 234.8,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.737,
+        "sharpe": 5.848,
+        "avg_score": 8.7,
+        "profit_factor": 1.261,
+        "expectancy": 1.4,
+        "prime_win_rate": 54.3,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 70,
+            "pnl": 83.27000000000008,
+            "wins": 41
+          },
+          "GOOGL": {
+            "trades": 56,
+            "pnl": 38.760000000000005,
+            "wins": 29
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 112.76999999999998,
+            "wins": 24
+          }
+        }
+      },
+      "score": 35.69
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 48,
+      "min_score": 5,
+      "stats": {
+        "trades": 168,
+        "wins": 94,
+        "losses": 74,
+        "win_rate": 55.95,
+        "total_pnl_pct": 38.091,
+        "total_pnl_dollar": 234.8,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.737,
+        "sharpe": 5.848,
+        "avg_score": 8.7,
+        "profit_factor": 1.261,
+        "expectancy": 1.4,
+        "prime_win_rate": 54.3,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 70,
+            "pnl": 83.27000000000008,
+            "wins": 41
+          },
+          "GOOGL": {
+            "trades": 56,
+            "pnl": 38.760000000000005,
+            "wins": 29
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 112.76999999999998,
+            "wins": 24
+          }
+        }
+      },
+      "score": 35.69
     },
     {
       "rsi_buy": 55,
       "rsi_sell": 40,
-      "min_score": 5,
+      "min_score": 3,
       "stats": {
-        "trades": 97,
-        "wins": 53,
-        "losses": 44,
-        "win_rate": 54.64,
-        "total_pnl_pct": 20.838,
-        "total_pnl_dollar": -18.36,
+        "trades": 154,
+        "wins": 85,
+        "losses": 69,
+        "win_rate": 55.19,
+        "total_pnl_pct": 35.297,
+        "total_pnl_dollar": 222.68,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -3.021,
-        "sharpe": 5.233,
-        "avg_score": 8.5,
-        "profit_factor": 0.97,
-        "expectancy": -0.19,
-        "prime_win_rate": 52.2,
+        "max_drawdown": -3.748,
+        "sharpe": 5.903,
+        "avg_score": 8.6,
+        "profit_factor": 1.286,
+        "expectancy": 1.45,
+        "prime_win_rate": 54.8,
         "by_ticker": {
           "NVDA": {
             "trades": 59,
             "pnl": 112.81000000000009,
             "wins": 38
           },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -131.17000000000002,
-            "wins": 15
-          }
-        }
-      },
-      "score": 31.461
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 42,
-      "min_score": 4,
-      "stats": {
-        "trades": 106,
-        "wins": 56,
-        "losses": 50,
-        "win_rate": 52.83,
-        "total_pnl_pct": 22.275,
-        "total_pnl_dollar": 14.02,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -3.046,
-        "sharpe": 5.226,
-        "avg_score": 8.7,
-        "profit_factor": 1.022,
-        "expectancy": 0.13,
-        "prime_win_rate": 52.2,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 68,
-            "pnl": 107.70000000000007,
-            "wins": 41
+          "AAPL": {
+            "trades": 42,
+            "pnl": 133.78,
+            "wins": 24
           },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -93.67999999999995,
-            "wins": 15
+          "GOOGL": {
+            "trades": 53,
+            "pnl": -23.910000000000007,
+            "wins": 23
           }
         }
       },
-      "score": 31.417
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 42,
-      "min_score": 5,
-      "stats": {
-        "trades": 106,
-        "wins": 56,
-        "losses": 50,
-        "win_rate": 52.83,
-        "total_pnl_pct": 22.275,
-        "total_pnl_dollar": 14.02,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -3.046,
-        "sharpe": 5.226,
-        "avg_score": 8.7,
-        "profit_factor": 1.022,
-        "expectancy": 0.13,
-        "prime_win_rate": 52.2,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 68,
-            "pnl": 107.70000000000007,
-            "wins": 41
-          },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -93.67999999999995,
-            "wins": 15
-          }
-        }
-      },
-      "score": 31.417
+      "score": 35.661
     },
     {
       "rsi_buy": 55,
       "rsi_sell": 40,
-      "min_score": 6,
+      "min_score": 4,
       "stats": {
-        "trades": 96,
-        "wins": 51,
-        "losses": 45,
-        "win_rate": 53.12,
-        "total_pnl_pct": 19.045,
-        "total_pnl_dollar": -19.84,
+        "trades": 154,
+        "wins": 85,
+        "losses": 69,
+        "win_rate": 55.19,
+        "total_pnl_pct": 35.297,
+        "total_pnl_dollar": 222.68,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -3.021,
-        "sharpe": 4.859,
+        "max_drawdown": -3.748,
+        "sharpe": 5.903,
         "avg_score": 8.6,
-        "profit_factor": 0.967,
-        "expectancy": -0.21,
-        "prime_win_rate": 52.2,
+        "profit_factor": 1.286,
+        "expectancy": 1.45,
+        "prime_win_rate": 54.8,
         "by_ticker": {
           "NVDA": {
-            "trades": 58,
-            "pnl": 105.58000000000007,
-            "wins": 36
-          },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -125.42000000000004,
-            "wins": 15
-          }
-        }
-      },
-      "score": 30.813
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 40,
-      "min_score": 6,
-      "stats": {
-        "trades": 101,
-        "wins": 53,
-        "losses": 48,
-        "win_rate": 52.48,
-        "total_pnl_pct": 20.667,
-        "total_pnl_dollar": -11.75,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.715,
-        "sharpe": 5.056,
-        "avg_score": 8.5,
-        "profit_factor": 0.981,
-        "expectancy": -0.12,
-        "prime_win_rate": 47.6,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 63,
-            "pnl": 100.22000000000003,
+            "trades": 59,
+            "pnl": 112.81000000000009,
             "wins": 38
           },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -111.97,
-            "wins": 15
+          "AAPL": {
+            "trades": 42,
+            "pnl": 133.78,
+            "wins": 24
+          },
+          "GOOGL": {
+            "trades": 53,
+            "pnl": -23.910000000000007,
+            "wins": 23
           }
         }
       },
-      "score": 30.742
+      "score": 35.661
     },
     {
       "rsi_buy": 52,
       "rsi_sell": 42,
-      "min_score": 6,
+      "min_score": 3,
       "stats": {
-        "trades": 105,
-        "wins": 54,
-        "losses": 51,
-        "win_rate": 51.43,
-        "total_pnl_pct": 20.488,
-        "total_pnl_dollar": 6.79,
+        "trades": 167,
+        "wins": 95,
+        "losses": 72,
+        "win_rate": 56.89,
+        "total_pnl_pct": 37.2,
+        "total_pnl_dollar": 197.87,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -3.046,
-        "sharpe": 4.879,
-        "avg_score": 8.7,
-        "profit_factor": 1.011,
-        "expectancy": 0.06,
-        "prime_win_rate": 52.2,
+        "max_drawdown": -2.737,
+        "sharpe": 5.793,
+        "avg_score": 8.5,
+        "profit_factor": 1.231,
+        "expectancy": 1.18,
+        "prime_win_rate": 54.8,
         "by_ticker": {
           "NVDA": {
-            "trades": 67,
-            "pnl": 100.47000000000006,
-            "wins": 39
+            "trades": 68,
+            "pnl": 107.70000000000007,
+            "wins": 41
           },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -93.67999999999995,
-            "wins": 15
+          "AAPL": {
+            "trades": 42,
+            "pnl": 148.27,
+            "wins": 26
+          },
+          "GOOGL": {
+            "trades": 57,
+            "pnl": -58.10000000000001,
+            "wins": 28
           }
         }
       },
-      "score": 30.712
+      "score": 35.656
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 42,
+      "min_score": 4,
+      "stats": {
+        "trades": 167,
+        "wins": 95,
+        "losses": 72,
+        "win_rate": 56.89,
+        "total_pnl_pct": 37.2,
+        "total_pnl_dollar": 197.87,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.737,
+        "sharpe": 5.793,
+        "avg_score": 8.5,
+        "profit_factor": 1.231,
+        "expectancy": 1.18,
+        "prime_win_rate": 54.8,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 68,
+            "pnl": 107.70000000000007,
+            "wins": 41
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 148.27,
+            "wins": 26
+          },
+          "GOOGL": {
+            "trades": 57,
+            "pnl": -58.10000000000001,
+            "wins": 28
+          }
+        }
+      },
+      "score": 35.656
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 42,
+      "min_score": 5,
+      "stats": {
+        "trades": 167,
+        "wins": 95,
+        "losses": 72,
+        "win_rate": 56.89,
+        "total_pnl_pct": 37.2,
+        "total_pnl_dollar": 197.87,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.737,
+        "sharpe": 5.793,
+        "avg_score": 8.5,
+        "profit_factor": 1.231,
+        "expectancy": 1.18,
+        "prime_win_rate": 54.8,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 68,
+            "pnl": 107.70000000000007,
+            "wins": 41
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 148.27,
+            "wins": 26
+          },
+          "GOOGL": {
+            "trades": 57,
+            "pnl": -58.10000000000001,
+            "wins": 28
+          }
+        }
+      },
+      "score": 35.656
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 45,
+      "min_score": 3,
+      "stats": {
+        "trades": 169,
+        "wins": 96,
+        "losses": 73,
+        "win_rate": 56.8,
+        "total_pnl_pct": 39.054,
+        "total_pnl_dollar": 201.06,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.379,
+        "sharpe": 5.842,
+        "avg_score": 8.6,
+        "profit_factor": 1.217,
+        "expectancy": 1.19,
+        "prime_win_rate": 55.9,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 73,
+            "pnl": 104.14000000000004,
+            "wins": 45
+          },
+          "GOOGL": {
+            "trades": 54,
+            "pnl": -43.15999999999998,
+            "wins": 26
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 140.08,
+            "wins": 25
+          }
+        }
+      },
+      "score": 35.485
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 45,
+      "min_score": 4,
+      "stats": {
+        "trades": 169,
+        "wins": 96,
+        "losses": 73,
+        "win_rate": 56.8,
+        "total_pnl_pct": 39.054,
+        "total_pnl_dollar": 201.06,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.379,
+        "sharpe": 5.842,
+        "avg_score": 8.6,
+        "profit_factor": 1.217,
+        "expectancy": 1.19,
+        "prime_win_rate": 55.9,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 73,
+            "pnl": 104.14000000000004,
+            "wins": 45
+          },
+          "GOOGL": {
+            "trades": 54,
+            "pnl": -43.15999999999998,
+            "wins": 26
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 140.08,
+            "wins": 25
+          }
+        }
+      },
+      "score": 35.485
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 45,
+      "min_score": 5,
+      "stats": {
+        "trades": 169,
+        "wins": 96,
+        "losses": 73,
+        "win_rate": 56.8,
+        "total_pnl_pct": 39.054,
+        "total_pnl_dollar": 201.06,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.379,
+        "sharpe": 5.842,
+        "avg_score": 8.6,
+        "profit_factor": 1.217,
+        "expectancy": 1.19,
+        "prime_win_rate": 55.9,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 73,
+            "pnl": 104.14000000000004,
+            "wins": 45
+          },
+          "GOOGL": {
+            "trades": 54,
+            "pnl": -43.15999999999998,
+            "wins": 26
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 140.08,
+            "wins": 25
+          }
+        }
+      },
+      "score": 35.485
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 40,
+      "min_score": 3,
+      "stats": {
+        "trades": 158,
+        "wins": 87,
+        "losses": 71,
+        "win_rate": 55.06,
+        "total_pnl_pct": 36.965,
+        "total_pnl_dollar": 178.75,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.379,
+        "sharpe": 6.073,
+        "avg_score": 8.5,
+        "profit_factor": 1.232,
+        "expectancy": 1.13,
+        "prime_win_rate": 48.1,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 64,
+            "pnl": 107.45000000000005,
+            "wins": 40
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 131.29,
+            "wins": 24
+          },
+          "GOOGL": {
+            "trades": 52,
+            "pnl": -59.99000000000001,
+            "wins": 23
+          }
+        }
+      },
+      "score": 34.909
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 40,
+      "min_score": 4,
+      "stats": {
+        "trades": 158,
+        "wins": 87,
+        "losses": 71,
+        "win_rate": 55.06,
+        "total_pnl_pct": 36.965,
+        "total_pnl_dollar": 178.75,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.379,
+        "sharpe": 6.073,
+        "avg_score": 8.5,
+        "profit_factor": 1.232,
+        "expectancy": 1.13,
+        "prime_win_rate": 48.1,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 64,
+            "pnl": 107.45000000000005,
+            "wins": 40
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 131.29,
+            "wins": 24
+          },
+          "GOOGL": {
+            "trades": 52,
+            "pnl": -59.99000000000001,
+            "wins": 23
+          }
+        }
+      },
+      "score": 34.909
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 40,
+      "min_score": 5,
+      "stats": {
+        "trades": 158,
+        "wins": 87,
+        "losses": 71,
+        "win_rate": 55.06,
+        "total_pnl_pct": 36.965,
+        "total_pnl_dollar": 178.75,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.379,
+        "sharpe": 6.073,
+        "avg_score": 8.5,
+        "profit_factor": 1.232,
+        "expectancy": 1.13,
+        "prime_win_rate": 48.1,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 64,
+            "pnl": 107.45000000000005,
+            "wins": 40
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 131.29,
+            "wins": 24
+          },
+          "GOOGL": {
+            "trades": 52,
+            "pnl": -59.99000000000001,
+            "wins": 23
+          }
+        }
+      },
+      "score": 34.909
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 45,
+      "min_score": 3,
+      "stats": {
+        "trades": 170,
+        "wins": 95,
+        "losses": 75,
+        "win_rate": 55.88,
+        "total_pnl_pct": 35.85,
+        "total_pnl_dollar": 140.82,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.737,
+        "sharpe": 5.325,
+        "avg_score": 8.6,
+        "profit_factor": 1.145,
+        "expectancy": 0.83,
+        "prime_win_rate": 55.9,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 72,
+            "pnl": 88.29000000000008,
+            "wins": 43
+          },
+          "GOOGL": {
+            "trades": 56,
+            "pnl": -67.92,
+            "wins": 27
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 120.44999999999999,
+            "wins": 25
+          }
+        }
+      },
+      "score": 34.217
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 45,
+      "min_score": 4,
+      "stats": {
+        "trades": 170,
+        "wins": 95,
+        "losses": 75,
+        "win_rate": 55.88,
+        "total_pnl_pct": 35.85,
+        "total_pnl_dollar": 140.82,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.737,
+        "sharpe": 5.325,
+        "avg_score": 8.6,
+        "profit_factor": 1.145,
+        "expectancy": 0.83,
+        "prime_win_rate": 55.9,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 72,
+            "pnl": 88.29000000000008,
+            "wins": 43
+          },
+          "GOOGL": {
+            "trades": 56,
+            "pnl": -67.92,
+            "wins": 27
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 120.44999999999999,
+            "wins": 25
+          }
+        }
+      },
+      "score": 34.217
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 45,
+      "min_score": 5,
+      "stats": {
+        "trades": 170,
+        "wins": 95,
+        "losses": 75,
+        "win_rate": 55.88,
+        "total_pnl_pct": 35.85,
+        "total_pnl_dollar": 140.82,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.737,
+        "sharpe": 5.325,
+        "avg_score": 8.6,
+        "profit_factor": 1.145,
+        "expectancy": 0.83,
+        "prime_win_rate": 55.9,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 72,
+            "pnl": 88.29000000000008,
+            "wins": 43
+          },
+          "GOOGL": {
+            "trades": 56,
+            "pnl": -67.92,
+            "wins": 27
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 120.44999999999999,
+            "wins": 25
+          }
+        }
+      },
+      "score": 34.217
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 40,
+      "min_score": 3,
+      "stats": {
+        "trades": 159,
+        "wins": 86,
+        "losses": 73,
+        "win_rate": 54.09,
+        "total_pnl_pct": 33.761,
+        "total_pnl_dollar": 118.51,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.379,
+        "sharpe": 5.503,
+        "avg_score": 8.5,
+        "profit_factor": 1.145,
+        "expectancy": 0.75,
+        "prime_win_rate": 48.1,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 63,
+            "pnl": 91.60000000000008,
+            "wins": 38
+          },
+          "AAPL": {
+            "trades": 42,
+            "pnl": 111.66,
+            "wins": 24
+          },
+          "GOOGL": {
+            "trades": 54,
+            "pnl": -84.75000000000004,
+            "wins": 24
+          }
+        }
+      },
+      "score": 33.461
     },
     {
       "rsi_buy": 52,
       "rsi_sell": 40,
       "min_score": 4,
       "stats": {
-        "trades": 101,
-        "wins": 53,
-        "losses": 48,
-        "win_rate": 52.48,
-        "total_pnl_pct": 20.568,
-        "total_pnl_dollar": -21.14,
+        "trades": 159,
+        "wins": 86,
+        "losses": 73,
+        "win_rate": 54.09,
+        "total_pnl_pct": 33.761,
+        "total_pnl_dollar": 118.51,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -2.959,
-        "sharpe": 4.993,
-        "avg_score": 8.6,
-        "profit_factor": 0.966,
-        "expectancy": -0.21,
-        "prime_win_rate": 47.6,
+        "max_drawdown": -2.379,
+        "sharpe": 5.503,
+        "avg_score": 8.5,
+        "profit_factor": 1.145,
+        "expectancy": 0.75,
+        "prime_win_rate": 48.1,
         "by_ticker": {
           "NVDA": {
             "trades": 63,
             "pnl": 91.60000000000008,
             "wins": 38
           },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -112.73999999999997,
-            "wins": 15
+          "AAPL": {
+            "trades": 42,
+            "pnl": 111.66,
+            "wins": 24
+          },
+          "GOOGL": {
+            "trades": 54,
+            "pnl": -84.75000000000004,
+            "wins": 24
           }
         }
       },
-      "score": 30.547
+      "score": 33.461
     },
     {
       "rsi_buy": 52,
       "rsi_sell": 40,
       "min_score": 5,
       "stats": {
-        "trades": 101,
-        "wins": 53,
-        "losses": 48,
-        "win_rate": 52.48,
-        "total_pnl_pct": 20.568,
-        "total_pnl_dollar": -21.14,
+        "trades": 159,
+        "wins": 86,
+        "losses": 73,
+        "win_rate": 54.09,
+        "total_pnl_pct": 33.761,
+        "total_pnl_dollar": 118.51,
         "best": 1.48,
         "worst": -0.77,
-        "max_drawdown": -2.959,
-        "sharpe": 4.993,
-        "avg_score": 8.6,
-        "profit_factor": 0.966,
-        "expectancy": -0.21,
-        "prime_win_rate": 47.6,
+        "max_drawdown": -2.379,
+        "sharpe": 5.503,
+        "avg_score": 8.5,
+        "profit_factor": 1.145,
+        "expectancy": 0.75,
+        "prime_win_rate": 48.1,
         "by_ticker": {
           "NVDA": {
             "trades": 63,
             "pnl": 91.60000000000008,
             "wins": 38
           },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -112.73999999999997,
-            "wins": 15
-          }
-        }
-      },
-      "score": 30.547
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 40,
-      "min_score": 6,
-      "stats": {
-        "trades": 100,
-        "wins": 51,
-        "losses": 49,
-        "win_rate": 51.0,
-        "total_pnl_pct": 18.781,
-        "total_pnl_dollar": -28.37,
-        "best": 1.48,
-        "worst": -0.77,
-        "max_drawdown": -2.959,
-        "sharpe": 4.631,
-        "avg_score": 8.6,
-        "profit_factor": 0.955,
-        "expectancy": -0.28,
-        "prime_win_rate": 47.6,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 62,
-            "pnl": 84.37000000000006,
-            "wins": 36
+          "AAPL": {
+            "trades": 42,
+            "pnl": 111.66,
+            "wins": 24
           },
-          "QQQ": {
-            "trades": 38,
-            "pnl": -112.73999999999997,
-            "wins": 15
+          "GOOGL": {
+            "trades": 54,
+            "pnl": -84.75000000000004,
+            "wins": 24
           }
         }
       },
-      "score": 29.81
+      "score": 33.461
     }
   ]
 }
