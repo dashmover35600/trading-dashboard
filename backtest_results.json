@@ -1,3424 +1,3903 @@
 {
-  "generated_at": "2026-05-20T08:53:45.207762-04:00",
-  "generated_str": "May 20, 2026 at 08:53 AM ET",
+  "generated_at": "2026-05-21T23:05:53.747210-04:00",
+  "generated_str": "May 21, 2026 at 11:05 PM ET",
   "config": {
     "tickers": [
       "QQQ",
       "NVDA"
     ],
     "lookback_days": 120,
-    "strategy": "VWAP Reclaim + EMA Pullback + Opening Drive + Momentum",
+    "strategy": "VWAP Reclaim + EMA Pullback + Opening Drive + Momentum v16",
+    "features": [
+      "partial_exits",
+      "breakeven_stop",
+      "daily_loss_limit",
+      "consec_loss_pause",
+      "vix_sizing",
+      "slippage",
+      "prime_window_bonus",
+      "volume_rising_filter",
+      "time_based_trail"
+    ],
     "baseline": {
       "rsi_bull_min": 52,
       "rsi_bull_max": 72,
       "rsi_bear_min": 28,
-      "rsi_bear_max": 40,
+      "rsi_bear_max": 48,
       "min_score": 5,
       "gain_pct": 1.5,
       "stop_pct": 0.75,
-      "no_trade_limit": true,
-      "no_dead_zone": true,
-      "momentum_confirmation": true
+      "slippage_pct": 0.02,
+      "partial_exit_pct": 0.75
     }
   },
   "baseline": {
     "stats": {
-      "trades": 73,
-      "wins": 42,
-      "losses": 31,
-      "trail_exits": 18,
-      "time_exits": 36,
-      "win_rate": 57.53,
-      "total_pnl_pct": 8.939,
-      "total_pnl_dollar": 129.28,
-      "best": 1.5,
-      "worst": -0.75,
-      "max_drawdown": -2.753,
-      "sharpe": 3.059,
-      "avg_score": 6.6,
+      "trades": 107,
+      "wins": 59,
+      "losses": 48,
+      "win_rate": 55.14,
+      "total_pnl_pct": 24.115,
+      "total_pnl_dollar": 74.82,
+      "best": 1.48,
+      "worst": -0.77,
+      "max_drawdown": -2.33,
+      "sharpe": 5.665,
+      "avg_score": 8.8,
+      "profit_factor": 1.12,
+      "expectancy": 0.7,
+      "prime_win_rate": 56.0,
       "by_ticker": {
         "NVDA": {
-          "trades": 50,
-          "pnl": 104.33,
-          "wins": 29
+          "trades": 70,
+          "pnl": 83.27000000000008,
+          "wins": 41
         },
         "QQQ": {
-          "trades": 23,
-          "pnl": 24.95,
-          "wins": 13
+          "trades": 37,
+          "pnl": -8.449999999999989,
+          "wins": 18
         }
       }
     },
     "trades": [
       {
-        "date": "2026-04-22",
+        "date": "2026-04-23",
         "ticker": "NVDA",
         "direction": "Short",
-        "entry": 199.6899,
-        "exit": 201.1876,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -5.63,
-        "rsi": 36.3,
-        "vol_ratio": 1.23,
-        "entry_time": "09:57 AM",
-        "hour": 9,
+        "entry": 199.1901,
+        "exit": 197.7357,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 10.95,
+        "rsi": 31.3,
+        "vol_ratio": 1.57,
+        "entry_time": "01:31 PM",
+        "hour": 13,
         "signal_type": "ema_pullback",
-        "signal_score": 5,
-        "pos_size": 750,
-        "day_bias": "neutral",
-        "trail_used": false
+        "signal_score": 9,
+        "pos_size": 1500.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
       },
       {
-        "date": "2026-04-22",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 652.355,
-        "exit": 654.315,
-        "result": "Time Exit",
-        "pnl_pct": 0.3,
-        "pnl_dollar": 4.51,
-        "rsi": 53.6,
-        "vol_ratio": 1.94,
-        "entry_time": "11:07 AM",
-        "hour": 11,
-        "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1500,
-        "day_bias": "neutral",
-        "trail_used": false
-      },
-      {
-        "date": "2026-04-22",
+        "date": "2026-04-23",
         "ticker": "NVDA",
-        "direction": "Long",
-        "entry": 201.637,
-        "exit": 201.88,
-        "result": "Time Exit",
-        "pnl_pct": 0.121,
-        "pnl_dollar": 1.81,
-        "rsi": 65.9,
-        "vol_ratio": 1.66,
-        "entry_time": "11:17 AM",
-        "hour": 11,
+        "direction": "Short",
+        "entry": 199.1901,
+        "exit": 199.2299,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.3,
+        "rsi": 31.3,
+        "vol_ratio": 1.57,
+        "entry_time": "01:31 PM",
+        "hour": 13,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
-        "day_bias": "neutral",
-        "trail_used": false
+        "signal_score": 9,
+        "pos_size": 1500.0,
+        "day_bias": "short",
+        "trail_used": true,
+        "prime_window": false
       },
       {
         "date": "2026-04-23",
         "ticker": "QQQ",
         "direction": "Short",
-        "entry": 649.94,
-        "exit": 651.13,
-        "result": "Time Exit",
-        "pnl_pct": -0.183,
-        "pnl_dollar": -2.75,
+        "entry": 649.81,
+        "exit": 649.94,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.6,
         "rsi": 39.5,
         "vol_ratio": 1.85,
         "entry_time": "01:36 PM",
         "hour": 13,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1500,
+        "signal_score": 8,
+        "pos_size": 3000.0,
         "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-04-23",
-        "ticker": "NVDA",
+        "ticker": "QQQ",
         "direction": "Short",
-        "entry": 198.815,
-        "exit": 197.9121,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.454,
-        "pnl_dollar": 10.22,
-        "rsi": 33.0,
-        "vol_ratio": 2.43,
-        "entry_time": "01:40 PM",
-        "hour": 13,
+        "entry": 651.4997,
+        "exit": 651.1552,
+        "result": "Time Exit",
+        "pnl_pct": 0.053,
+        "pnl_dollar": 1.59,
+        "rsi": 44.2,
+        "vol_ratio": 1.52,
+        "entry_time": "02:42 PM",
+        "hour": 14,
         "signal_type": "ema_pullback",
         "signal_score": 8,
-        "pos_size": 2250,
-        "day_bias": "short",
-        "trail_used": true
+        "pos_size": 3000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-04-23",
         "ticker": "NVDA",
         "direction": "Short",
-        "entry": 198.9801,
-        "exit": 199.205,
+        "entry": 198.9403,
+        "exit": 199.0898,
         "result": "Time Exit",
-        "pnl_pct": -0.113,
-        "pnl_dollar": -1.27,
+        "pnl_pct": -0.075,
+        "pnl_dollar": -1.69,
         "rsi": 35.1,
         "vol_ratio": 1.23,
         "entry_time": "02:49 PM",
         "hour": 14,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
+        "signal_score": 8,
+        "pos_size": 2250.0,
         "day_bias": "short",
-        "trail_used": false
-      },
-      {
-        "date": "2026-04-23",
-        "ticker": "NVDA",
-        "direction": "Short",
-        "entry": 201.7701,
-        "exit": 199.8277,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.963,
-        "pnl_dollar": 14.44,
-        "rsi": 35.0,
-        "vol_ratio": 1.43,
-        "entry_time": "10:28 AM",
-        "hour": 10,
-        "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
-        "day_bias": "short",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-04-23",
         "ticker": "QQQ",
         "direction": "Long",
-        "entry": 656.08,
-        "exit": 651.1594,
+        "entry": 655.136,
+        "exit": 650.0925,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -11.25,
-        "rsi": 71.7,
-        "vol_ratio": 1.68,
-        "entry_time": "11:10 AM",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -30.79,
+        "rsi": 63.5,
+        "vol_ratio": 1.41,
+        "entry_time": "09:52 AM",
+        "hour": 9,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-04-23",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 202.6295,
+        "exit": 201.15,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 4.11,
+        "rsi": 39.1,
+        "vol_ratio": 1.41,
+        "entry_time": "11:26 AM",
         "hour": 11,
         "signal_type": "ema_pullback",
         "signal_score": 6,
-        "pos_size": 1500,
-        "day_bias": "neutral",
-        "trail_used": false
+        "pos_size": 562.5,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-23",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 202.6295,
+        "exit": 199.63,
+        "result": "Target Hit",
+        "pnl_pct": 1.48,
+        "pnl_dollar": 8.33,
+        "rsi": 39.1,
+        "vol_ratio": 1.41,
+        "entry_time": "11:26 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 6,
+        "pos_size": 562.5,
+        "day_bias": "short",
+        "trail_used": true,
+        "prime_window": false
       },
       {
         "date": "2026-04-24",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 208.23,
-        "exit": 208.7,
+        "entry": 210.047,
+        "exit": 208.4299,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -23.1,
+        "rsi": 54.4,
+        "vol_ratio": 1.3,
+        "entry_time": "01:14 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 3000.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-24",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 208.2716,
+        "exit": 208.9133,
         "result": "Time Exit",
-        "pnl_pct": 0.226,
-        "pnl_dollar": 3.39,
+        "pnl_pct": 0.308,
+        "pnl_dollar": 11.55,
         "rsi": 56.9,
         "vol_ratio": 1.65,
         "entry_time": "02:59 PM",
         "hour": 14,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
+        "signal_score": 10,
+        "pos_size": 3750.0,
         "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-04-24",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 202.6,
-        "exit": 205.639,
-        "result": "Target Hit",
-        "pnl_pct": 1.5,
-        "pnl_dollar": 22.5,
+        "entry": 202.6405,
+        "exit": 204.1195,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 13.68,
         "rsi": 57.2,
         "vol_ratio": 1.2,
         "entry_time": "10:08 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
+        "signal_score": 10,
+        "pos_size": 1875.0,
         "day_bias": "long",
-        "trail_used": true
-      },
-      {
-        "date": "2026-04-24",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 660.52,
-        "exit": 663.67,
-        "result": "Time Exit",
-        "pnl_pct": 0.477,
-        "pnl_dollar": 4.77,
-        "rsi": 71.5,
-        "vol_ratio": 1.36,
-        "entry_time": "10:57 AM",
-        "hour": 10,
-        "signal_type": "ema_pullback",
-        "signal_score": 5,
-        "pos_size": 1000,
-        "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": true
       },
       {
         "date": "2026-04-24",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 209.59,
-        "exit": 208.0181,
+        "entry": 202.6405,
+        "exit": 205.639,
+        "result": "Target Hit",
+        "pnl_pct": 1.48,
+        "pnl_dollar": 27.74,
+        "rsi": 57.2,
+        "vol_ratio": 1.2,
+        "entry_time": "10:08 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 1875.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": true
+      },
+      {
+        "date": "2026-04-24",
+        "ticker": "QQQ",
+        "direction": "Long",
+        "entry": 659.8619,
+        "exit": 664.0772,
+        "result": "Time Exit",
+        "pnl_pct": 0.639,
+        "pnl_dollar": 31.94,
+        "rsi": 67.8,
+        "vol_ratio": 1.81,
+        "entry_time": "10:12 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-04-24",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 209.6319,
+        "exit": 209.59,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -11.25,
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.6,
         "rsi": 58.3,
         "vol_ratio": 1.32,
         "entry_time": "11:51 AM",
         "hour": 11,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
+        "signal_score": 9,
+        "pos_size": 3000.0,
         "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-04-27",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 213.12,
-        "exit": 216.3168,
-        "result": "Target Hit",
-        "pnl_pct": 1.5,
-        "pnl_dollar": 22.5,
+        "entry": 213.1626,
+        "exit": 214.7184,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 10.95,
         "rsi": 62.2,
         "vol_ratio": 1.34,
         "entry_time": "01:00 PM",
         "hour": 13,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
+        "signal_score": 9,
+        "pos_size": 1500.0,
         "day_bias": "long",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-04-27",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 215.51,
-        "exit": 215.59,
-        "result": "Time Exit",
-        "pnl_pct": 0.037,
-        "pnl_dollar": 0.42,
-        "rsi": 56.7,
-        "vol_ratio": 1.26,
-        "entry_time": "03:03 PM",
-        "hour": 15,
+        "entry": 213.1626,
+        "exit": 215.1657,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.94,
+        "pnl_dollar": 14.1,
+        "rsi": 62.2,
+        "vol_ratio": 1.34,
+        "entry_time": "01:00 PM",
+        "hour": 13,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
+        "signal_score": 9,
+        "pos_size": 1500.0,
         "day_bias": "long",
-        "trail_used": false
+        "trail_used": true,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-27",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 215.8782,
+        "exit": 215.6769,
+        "result": "Time Exit",
+        "pnl_pct": -0.093,
+        "pnl_dollar": -2.8,
+        "rsi": 68.1,
+        "vol_ratio": 1.45,
+        "entry_time": "02:17 PM",
+        "hour": 14,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 3000.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-04-27",
         "ticker": "QQQ",
         "direction": "Short",
-        "entry": 661.2401,
-        "exit": 663.63,
+        "entry": 661.1079,
+        "exit": 663.9028,
         "result": "Time Exit",
-        "pnl_pct": -0.361,
-        "pnl_dollar": -7.23,
+        "pnl_pct": -0.423,
+        "pnl_dollar": -12.68,
         "rsi": 31.2,
         "vol_ratio": 1.69,
         "entry_time": "11:25 AM",
         "hour": 11,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 2000,
+        "signal_score": 8,
+        "pos_size": 3000.0,
         "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-04-27",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 210.87,
-        "exit": 212.7897,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.91,
-        "pnl_dollar": 27.31,
-        "rsi": 65.2,
-        "vol_ratio": 3.58,
-        "entry_time": "12:00 PM",
-        "hour": 12,
+        "entry": 210.102,
+        "exit": 211.6354,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 13.68,
+        "rsi": 68.0,
+        "vol_ratio": 2.79,
+        "entry_time": "11:30 AM",
+        "hour": 11,
         "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 3000,
+        "signal_score": 10,
+        "pos_size": 1875.0,
         "day_bias": "long",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-27",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 210.102,
+        "exit": 213.2108,
+        "result": "Target Hit",
+        "pnl_pct": 1.48,
+        "pnl_dollar": 27.74,
+        "rsi": 68.0,
+        "vol_ratio": 2.79,
+        "entry_time": "11:30 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 1875.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-28",
+        "ticker": "QQQ",
+        "direction": "Long",
+        "entry": 658.1816,
+        "exit": 657.6385,
+        "result": "Time Exit",
+        "pnl_pct": -0.083,
+        "pnl_dollar": -1.65,
+        "rsi": 65.0,
+        "vol_ratio": 1.36,
+        "entry_time": "02:52 PM",
+        "hour": 14,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 2000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-04-28",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 214.13,
-        "exit": 214.0701,
+        "entry": 214.1728,
+        "exit": 213.5374,
         "result": "Time Exit",
-        "pnl_pct": -0.028,
-        "pnl_dollar": -0.31,
+        "pnl_pct": -0.297,
+        "pnl_dollar": -4.45,
         "rsi": 70.3,
         "vol_ratio": 1.44,
         "entry_time": "03:03 PM",
         "hour": 15,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
+        "signal_score": 7,
+        "pos_size": 1500.0,
         "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-28",
+        "ticker": "QQQ",
+        "direction": "Short",
+        "entry": 657.4385,
+        "exit": 657.57,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.8,
+        "rsi": 43.7,
+        "vol_ratio": 1.3,
+        "entry_time": "09:55 AM",
+        "hour": 9,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": true
       },
       {
         "date": "2026-04-28",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 213.1909,
-        "exit": 211.592,
+        "entry": 213.2335,
+        "exit": 211.5919,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -8.44,
+        "pnl_pct": -0.77,
+        "pnl_dollar": -28.87,
         "rsi": 69.9,
         "vol_ratio": 1.38,
         "entry_time": "10:06 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
+        "signal_score": 10,
+        "pos_size": 3750.0,
         "day_bias": "long",
-        "trail_used": false
-      },
-      {
-        "date": "2026-04-28",
-        "ticker": "QQQ",
-        "direction": "Short",
-        "entry": 654.14,
-        "exit": 657.9899,
-        "result": "Time Exit",
-        "pnl_pct": -0.589,
-        "pnl_dollar": -8.83,
-        "rsi": 37.0,
-        "vol_ratio": 1.68,
-        "entry_time": "11:31 AM",
-        "hour": 11,
-        "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1500,
-        "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": true
       },
       {
         "date": "2026-04-28",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 210.22,
-        "exit": 213.3733,
-        "result": "Target Hit",
-        "pnl_pct": 1.5,
-        "pnl_dollar": 16.87,
-        "rsi": 58.0,
-        "vol_ratio": 1.29,
-        "entry_time": "12:48 PM",
+        "entry": 209.942,
+        "exit": 211.4743,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 8.21,
+        "rsi": 69.1,
+        "vol_ratio": 1.95,
+        "entry_time": "12:05 PM",
         "hour": 12,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
+        "signal_score": 8,
+        "pos_size": 1125.0,
         "day_bias": "long",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": false
       },
       {
-        "date": "2026-04-29",
+        "date": "2026-04-28",
         "ticker": "NVDA",
-        "direction": "Short",
-        "entry": 209.0987,
-        "exit": 209.23,
-        "result": "Time Exit",
-        "pnl_pct": -0.063,
-        "pnl_dollar": -0.94,
-        "rsi": 37.8,
-        "vol_ratio": 1.55,
-        "entry_time": "01:54 PM",
-        "hour": 13,
+        "direction": "Long",
+        "entry": 209.942,
+        "exit": 213.0485,
+        "result": "Target Hit",
+        "pnl_pct": 1.48,
+        "pnl_dollar": 16.65,
+        "rsi": 69.1,
+        "vol_ratio": 1.95,
+        "entry_time": "12:05 PM",
+        "hour": 12,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
-        "day_bias": "short",
-        "trail_used": false
+        "signal_score": 8,
+        "pos_size": 1125.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": false
       },
       {
         "date": "2026-04-29",
         "ticker": "NVDA",
         "direction": "Short",
-        "entry": 210.12,
+        "entry": 210.078,
         "exit": 211.6959,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -11.25,
+        "pnl_pct": -0.77,
+        "pnl_dollar": -28.88,
         "rsi": 36.4,
         "vol_ratio": 1.7,
         "entry_time": "10:00 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
+        "signal_score": 10,
+        "pos_size": 3750.0,
         "day_bias": "short",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": true
       },
       {
         "date": "2026-04-29",
         "ticker": "NVDA",
         "direction": "Short",
-        "entry": 210.6314,
-        "exit": 209.2559,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.653,
-        "pnl_dollar": 7.35,
-        "rsi": 35.5,
-        "vol_ratio": 1.3,
-        "entry_time": "11:12 AM",
-        "hour": 11,
-        "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
+        "entry": 210.9978,
+        "exit": 209.4572,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 13.69,
+        "rsi": 44.7,
+        "vol_ratio": 19.5,
+        "entry_time": "10:49 AM",
+        "hour": 10,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 10,
+        "pos_size": 1875.0,
         "day_bias": "short",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": false
       },
       {
-        "date": "2026-04-30",
-        "ticker": "QQQ",
+        "date": "2026-04-29",
+        "ticker": "NVDA",
         "direction": "Short",
-        "entry": 659.9893,
-        "exit": 664.9392,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -15.0,
-        "rsi": 31.7,
-        "vol_ratio": 1.21,
-        "entry_time": "09:52 AM",
-        "hour": 9,
-        "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 2000,
+        "entry": 210.9978,
+        "exit": 209.607,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.659,
+        "pnl_dollar": 12.36,
+        "rsi": 44.7,
+        "vol_ratio": 19.5,
+        "entry_time": "10:49 AM",
+        "hour": 10,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 10,
+        "pos_size": 1875.0,
         "day_bias": "short",
-        "trail_used": false
+        "trail_used": true,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-29",
+        "ticker": "QQQ",
+        "direction": "Long",
+        "entry": 659.967,
+        "exit": 660.9077,
+        "result": "Time Exit",
+        "pnl_pct": 0.143,
+        "pnl_dollar": 2.14,
+        "rsi": 52.2,
+        "vol_ratio": 1.32,
+        "entry_time": "12:06 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 6,
+        "pos_size": 1500.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-29",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 209.0883,
+        "exit": 209.1301,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.6,
+        "rsi": 32.9,
+        "vol_ratio": 1.22,
+        "entry_time": "12:53 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 3000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-04-30",
         "ticker": "NVDA",
         "direction": "Short",
-        "entry": 201.065,
-        "exit": 199.4666,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.795,
-        "pnl_dollar": 11.92,
+        "entry": 200.6198,
+        "exit": 201.0452,
+        "result": "Time Exit",
+        "pnl_pct": -0.212,
+        "pnl_dollar": -6.36,
+        "rsi": 38.5,
+        "vol_ratio": 1.62,
+        "entry_time": "02:07 PM",
+        "hour": 14,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 9,
+        "pos_size": 3000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-30",
+        "ticker": "QQQ",
+        "direction": "Short",
+        "entry": 666.8866,
+        "exit": 668.0929,
+        "result": "Time Exit",
+        "pnl_pct": -0.181,
+        "pnl_dollar": -5.43,
+        "rsi": 42.3,
+        "vol_ratio": 2.08,
+        "entry_time": "02:27 PM",
+        "hour": 14,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 3000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-04-30",
+        "ticker": "QQQ",
+        "direction": "Short",
+        "entry": 659.763,
+        "exit": 664.8441,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -38.51,
+        "rsi": 43.5,
+        "vol_ratio": 1.36,
+        "entry_time": "10:06 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-04-30",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 201.0248,
+        "exit": 201.065,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.6,
         "rsi": 30.0,
         "vol_ratio": 1.36,
         "entry_time": "10:15 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
+        "signal_score": 9,
+        "pos_size": 3000.0,
         "day_bias": "short",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": true
       },
       {
         "date": "2026-04-30",
         "ticker": "NVDA",
         "direction": "Short",
-        "entry": 200.63,
-        "exit": 201.03,
-        "result": "Time Exit",
-        "pnl_pct": -0.199,
-        "pnl_dollar": -4.49,
-        "rsi": 31.8,
-        "vol_ratio": 2.07,
-        "entry_time": "11:35 AM",
-        "hour": 11,
+        "entry": 199.5901,
+        "exit": 201.1272,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -28.88,
+        "rsi": 41.7,
+        "vol_ratio": 446.55,
+        "entry_time": "12:56 PM",
+        "hour": 12,
         "signal_type": "ema_pullback",
-        "signal_score": 8,
-        "pos_size": 2250,
+        "signal_score": 10,
+        "pos_size": 3750.0,
         "day_bias": "short",
-        "trail_used": false
-      },
-      {
-        "date": "2026-05-01",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 675.285,
-        "exit": 675.3607,
-        "result": "Time Exit",
-        "pnl_pct": 0.011,
-        "pnl_dollar": 0.45,
-        "rsi": 60.7,
-        "vol_ratio": 3.09,
-        "entry_time": "10:21 AM",
-        "hour": 10,
-        "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 4000,
-        "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-01",
         "ticker": "NVDA",
         "direction": "Short",
-        "entry": 199.2501,
-        "exit": 198.1577,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.548,
-        "pnl_dollar": 6.17,
-        "rsi": 35.9,
-        "vol_ratio": 1.86,
-        "entry_time": "10:25 AM",
+        "entry": 199.6501,
+        "exit": 198.1924,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 13.69,
+        "rsi": 40.5,
+        "vol_ratio": 1.63,
+        "entry_time": "10:04 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
+        "signal_score": 10,
+        "pos_size": 1875.0,
         "day_bias": "neutral",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-01",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 199.6501,
+        "exit": 198.1973,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.728,
+        "pnl_dollar": 13.64,
+        "rsi": 40.5,
+        "vol_ratio": 1.63,
+        "entry_time": "10:04 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 1875.0,
+        "day_bias": "neutral",
+        "trail_used": true,
+        "prime_window": true
       },
       {
         "date": "2026-05-01",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 199.52,
-        "exit": 199.78,
+        "entry": 199.5599,
+        "exit": 199.4051,
         "result": "Time Exit",
-        "pnl_pct": 0.13,
-        "pnl_dollar": 1.47,
+        "pnl_pct": -0.078,
+        "pnl_dollar": -1.75,
         "rsi": 52.0,
-        "vol_ratio": 2.83,
+        "vol_ratio": 6.77,
         "entry_time": "11:18 AM",
         "hour": 11,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
-        "day_bias": "neutral",
-        "trail_used": false
-      },
-      {
-        "date": "2026-05-04",
-        "ticker": "NVDA",
-        "direction": "Long",
-        "entry": 197.86,
-        "exit": 198.28,
-        "result": "Time Exit",
-        "pnl_pct": 0.212,
-        "pnl_dollar": 4.78,
-        "rsi": 66.8,
-        "vol_ratio": 1.74,
-        "entry_time": "01:50 PM",
-        "hour": 13,
-        "signal_type": "ema_pullback",
         "signal_score": 8,
-        "pos_size": 2250,
-        "day_bias": "long",
-        "trail_used": false
+        "pos_size": 2250.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
       },
       {
-        "date": "2026-05-04",
-        "ticker": "NVDA",
+        "date": "2026-05-01",
+        "ticker": "QQQ",
         "direction": "Long",
-        "entry": 198.66,
-        "exit": 198.64,
+        "entry": 675.9552,
+        "exit": 674.765,
         "result": "Time Exit",
-        "pnl_pct": -0.01,
-        "pnl_dollar": -0.15,
-        "rsi": 70.0,
-        "vol_ratio": 1.82,
-        "entry_time": "03:28 PM",
-        "hour": 15,
+        "pnl_pct": -0.176,
+        "pnl_dollar": -7.04,
+        "rsi": 71.8,
+        "vol_ratio": 217.18,
+        "entry_time": "11:49 AM",
+        "hour": 11,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
+        "signal_score": 9,
+        "pos_size": 4000.0,
         "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-04",
         "ticker": "QQQ",
         "direction": "Long",
-        "entry": 672.33,
-        "exit": 672.47,
-        "result": "Time Exit",
-        "pnl_pct": 0.021,
-        "pnl_dollar": 0.21,
-        "rsi": 54.5,
-        "vol_ratio": 1.95,
-        "entry_time": "11:54 AM",
-        "hour": 11,
+        "entry": 675.9652,
+        "exit": 670.7613,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -30.79,
+        "rsi": 61.0,
+        "vol_ratio": 1.2,
+        "entry_time": "10:12 AM",
+        "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 5,
-        "pos_size": 1000,
+        "signal_score": 9,
+        "pos_size": 4000.0,
         "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-04",
+        "ticker": "QQQ",
+        "direction": "Long",
+        "entry": 671.3742,
+        "exit": 672.5052,
+        "result": "Time Exit",
+        "pnl_pct": 0.168,
+        "pnl_dollar": 3.37,
+        "rsi": 56.1,
+        "vol_ratio": 1.58,
+        "entry_time": "12:19 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 2000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-04",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 195.8601,
-        "exit": 197.1368,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.652,
-        "pnl_dollar": 4.89,
-        "rsi": 55.6,
-        "vol_ratio": 1.23,
-        "entry_time": "12:17 PM",
+        "entry": 196.7158,
+        "exit": 198.1515,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 5.47,
+        "rsi": 62.6,
+        "vol_ratio": 1.47,
+        "entry_time": "12:42 PM",
         "hour": 12,
         "signal_type": "ema_pullback",
-        "signal_score": 5,
-        "pos_size": 750,
+        "signal_score": 7,
+        "pos_size": 750.0,
         "day_bias": "long",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-04",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 196.7158,
+        "exit": 198.6521,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.984,
+        "pnl_dollar": 7.38,
+        "rsi": 62.6,
+        "vol_ratio": 1.47,
+        "entry_time": "12:42 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 750.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": false
       },
       {
         "date": "2026-05-05",
         "ticker": "QQQ",
         "direction": "Long",
-        "entry": 681.22,
-        "exit": 682.465,
+        "entry": 681.3562,
+        "exit": 682.1136,
         "result": "Time Exit",
-        "pnl_pct": 0.183,
-        "pnl_dollar": 3.66,
+        "pnl_pct": 0.111,
+        "pnl_dollar": 5.56,
         "rsi": 64.2,
         "vol_ratio": 2.25,
         "entry_time": "10:25 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 2000,
+        "signal_score": 10,
+        "pos_size": 5000.0,
         "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": true
       },
       {
         "date": "2026-05-05",
         "ticker": "NVDA",
         "direction": "Short",
-        "entry": 197.75,
-        "exit": 196.72,
-        "result": "Time Exit",
-        "pnl_pct": 0.521,
-        "pnl_dollar": 3.91,
-        "rsi": 35.8,
-        "vol_ratio": 1.33,
-        "entry_time": "10:38 AM",
+        "entry": 198.0104,
+        "exit": 198.05,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.6,
+        "rsi": 40.7,
+        "vol_ratio": 6.85,
+        "entry_time": "10:37 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 5,
-        "pos_size": 750,
+        "signal_score": 9,
+        "pos_size": 3000.0,
         "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-05",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 197.5505,
+        "exit": 196.5093,
+        "result": "Time Exit",
+        "pnl_pct": 0.527,
+        "pnl_dollar": 7.91,
+        "rsi": 40.4,
+        "vol_ratio": 1.27,
+        "entry_time": "12:53 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 1500.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-06",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 207.3403,
-        "exit": 207.33,
+        "entry": 207.3818,
+        "exit": 207.0386,
         "result": "Time Exit",
-        "pnl_pct": -0.005,
-        "pnl_dollar": -0.06,
+        "pnl_pct": -0.165,
+        "pnl_dollar": -4.96,
         "rsi": 54.5,
         "vol_ratio": 1.33,
         "entry_time": "03:04 PM",
         "hour": 15,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
+        "signal_score": 9,
+        "pos_size": 3000.0,
         "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-06",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 207.351,
-        "exit": 207.745,
-        "result": "Time Exit",
-        "pnl_pct": 0.19,
-        "pnl_dollar": 2.85,
-        "rsi": 57.5,
-        "vol_ratio": 1.31,
-        "entry_time": "03:26 PM",
-        "hour": 15,
-        "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
-        "day_bias": "long",
-        "trail_used": false
-      },
-      {
-        "date": "2026-05-06",
-        "ticker": "NVDA",
-        "direction": "Long",
-        "entry": 202.65,
-        "exit": 203.8317,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.583,
-        "pnl_dollar": 6.56,
+        "entry": 202.6905,
+        "exit": 204.1698,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 13.68,
         "rsi": 69.2,
         "vol_ratio": 1.2,
         "entry_time": "09:52 AM",
         "hour": 9,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
+        "signal_score": 10,
+        "pos_size": 1875.0,
         "day_bias": "long",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-06",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 202.6905,
+        "exit": 203.7909,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.543,
+        "pnl_dollar": 10.18,
+        "rsi": 69.2,
+        "vol_ratio": 1.2,
+        "entry_time": "09:52 AM",
+        "hour": 9,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 1875.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": true
       },
       {
         "date": "2026-05-06",
         "ticker": "QQQ",
         "direction": "Long",
-        "entry": 690.03,
-        "exit": 694.89,
+        "entry": 690.168,
+        "exit": 694.651,
         "result": "Time Exit",
-        "pnl_pct": 0.704,
-        "pnl_dollar": 14.09,
+        "pnl_pct": 0.65,
+        "pnl_dollar": 25.98,
         "rsi": 63.1,
         "vol_ratio": 1.98,
         "entry_time": "10:34 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 2000,
+        "signal_score": 9,
+        "pos_size": 4000.0,
         "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-06",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 205.5008,
-        "exit": 207.376,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.913,
-        "pnl_dollar": 13.69,
+        "entry": 205.171,
+        "exit": 203.5915,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -28.87,
+        "rsi": 56.5,
+        "vol_ratio": 9.78,
+        "entry_time": "11:06 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 3750.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-06",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 205.5419,
+        "exit": 207.042,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 8.21,
         "rsi": 58.8,
         "vol_ratio": 1.23,
         "entry_time": "12:11 PM",
         "hour": 12,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
+        "signal_score": 8,
+        "pos_size": 1125.0,
         "day_bias": "long",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-06",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 205.5419,
+        "exit": 207.5425,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.973,
+        "pnl_dollar": 10.95,
+        "rsi": 58.8,
+        "vol_ratio": 1.23,
+        "entry_time": "12:11 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 1125.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-07",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 211.9626,
+        "exit": 212.2424,
+        "result": "Time Exit",
+        "pnl_pct": -0.132,
+        "pnl_dollar": -3.96,
+        "rsi": 46.4,
+        "vol_ratio": 4.55,
+        "entry_time": "01:49 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 3000.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-07",
         "ticker": "QQQ",
         "direction": "Short",
-        "entry": 694.4899,
-        "exit": 692.7,
+        "entry": 694.4111,
+        "exit": 693.3786,
         "result": "Time Exit",
-        "pnl_pct": 0.258,
-        "pnl_dollar": 2.58,
-        "rsi": 37.0,
-        "vol_ratio": 1.21,
-        "entry_time": "01:11 PM",
-        "hour": 13,
+        "pnl_pct": 0.149,
+        "pnl_dollar": 2.97,
+        "rsi": 47.2,
+        "vol_ratio": 2.13,
+        "entry_time": "02:09 PM",
+        "hour": 14,
         "signal_type": "ema_pullback",
-        "signal_score": 5,
-        "pos_size": 1000,
+        "signal_score": 7,
+        "pos_size": 2000.0,
         "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-07",
+        "ticker": "QQQ",
+        "direction": "Short",
+        "entry": 693.0164,
+        "exit": 693.2136,
+        "result": "Time Exit",
+        "pnl_pct": -0.028,
+        "pnl_dollar": -1.14,
+        "rsi": 39.0,
+        "vol_ratio": 3.95,
+        "entry_time": "03:22 PM",
+        "hour": 15,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-07",
         "ticker": "QQQ",
         "direction": "Long",
-        "entry": 700.2699,
-        "exit": 695.0179,
+        "entry": 698.0796,
+        "exit": 692.7054,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -11.25,
-        "rsi": 68.6,
-        "vol_ratio": 1.91,
-        "entry_time": "10:39 AM",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -30.79,
+        "rsi": 66.2,
+        "vol_ratio": 1.22,
+        "entry_time": "10:04 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1500,
+        "signal_score": 9,
+        "pos_size": 4000.0,
         "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": true
       },
       {
         "date": "2026-05-07",
         "ticker": "NVDA",
         "direction": "Short",
-        "entry": 211.82,
-        "exit": 213.4087,
+        "entry": 211.7776,
+        "exit": 213.4086,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -11.25,
+        "pnl_pct": -0.77,
+        "pnl_dollar": -28.88,
         "rsi": 31.4,
         "vol_ratio": 1.71,
         "entry_time": "11:05 AM",
         "hour": 11,
-        "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 10,
+        "pos_size": 3750.0,
         "day_bias": "short",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-07",
         "ticker": "NVDA",
         "direction": "Short",
-        "entry": 211.77,
-        "exit": 213.3583,
+        "entry": 212.3674,
+        "exit": 212.4099,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -8.44,
-        "rsi": 33.5,
-        "vol_ratio": 1.45,
-        "entry_time": "12:11 PM",
-        "hour": 12,
-        "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
-        "day_bias": "short",
-        "trail_used": false
-      },
-      {
-        "date": "2026-05-07",
-        "ticker": "NVDA",
-        "direction": "Short",
-        "entry": 212.4099,
-        "exit": 211.775,
-        "result": "Time Exit",
-        "pnl_pct": 0.299,
-        "pnl_dollar": 2.24,
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.3,
         "rsi": 39.8,
         "vol_ratio": 1.24,
         "entry_time": "12:51 PM",
         "hour": 12,
         "signal_type": "ema_pullback",
-        "signal_score": 5,
-        "pos_size": 750,
+        "signal_score": 7,
+        "pos_size": 1500.0,
         "day_bias": "short",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-08",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 215.4731,
+        "exit": 217.0457,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 13.68,
+        "rsi": 52.4,
+        "vol_ratio": 18.03,
+        "entry_time": "10:46 AM",
+        "hour": 10,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 10,
+        "pos_size": 1875.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-08",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 215.4731,
+        "exit": 215.43,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.38,
+        "rsi": 52.4,
+        "vol_ratio": 18.03,
+        "entry_time": "10:46 AM",
+        "hour": 10,
+        "signal_type": "vwap_reclaim",
+        "signal_score": 10,
+        "pos_size": 1875.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": false
       },
       {
         "date": "2026-05-08",
         "ticker": "QQQ",
         "direction": "Long",
-        "entry": 706.09,
-        "exit": 709.7799,
+        "entry": 707.1814,
+        "exit": 709.808,
         "result": "Time Exit",
-        "pnl_pct": 0.523,
-        "pnl_dollar": 10.45,
-        "rsi": 68.4,
-        "vol_ratio": 2.57,
-        "entry_time": "10:22 AM",
-        "hour": 10,
+        "pnl_pct": 0.371,
+        "pnl_dollar": 11.14,
+        "rsi": 67.5,
+        "vol_ratio": 1.24,
+        "entry_time": "11:06 AM",
+        "hour": 11,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 2000,
+        "signal_score": 8,
+        "pos_size": 3000.0,
         "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-08",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 216.36,
-        "exit": 215.115,
+        "entry": 215.9732,
+        "exit": 215.167,
         "result": "Time Exit",
-        "pnl_pct": -0.575,
-        "pnl_dollar": -6.47,
-        "rsi": 68.4,
-        "vol_ratio": 1.4,
-        "entry_time": "11:06 AM",
-        "hour": 11,
+        "pnl_pct": -0.373,
+        "pnl_dollar": -14.0,
+        "rsi": 58.6,
+        "vol_ratio": 1.65,
+        "entry_time": "12:40 PM",
+        "hour": 12,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
+        "signal_score": 10,
+        "pos_size": 3750.0,
         "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-11",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 220.96,
-        "exit": 219.3028,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -8.44,
-        "rsi": 69.8,
-        "vol_ratio": 1.41,
-        "entry_time": "01:36 PM",
-        "hour": 13,
-        "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
-        "day_bias": "long",
-        "trail_used": false
-      },
-      {
-        "date": "2026-05-11",
-        "ticker": "NVDA",
-        "direction": "Long",
-        "entry": 218.94,
-        "exit": 221.3844,
-        "result": "Trailing Stop",
-        "pnl_pct": 1.116,
-        "pnl_dollar": 12.56,
+        "entry": 218.9838,
+        "exit": 220.5821,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 8.21,
         "rsi": 54.8,
         "vol_ratio": 1.26,
         "entry_time": "10:40 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
+        "signal_score": 8,
+        "pos_size": 1125.0,
         "day_bias": "long",
-        "trail_used": true
-      },
-      {
-        "date": "2026-05-11",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 712.5501,
-        "exit": 712.23,
-        "result": "Time Exit",
-        "pnl_pct": -0.045,
-        "pnl_dollar": -0.45,
-        "rsi": 54.4,
-        "vol_ratio": 1.28,
-        "entry_time": "11:23 AM",
-        "hour": 11,
-        "signal_type": "ema_pullback",
-        "signal_score": 5,
-        "pos_size": 1000,
-        "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-11",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 221.985,
-        "exit": 220.3201,
+        "entry": 218.9838,
+        "exit": 221.3401,
+        "result": "Trailing Stop",
+        "pnl_pct": 1.076,
+        "pnl_dollar": 12.11,
+        "rsi": 54.8,
+        "vol_ratio": 1.26,
+        "entry_time": "10:40 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 1125.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-11",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 221.4043,
+        "exit": 219.6999,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -16.88,
-        "rsi": 65.2,
-        "vol_ratio": 1.86,
+        "pnl_pct": -0.77,
+        "pnl_dollar": -28.87,
+        "rsi": 63.8,
+        "vol_ratio": 18.15,
+        "entry_time": "11:02 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 3750.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-11",
+        "ticker": "QQQ",
+        "direction": "Long",
+        "entry": 713.4127,
+        "exit": 712.4275,
+        "result": "Time Exit",
+        "pnl_pct": -0.138,
+        "pnl_dollar": -4.14,
+        "rsi": 71.4,
+        "vol_ratio": 6.76,
         "entry_time": "11:29 AM",
         "hour": 11,
         "signal_type": "ema_pullback",
         "signal_score": 8,
-        "pos_size": 2250,
-        "day_bias": "long",
-        "trail_used": false
+        "pos_size": 3000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-12",
         "ticker": "QQQ",
         "direction": "Long",
-        "entry": 701.08,
-        "exit": 704.015,
+        "entry": 700.7914,
+        "exit": 703.5992,
         "result": "Time Exit",
-        "pnl_pct": 0.419,
-        "pnl_dollar": 8.37,
-        "rsi": 60.1,
-        "vol_ratio": 2.97,
-        "entry_time": "02:00 PM",
-        "hour": 14,
+        "pnl_pct": 0.401,
+        "pnl_dollar": 12.02,
+        "rsi": 59.5,
+        "vol_ratio": 10.13,
+        "entry_time": "01:40 PM",
+        "hour": 13,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 2000,
+        "signal_score": 8,
+        "pos_size": 3000.0,
         "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-12",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 220.37,
-        "exit": 220.59,
-        "result": "Time Exit",
-        "pnl_pct": 0.1,
-        "pnl_dollar": 2.25,
-        "rsi": 62.8,
-        "vol_ratio": 1.65,
-        "entry_time": "03:07 PM",
-        "hour": 15,
+        "entry": 218.6537,
+        "exit": 220.2495,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 10.95,
+        "rsi": 59.9,
+        "vol_ratio": 1.51,
+        "entry_time": "02:26 PM",
+        "hour": 14,
         "signal_type": "ema_pullback",
-        "signal_score": 8,
-        "pos_size": 2250,
+        "signal_score": 9,
+        "pos_size": 1500.0,
         "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-12",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 218.6537,
+        "exit": 220.5909,
+        "result": "Time Exit",
+        "pnl_pct": 0.886,
+        "pnl_dollar": 13.29,
+        "rsi": 59.9,
+        "vol_ratio": 1.51,
+        "entry_time": "02:26 PM",
+        "hour": 14,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 1500.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": false
       },
       {
         "date": "2026-05-12",
         "ticker": "QQQ",
         "direction": "Short",
-        "entry": 705.3201,
-        "exit": 698.8002,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.924,
-        "pnl_dollar": 18.49,
-        "rsi": 32.1,
-        "vol_ratio": 1.71,
-        "entry_time": "10:28 AM",
+        "entry": 704.5141,
+        "exit": 699.3701,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 18.25,
+        "rsi": 40.9,
+        "vol_ratio": 3.41,
+        "entry_time": "10:45 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 2000,
+        "signal_score": 10,
+        "pos_size": 2500.0,
         "day_bias": "neutral",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-12",
-        "ticker": "NVDA",
-        "direction": "Long",
-        "entry": 217.21,
-        "exit": 219.1605,
+        "ticker": "QQQ",
+        "direction": "Short",
+        "entry": 704.5141,
+        "exit": 698.2431,
         "result": "Trailing Stop",
-        "pnl_pct": 0.898,
-        "pnl_dollar": 6.73,
-        "rsi": 54.9,
-        "vol_ratio": 1.27,
-        "entry_time": "12:00 PM",
-        "hour": 12,
+        "pnl_pct": 0.89,
+        "pnl_dollar": 22.25,
+        "rsi": 40.9,
+        "vol_ratio": 3.41,
+        "entry_time": "10:45 AM",
+        "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 5,
-        "pos_size": 750,
-        "day_bias": "long",
-        "trail_used": true
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "neutral",
+        "trail_used": true,
+        "prime_window": false
       },
       {
         "date": "2026-05-13",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 226.775,
-        "exit": 226.59,
+        "entry": 226.6769,
+        "exit": 226.8845,
         "result": "Time Exit",
-        "pnl_pct": -0.082,
-        "pnl_dollar": -1.22,
-        "rsi": 62.1,
-        "vol_ratio": 1.29,
-        "entry_time": "11:41 AM",
-        "hour": 11,
+        "pnl_pct": 0.092,
+        "pnl_dollar": 3.43,
+        "rsi": 66.9,
+        "vol_ratio": 1.81,
+        "entry_time": "02:09 PM",
+        "hour": 14,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
+        "signal_score": 10,
+        "pos_size": 3750.0,
         "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-13",
         "ticker": "QQQ",
         "direction": "Long",
-        "entry": 712.19,
-        "exit": 715.33,
+        "entry": 715.6531,
+        "exit": 715.5369,
         "result": "Time Exit",
-        "pnl_pct": 0.441,
-        "pnl_dollar": 8.82,
-        "rsi": 70.4,
-        "vol_ratio": 6.14,
-        "entry_time": "11:44 AM",
-        "hour": 11,
+        "pnl_pct": -0.016,
+        "pnl_dollar": -0.49,
+        "rsi": 60.6,
+        "vol_ratio": 1.34,
+        "entry_time": "03:09 PM",
+        "hour": 15,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 2000,
+        "signal_score": 8,
+        "pos_size": 3000.0,
         "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-13",
+        "ticker": "QQQ",
+        "direction": "Long",
+        "entry": 707.6014,
+        "exit": 712.7658,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 14.6,
+        "rsi": 56.9,
+        "vol_ratio": 1.22,
+        "entry_time": "10:13 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 2000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-13",
+        "ticker": "QQQ",
+        "direction": "Long",
+        "entry": 707.6014,
+        "exit": 715.0007,
+        "result": "Trailing Stop",
+        "pnl_pct": 1.046,
+        "pnl_dollar": 20.91,
+        "rsi": 56.9,
+        "vol_ratio": 1.22,
+        "entry_time": "10:13 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 2000.0,
+        "day_bias": "neutral",
+        "trail_used": true,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-13",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 227.6155,
+        "exit": 225.8632,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -23.1,
+        "rsi": 58.6,
+        "vol_ratio": 1.31,
+        "entry_time": "12:37 PM",
+        "hour": 12,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 3000.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-14",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 234.2,
-        "exit": 235.7406,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.658,
-        "pnl_dollar": 9.87,
+        "entry": 234.2468,
+        "exit": 235.9565,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 10.95,
         "rsi": 61.0,
         "vol_ratio": 1.24,
         "entry_time": "01:46 PM",
         "hour": 13,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
+        "signal_score": 9,
+        "pos_size": 1500.0,
         "day_bias": "long",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-14",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 234.2468,
+        "exit": 235.9299,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.719,
+        "pnl_dollar": 10.78,
+        "rsi": 61.0,
+        "vol_ratio": 1.24,
+        "entry_time": "01:46 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 1500.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": false
       },
       {
         "date": "2026-05-14",
         "ticker": "QQQ",
         "direction": "Long",
-        "entry": 719.7801,
-        "exit": 720.4504,
+        "entry": 720.7541,
+        "exit": 720.6959,
         "result": "Time Exit",
-        "pnl_pct": 0.093,
-        "pnl_dollar": 1.86,
+        "pnl_pct": -0.008,
+        "pnl_dollar": -0.32,
+        "rsi": 59.5,
+        "vol_ratio": 2.03,
+        "entry_time": "03:21 PM",
+        "hour": 15,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-14",
+        "ticker": "QQQ",
+        "direction": "Long",
+        "entry": 719.924,
+        "exit": 720.3459,
+        "result": "Time Exit",
+        "pnl_pct": 0.059,
+        "pnl_dollar": 1.76,
         "rsi": 71.6,
         "vol_ratio": 1.6,
         "entry_time": "10:45 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 2000,
+        "signal_score": 8,
+        "pos_size": 3000.0,
         "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-14",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 235.415,
+        "entry": 235.4621,
         "exit": 233.6494,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -16.87,
+        "pnl_pct": -0.77,
+        "pnl_dollar": -28.87,
         "rsi": 63.6,
         "vol_ratio": 1.59,
         "entry_time": "11:20 AM",
         "hour": 11,
         "signal_type": "ema_pullback",
-        "signal_score": 8,
-        "pos_size": 2250,
+        "signal_score": 10,
+        "pos_size": 3750.0,
         "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-15",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 227.7744,
+        "exit": 229.5286,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -28.88,
+        "rsi": 42.7,
+        "vol_ratio": 4.23,
+        "entry_time": "01:03 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 3750.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-15",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 226.4197,
+        "exit": 228.1634,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -28.88,
+        "rsi": 42.6,
+        "vol_ratio": 5.12,
+        "entry_time": "10:58 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 3750.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-15",
         "ticker": "QQQ",
         "direction": "Long",
-        "entry": 712.4388,
-        "exit": 710.46,
-        "result": "Time Exit",
-        "pnl_pct": -0.278,
-        "pnl_dollar": -2.78,
-        "rsi": 68.4,
-        "vol_ratio": 1.24,
-        "entry_time": "01:21 PM",
-        "hour": 13,
-        "signal_type": "ema_pullback",
-        "signal_score": 5,
-        "pos_size": 1000,
-        "day_bias": "neutral",
-        "trail_used": false
-      },
-      {
-        "date": "2026-05-15",
-        "ticker": "NVDA",
-        "direction": "Short",
-        "entry": 228.02,
-        "exit": 226.94,
-        "result": "Time Exit",
-        "pnl_pct": 0.474,
-        "pnl_dollar": 7.1,
-        "rsi": 32.3,
-        "vol_ratio": 2.05,
-        "entry_time": "03:07 PM",
-        "hour": 15,
-        "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
-        "day_bias": "short",
-        "trail_used": false
-      },
-      {
-        "date": "2026-05-15",
-        "ticker": "NVDA",
-        "direction": "Short",
-        "entry": 226.25,
-        "exit": 227.9469,
+        "entry": 711.2122,
+        "exit": 711.07,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -11.25,
-        "rsi": 31.9,
-        "vol_ratio": 1.25,
-        "entry_time": "10:50 AM",
-        "hour": 10,
-        "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
-        "day_bias": "short",
-        "trail_used": false
-      },
-      {
-        "date": "2026-05-15",
-        "ticker": "NVDA",
-        "direction": "Short",
-        "entry": 227.43,
-        "exit": 229.1357,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -11.25,
-        "rsi": 37.9,
-        "vol_ratio": 1.32,
-        "entry_time": "12:11 PM",
-        "hour": 12,
+        "pnl_pct": -0.02,
+        "pnl_dollar": -1.0,
+        "rsi": 57.6,
+        "vol_ratio": 5.17,
+        "entry_time": "11:09 AM",
+        "hour": 11,
         "signal_type": "vwap_reclaim",
-        "signal_score": 7,
-        "pos_size": 1500,
-        "day_bias": "short",
-        "trail_used": false
+        "signal_score": 10,
+        "pos_size": 5000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-18",
         "ticker": "NVDA",
         "direction": "Short",
-        "entry": 220.61,
-        "exit": 219.3862,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.555,
-        "pnl_dollar": 12.48,
+        "entry": 220.5659,
+        "exit": 218.9554,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 10.95,
         "rsi": 32.4,
         "vol_ratio": 1.81,
         "entry_time": "02:02 PM",
         "hour": 14,
         "signal_type": "ema_pullback",
-        "signal_score": 8,
-        "pos_size": 2250,
+        "signal_score": 9,
+        "pos_size": 1500.0,
         "day_bias": "short",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-18",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 220.5659,
+        "exit": 219.2113,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.614,
+        "pnl_dollar": 9.21,
+        "rsi": 32.4,
+        "vol_ratio": 1.81,
+        "entry_time": "02:02 PM",
+        "hour": 14,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 1500.0,
+        "day_bias": "short",
+        "trail_used": true,
+        "prime_window": false
       },
       {
         "date": "2026-05-18",
         "ticker": "QQQ",
         "direction": "Short",
-        "entry": 707.361,
-        "exit": 701.8442,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.78,
-        "pnl_dollar": 11.7,
+        "entry": 707.2196,
+        "exit": 702.0558,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 18.25,
         "rsi": 35.3,
         "vol_ratio": 1.5,
         "entry_time": "10:01 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1500,
+        "signal_score": 10,
+        "pos_size": 2500.0,
         "day_bias": "neutral",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": true
       },
       {
         "date": "2026-05-18",
-        "ticker": "NVDA",
+        "ticker": "QQQ",
         "direction": "Short",
-        "entry": 224.0,
-        "exit": 221.7081,
+        "entry": 707.2196,
+        "exit": 701.2847,
         "result": "Trailing Stop",
-        "pnl_pct": 1.023,
-        "pnl_dollar": 15.35,
-        "rsi": 36.9,
-        "vol_ratio": 1.65,
-        "entry_time": "10:24 AM",
+        "pnl_pct": 0.839,
+        "pnl_dollar": 20.98,
+        "rsi": 35.3,
+        "vol_ratio": 1.5,
+        "entry_time": "10:01 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
-        "day_bias": "short",
-        "trail_used": true
+        "signal_score": 10,
+        "pos_size": 2500.0,
+        "day_bias": "neutral",
+        "trail_used": true,
+        "prime_window": true
       },
       {
         "date": "2026-05-18",
         "ticker": "NVDA",
         "direction": "Short",
-        "entry": 221.68,
-        "exit": 220.4795,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.542,
-        "pnl_dollar": 6.09,
+        "entry": 224.9351,
+        "exit": 223.2927,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 13.69,
+        "rsi": 46.2,
+        "vol_ratio": 77.43,
+        "entry_time": "10:11 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 1875.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-18",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 224.9351,
+        "exit": 221.6054,
+        "result": "Target Hit",
+        "pnl_pct": 1.48,
+        "pnl_dollar": 27.76,
+        "rsi": 46.2,
+        "vol_ratio": 77.43,
+        "entry_time": "10:11 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 10,
+        "pos_size": 1875.0,
+        "day_bias": "short",
+        "trail_used": true,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-18",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 221.6357,
+        "exit": 220.0174,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 8.21,
         "rsi": 35.9,
         "vol_ratio": 1.22,
         "entry_time": "11:29 AM",
         "hour": 11,
         "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1125,
+        "signal_score": 8,
+        "pos_size": 1125.0,
         "day_bias": "short",
-        "trail_used": true
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-18",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 221.6357,
+        "exit": 220.3037,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.601,
+        "pnl_dollar": 6.76,
+        "rsi": 35.9,
+        "vol_ratio": 1.22,
+        "entry_time": "11:29 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 1125.0,
+        "day_bias": "short",
+        "trail_used": true,
+        "prime_window": false
       },
       {
         "date": "2026-05-18",
         "ticker": "QQQ",
         "direction": "Long",
-        "entry": 702.6,
-        "exit": 700.94,
+        "entry": 702.7405,
+        "exit": 701.9695,
         "result": "Time Exit",
-        "pnl_pct": -0.236,
-        "pnl_dollar": -2.36,
+        "pnl_pct": -0.11,
+        "pnl_dollar": -1.65,
         "rsi": 59.8,
         "vol_ratio": 1.22,
         "entry_time": "12:51 PM",
         "hour": 12,
         "signal_type": "ema_pullback",
-        "signal_score": 5,
-        "pos_size": 1000,
+        "signal_score": 6,
+        "pos_size": 1500.0,
         "day_bias": "neutral",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-19",
+        "ticker": "QQQ",
+        "direction": "Short",
+        "entry": 704.4791,
+        "exit": 703.5107,
+        "result": "Time Exit",
+        "pnl_pct": 0.137,
+        "pnl_dollar": 2.06,
+        "rsi": 30.4,
+        "vol_ratio": 1.32,
+        "entry_time": "01:46 PM",
+        "hour": 13,
+        "signal_type": "ema_pullback",
+        "signal_score": 6,
+        "pos_size": 1500.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-19",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 221.93,
+        "entry": 223.0096,
+        "exit": 221.8356,
+        "result": "Time Exit",
+        "pnl_pct": -0.526,
+        "pnl_dollar": -11.84,
+        "rsi": 58.5,
+        "vol_ratio": 1.33,
+        "entry_time": "02:49 PM",
+        "hour": 14,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 2250.0,
+        "day_bias": "long",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-19",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 221.9744,
         "exit": 220.2655,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -11.25,
+        "pnl_pct": -0.77,
+        "pnl_dollar": -28.87,
         "rsi": 56.5,
         "vol_ratio": 2.24,
         "entry_time": "09:51 AM",
         "hour": 9,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
+        "signal_score": 10,
+        "pos_size": 3750.0,
         "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-19",
+        "ticker": "QQQ",
+        "direction": "Short",
+        "entry": 698.5902,
+        "exit": 703.9704,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -30.81,
+        "rsi": 35.6,
+        "vol_ratio": 1.45,
+        "entry_time": "10:12 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": true
       },
       {
         "date": "2026-05-19",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 221.01,
-        "exit": 222.5703,
-        "result": "Trailing Stop",
-        "pnl_pct": 0.706,
-        "pnl_dollar": 10.59,
+        "entry": 221.0542,
+        "exit": 222.6676,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 8.21,
         "rsi": 59.8,
         "vol_ratio": 1.33,
         "entry_time": "11:10 AM",
         "hour": 11,
         "signal_type": "ema_pullback",
-        "signal_score": 7,
-        "pos_size": 1500,
+        "signal_score": 8,
+        "pos_size": 1125.0,
         "day_bias": "long",
-        "trail_used": true
-      },
-      {
-        "date": "2026-05-19",
-        "ticker": "QQQ",
-        "direction": "Long",
-        "entry": 703.64,
-        "exit": 702.18,
-        "result": "Time Exit",
-        "pnl_pct": -0.207,
-        "pnl_dollar": -3.11,
-        "rsi": 70.5,
-        "vol_ratio": 1.38,
-        "entry_time": "12:52 PM",
-        "hour": 12,
-        "signal_type": "ema_pullback",
-        "signal_score": 6,
-        "pos_size": 1500,
-        "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
       },
       {
         "date": "2026-05-19",
         "ticker": "NVDA",
         "direction": "Long",
-        "entry": 223.11,
-        "exit": 221.4367,
+        "entry": 221.0542,
+        "exit": 222.749,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.767,
+        "pnl_dollar": 8.63,
+        "rsi": 59.8,
+        "vol_ratio": 1.33,
+        "entry_time": "11:10 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 8,
+        "pos_size": 1125.0,
+        "day_bias": "long",
+        "trail_used": true,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-19",
+        "ticker": "NVDA",
+        "direction": "Long",
+        "entry": 223.1546,
+        "exit": 223.11,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.75,
-        "pnl_dollar": -16.87,
+        "pnl_pct": -0.02,
+        "pnl_dollar": -0.6,
         "rsi": 63.6,
         "vol_ratio": 1.83,
         "entry_time": "12:54 PM",
         "hour": 12,
         "signal_type": "ema_pullback",
-        "signal_score": 8,
-        "pos_size": 2250,
+        "signal_score": 9,
+        "pos_size": 3000.0,
         "day_bias": "long",
-        "trail_used": false
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-20",
+        "ticker": "QQQ",
+        "direction": "Long",
+        "entry": 712.1024,
+        "exit": 711.7076,
+        "result": "Time Exit",
+        "pnl_pct": -0.055,
+        "pnl_dollar": -2.22,
+        "rsi": 69.2,
+        "vol_ratio": 2.04,
+        "entry_time": "03:23 PM",
+        "hour": 15,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-20",
+        "ticker": "QQQ",
+        "direction": "Short",
+        "entry": 704.0281,
+        "exit": 709.4502,
+        "result": "Stop Loss Hit",
+        "pnl_pct": -0.77,
+        "pnl_dollar": -30.81,
+        "rsi": 31.4,
+        "vol_ratio": 1.25,
+        "entry_time": "10:12 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": true
+      },
+      {
+        "date": "2026-05-20",
+        "ticker": "QQQ",
+        "direction": "Long",
+        "entry": 710.272,
+        "exit": 711.5926,
+        "result": "Time Exit",
+        "pnl_pct": 0.186,
+        "pnl_dollar": 7.44,
+        "rsi": 66.4,
+        "vol_ratio": 1.68,
+        "entry_time": "10:57 AM",
+        "hour": 10,
+        "signal_type": "ema_pullback",
+        "signal_score": 9,
+        "pos_size": 4000.0,
+        "day_bias": "neutral",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-20",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 224.7251,
+        "exit": 223.0843,
+        "result": "Partial Exit (partial)",
+        "pnl_pct": 0.73,
+        "pnl_dollar": 5.48,
+        "rsi": 33.2,
+        "vol_ratio": 1.26,
+        "entry_time": "11:40 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 750.0,
+        "day_bias": "short",
+        "trail_used": false,
+        "prime_window": false
+      },
+      {
+        "date": "2026-05-20",
+        "ticker": "NVDA",
+        "direction": "Short",
+        "entry": 224.7251,
+        "exit": 222.669,
+        "result": "Trailing Stop",
+        "pnl_pct": 0.915,
+        "pnl_dollar": 6.86,
+        "rsi": 33.2,
+        "vol_ratio": 1.26,
+        "entry_time": "11:40 AM",
+        "hour": 11,
+        "signal_type": "ema_pullback",
+        "signal_score": 7,
+        "pos_size": 750.0,
+        "day_bias": "short",
+        "trail_used": true,
+        "prime_window": false
       }
     ]
   },
+  "out_of_sample": {
+    "train": {
+      "stats": {
+        "trades": 36,
+        "wins": 17,
+        "losses": 19,
+        "win_rate": 47.22,
+        "total_pnl_pct": 7.668,
+        "total_pnl_dollar": 11.82,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -1.973,
+        "sharpe": 4.906,
+        "avg_score": 8.8,
+        "profit_factor": 1.054,
+        "expectancy": 0.33,
+        "prime_win_rate": 33.3,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 26,
+            "pnl": 66.61000000000001,
+            "wins": 14
+          },
+          "QQQ": {
+            "trades": 10,
+            "pnl": -54.79,
+            "wins": 3
+          }
+        }
+      }
+    },
+    "test": {
+      "stats": {
+        "trades": 71,
+        "wins": 42,
+        "losses": 29,
+        "win_rate": 59.15,
+        "total_pnl_pct": 16.447,
+        "total_pnl_dollar": 63.0,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.33,
+        "sharpe": 6.076,
+        "avg_score": 8.8,
+        "profit_factor": 1.156,
+        "expectancy": 0.89,
+        "prime_win_rate": 68.8,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 44,
+            "pnl": 16.65999999999997,
+            "wins": 27
+          },
+          "QQQ": {
+            "trades": 27,
+            "pnl": 46.33999999999999,
+            "wins": 15
+          }
+        }
+      }
+    },
+    "consistent": true
+  },
   "sweep": [
     {
-      "rsi_buy": 52,
-      "rsi_sell": 45,
-      "min_score": 5,
-      "stats": {
-        "trades": 75,
-        "wins": 43,
-        "losses": 32,
-        "trail_exits": 20,
-        "time_exits": 37,
-        "win_rate": 57.33,
-        "total_pnl_pct": 10.49,
-        "total_pnl_dollar": 129.74,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -1.68,
-        "sharpe": 3.516,
-        "avg_score": 6.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 51,
-            "pnl": 124.30000000000001,
-            "wins": 31
-          },
-          "QQQ": {
-            "trades": 24,
-            "pnl": 5.440000000000003,
-            "wins": 12
-          }
-        }
-      },
-      "score": 40.361
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 45,
-      "min_score": 5,
-      "stats": {
-        "trades": 73,
-        "wins": 42,
-        "losses": 31,
-        "trail_exits": 18,
-        "time_exits": 38,
-        "win_rate": 57.53,
-        "total_pnl_pct": 10.56,
-        "total_pnl_dollar": 153.77,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.081,
-        "sharpe": 3.676,
-        "avg_score": 6.6,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 48,
-            "pnl": 118.41000000000003,
-            "wins": 27
-          },
-          "QQQ": {
-            "trades": 25,
-            "pnl": 35.36,
-            "wins": 15
-          }
-        }
-      },
-      "score": 40.289
-    },
-    {
-      "rsi_buy": 60,
+      "rsi_buy": 58,
       "rsi_sell": 45,
       "min_score": 4,
       "stats": {
-        "trades": 74,
-        "wins": 42,
-        "losses": 32,
-        "trail_exits": 18,
-        "time_exits": 39,
-        "win_rate": 56.76,
-        "total_pnl_pct": 10.746,
-        "total_pnl_dollar": 154.67,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.081,
-        "sharpe": 3.713,
-        "avg_score": 6.5,
+        "trades": 102,
+        "wins": 58,
+        "losses": 44,
+        "win_rate": 56.86,
+        "total_pnl_pct": 25.061,
+        "total_pnl_dollar": 115.06,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.021,
+        "sharpe": 6.222,
+        "avg_score": 8.6,
+        "profit_factor": 1.212,
+        "expectancy": 1.13,
+        "prime_win_rate": 60.0,
         "by_ticker": {
           "NVDA": {
-            "trades": 48,
-            "pnl": 118.41000000000003,
-            "wins": 27
+            "trades": 66,
+            "pnl": 153.64000000000004,
+            "wins": 43
           },
           "QQQ": {
-            "trades": 26,
-            "pnl": 36.26,
+            "trades": 36,
+            "pnl": -38.579999999999984,
             "wins": 15
           }
         }
       },
-      "score": 40.078
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 40,
-      "min_score": 5,
-      "stats": {
-        "trades": 73,
-        "wins": 42,
-        "losses": 31,
-        "trail_exits": 19,
-        "time_exits": 35,
-        "win_rate": 57.53,
-        "total_pnl_pct": 9.998,
-        "total_pnl_dollar": 141.68,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.753,
-        "sharpe": 3.33,
-        "avg_score": 6.6,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 50,
-            "pnl": 99.91000000000001,
-            "wins": 29
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": 41.77,
-            "wins": 13
-          }
-        }
-      },
-      "score": 40.064
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 45,
-      "min_score": 4,
-      "stats": {
-        "trades": 77,
-        "wins": 43,
-        "losses": 34,
-        "trail_exits": 21,
-        "time_exits": 38,
-        "win_rate": 55.84,
-        "total_pnl_pct": 11.036,
-        "total_pnl_dollar": 128.83,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -1.68,
-        "sharpe": 3.61,
-        "avg_score": 6.4,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 51,
-            "pnl": 124.30000000000001,
-            "wins": 31
-          },
-          "QQQ": {
-            "trades": 26,
-            "pnl": 4.53000000000001,
-            "wins": 12
-          }
-        }
-      },
-      "score": 40.034
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 50,
-      "min_score": 5,
-      "stats": {
-        "trades": 73,
-        "wins": 42,
-        "losses": 31,
-        "trail_exits": 19,
-        "time_exits": 36,
-        "win_rate": 57.53,
-        "total_pnl_pct": 9.713,
-        "total_pnl_dollar": 135.11,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.111,
-        "sharpe": 3.369,
-        "avg_score": 6.4,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 50,
-            "pnl": 115.24000000000001,
-            "wins": 30
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": 19.870000000000005,
-            "wins": 12
-          }
-        }
-      },
-      "score": 39.95
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 50,
-      "min_score": 5,
-      "stats": {
-        "trades": 71,
-        "wins": 41,
-        "losses": 30,
-        "trail_exits": 17,
-        "time_exits": 37,
-        "win_rate": 57.75,
-        "total_pnl_pct": 9.783,
-        "total_pnl_dollar": 159.14,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.081,
-        "sharpe": 3.528,
-        "avg_score": 6.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 109.35,
-            "wins": 26
-          },
-          "QQQ": {
-            "trades": 24,
-            "pnl": 49.789999999999985,
-            "wins": 15
-          }
-        }
-      },
-      "score": 39.888
+      "score": 35.429
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 45,
       "min_score": 5,
       "stats": {
-        "trades": 72,
-        "wins": 41,
-        "losses": 31,
-        "trail_exits": 18,
-        "time_exits": 37,
-        "win_rate": 56.94,
-        "total_pnl_pct": 10.535,
-        "total_pnl_dollar": 118.02,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.071,
-        "sharpe": 3.693,
-        "avg_score": 6.6,
+        "trades": 102,
+        "wins": 58,
+        "losses": 44,
+        "win_rate": 56.86,
+        "total_pnl_pct": 25.061,
+        "total_pnl_dollar": 115.06,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.021,
+        "sharpe": 6.222,
+        "avg_score": 8.6,
+        "profit_factor": 1.212,
+        "expectancy": 1.13,
+        "prime_win_rate": 60.0,
         "by_ticker": {
           "NVDA": {
-            "trades": 48,
-            "pnl": 79.41,
-            "wins": 27
+            "trades": 66,
+            "pnl": 153.64000000000004,
+            "wins": 43
           },
           "QQQ": {
-            "trades": 24,
-            "pnl": 38.610000000000014,
-            "wins": 14
-          }
-        }
-      },
-      "score": 39.884
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 42,
-      "min_score": 5,
-      "stats": {
-        "trades": 74,
-        "wins": 42,
-        "losses": 32,
-        "trail_exits": 19,
-        "time_exits": 36,
-        "win_rate": 56.76,
-        "total_pnl_pct": 10.135,
-        "total_pnl_dollar": 140.66,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.753,
-        "sharpe": 3.338,
-        "avg_score": 6.6,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 51,
-            "pnl": 98.89000000000001,
-            "wins": 29
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": 41.77,
-            "wins": 13
-          }
-        }
-      },
-      "score": 39.834
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 40,
-      "min_score": 4,
-      "stats": {
-        "trades": 75,
-        "wins": 42,
-        "losses": 33,
-        "trail_exits": 20,
-        "time_exits": 36,
-        "win_rate": 56.0,
-        "total_pnl_pct": 10.544,
-        "total_pnl_dollar": 140.77,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.753,
-        "sharpe": 3.427,
-        "avg_score": 6.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 50,
-            "pnl": 99.91000000000001,
-            "wins": 29
-          },
-          "QQQ": {
-            "trades": 25,
-            "pnl": 40.85999999999999,
-            "wins": 13
-          }
-        }
-      },
-      "score": 39.718
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 50,
-      "min_score": 4,
-      "stats": {
-        "trades": 72,
-        "wins": 41,
-        "losses": 31,
-        "trail_exits": 17,
-        "time_exits": 38,
-        "win_rate": 56.94,
-        "total_pnl_pct": 9.936,
-        "total_pnl_dollar": 159.8,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.081,
-        "sharpe": 3.558,
-        "avg_score": 6.4,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 109.11,
-            "wins": 26
-          },
-          "QQQ": {
-            "trades": 25,
-            "pnl": 50.68999999999999,
+            "trades": 36,
+            "pnl": -38.579999999999984,
             "wins": 15
           }
         }
       },
-      "score": 39.644
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 50,
-      "min_score": 4,
-      "stats": {
-        "trades": 75,
-        "wins": 42,
-        "losses": 33,
-        "trail_exits": 20,
-        "time_exits": 37,
-        "win_rate": 56.0,
-        "total_pnl_pct": 10.226,
-        "total_pnl_dollar": 133.96,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.111,
-        "sharpe": 3.46,
-        "avg_score": 6.3,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 50,
-            "pnl": 115.00000000000003,
-            "wins": 30
-          },
-          "QQQ": {
-            "trades": 25,
-            "pnl": 18.96,
-            "wins": 12
-          }
-        }
-      },
-      "score": 39.59
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 42,
-      "min_score": 4,
-      "stats": {
-        "trades": 76,
-        "wins": 42,
-        "losses": 34,
-        "trail_exits": 20,
-        "time_exits": 37,
-        "win_rate": 55.26,
-        "total_pnl_pct": 10.681,
-        "total_pnl_dollar": 139.75,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.753,
-        "sharpe": 3.434,
-        "avg_score": 6.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 51,
-            "pnl": 98.89000000000001,
-            "wins": 29
-          },
-          "QQQ": {
-            "trades": 25,
-            "pnl": 40.85999999999999,
-            "wins": 13
-          }
-        }
-      },
-      "score": 39.502
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 48,
-      "min_score": 5,
-      "stats": {
-        "trades": 74,
-        "wins": 42,
-        "losses": 32,
-        "trail_exits": 19,
-        "time_exits": 37,
-        "win_rate": 56.76,
-        "total_pnl_pct": 9.246,
-        "total_pnl_dollar": 113.81,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.111,
-        "sharpe": 3.169,
-        "avg_score": 6.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 50,
-            "pnl": 108.67,
-            "wins": 30
-          },
-          "QQQ": {
-            "trades": 24,
-            "pnl": 5.140000000000006,
-            "wins": 12
-          }
-        }
-      },
-      "score": 39.478
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 50,
-      "min_score": 5,
-      "stats": {
-        "trades": 70,
-        "wins": 40,
-        "losses": 30,
-        "trail_exits": 17,
-        "time_exits": 36,
-        "win_rate": 57.14,
-        "total_pnl_pct": 9.758,
-        "total_pnl_dollar": 123.39,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.071,
-        "sharpe": 3.545,
-        "avg_score": 6.4,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 70.35,
-            "wins": 26
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": 53.03999999999998,
-            "wins": 14
-          }
-        }
-      },
-      "score": 39.473
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 48,
-      "min_score": 5,
-      "stats": {
-        "trades": 72,
-        "wins": 41,
-        "losses": 31,
-        "trail_exits": 17,
-        "time_exits": 38,
-        "win_rate": 56.94,
-        "total_pnl_pct": 9.316,
-        "total_pnl_dollar": 137.84,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.081,
-        "sharpe": 3.318,
-        "avg_score": 6.6,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 102.78,
-            "wins": 26
-          },
-          "QQQ": {
-            "trades": 25,
-            "pnl": 35.059999999999995,
-            "wins": 15
-          }
-        }
-      },
-      "score": 39.396
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 48,
-      "min_score": 4,
-      "stats": {
-        "trades": 73,
-        "wins": 41,
-        "losses": 32,
-        "trail_exits": 17,
-        "time_exits": 39,
-        "win_rate": 56.16,
-        "total_pnl_pct": 9.502,
-        "total_pnl_dollar": 138.74,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.081,
-        "sharpe": 3.359,
-        "avg_score": 6.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 102.78,
-            "wins": 26
-          },
-          "QQQ": {
-            "trades": 26,
-            "pnl": 35.96,
-            "wins": 15
-          }
-        }
-      },
-      "score": 39.181
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 48,
-      "min_score": 4,
-      "stats": {
-        "trades": 76,
-        "wins": 42,
-        "losses": 34,
-        "trail_exits": 20,
-        "time_exits": 38,
-        "win_rate": 55.26,
-        "total_pnl_pct": 9.792,
-        "total_pnl_dollar": 112.9,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.111,
-        "sharpe": 3.273,
-        "avg_score": 6.4,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 50,
-            "pnl": 108.67,
-            "wins": 30
-          },
-          "QQQ": {
-            "trades": 26,
-            "pnl": 4.229999999999999,
-            "wins": 12
-          }
-        }
-      },
-      "score": 39.147
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 45,
-      "min_score": 5,
-      "stats": {
-        "trades": 74,
-        "wins": 41,
-        "losses": 33,
-        "trail_exits": 20,
-        "time_exits": 37,
-        "win_rate": 55.41,
-        "total_pnl_pct": 9.86,
-        "total_pnl_dollar": 108.57,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -1.924,
-        "sharpe": 3.314,
-        "avg_score": 6.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 48,
-            "pnl": 124.69000000000003,
-            "wins": 30
-          },
-          "QQQ": {
-            "trades": 26,
-            "pnl": -16.120000000000005,
-            "wins": 11
-          }
-        }
-      },
-      "score": 39.049
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 40,
-      "min_score": 6,
-      "stats": {
-        "trades": 72,
-        "wins": 41,
-        "losses": 31,
-        "trail_exits": 18,
-        "time_exits": 35,
-        "win_rate": 56.94,
-        "total_pnl_pct": 8.346,
-        "total_pnl_dollar": 111.79,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.92,
-        "sharpe": 2.801,
-        "avg_score": 6.8,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 49,
-            "pnl": 90.23000000000005,
-            "wins": 28
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": 21.559999999999995,
-            "wins": 13
-          }
-        }
-      },
-      "score": 39.008
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 42,
-      "min_score": 6,
-      "stats": {
-        "trades": 72,
-        "wins": 41,
-        "losses": 31,
-        "trail_exits": 18,
-        "time_exits": 35,
-        "win_rate": 56.94,
-        "total_pnl_pct": 8.346,
-        "total_pnl_dollar": 111.79,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.92,
-        "sharpe": 2.801,
-        "avg_score": 6.8,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 49,
-            "pnl": 90.23000000000005,
-            "wins": 28
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": 21.559999999999995,
-            "wins": 13
-          }
-        }
-      },
-      "score": 39.008
+      "score": 35.429
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 48,
-      "min_score": 5,
-      "stats": {
-        "trades": 71,
-        "wins": 40,
-        "losses": 31,
-        "trail_exits": 17,
-        "time_exits": 37,
-        "win_rate": 56.34,
-        "total_pnl_pct": 9.291,
-        "total_pnl_dollar": 102.09,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.071,
-        "sharpe": 3.333,
-        "avg_score": 6.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 63.77999999999997,
-            "wins": 26
-          },
-          "QQQ": {
-            "trades": 24,
-            "pnl": 38.31,
-            "wins": 14
-          }
-        }
-      },
-      "score": 38.986
-    },
-    {
-      "rsi_buy": 55,
-      "rsi_sell": 45,
-      "min_score": 5,
-      "stats": {
-        "trades": 73,
-        "wins": 41,
-        "losses": 32,
-        "trail_exits": 18,
-        "time_exits": 37,
-        "win_rate": 56.16,
-        "total_pnl_pct": 8.822,
-        "total_pnl_dollar": 99.21,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.071,
-        "sharpe": 3.076,
-        "avg_score": 6.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 49,
-            "pnl": 76.43,
-            "wins": 28
-          },
-          "QQQ": {
-            "trades": 24,
-            "pnl": 22.78,
-            "wins": 13
-          }
-        }
-      },
-      "score": 38.909
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 45,
       "min_score": 6,
       "stats": {
-        "trades": 71,
-        "wins": 41,
-        "losses": 30,
-        "trail_exits": 16,
-        "time_exits": 36,
-        "win_rate": 57.75,
-        "total_pnl_pct": 7.025,
-        "total_pnl_dollar": 127.32,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.676,
-        "sharpe": 2.459,
-        "avg_score": 6.9,
+        "trades": 100,
+        "wins": 57,
+        "losses": 43,
+        "win_rate": 57.0,
+        "total_pnl_pct": 23.71,
+        "total_pnl_dollar": 108.87,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.724,
+        "sharpe": 6.024,
+        "avg_score": 8.7,
+        "profit_factor": 1.199,
+        "expectancy": 1.09,
+        "prime_win_rate": 60.0,
         "by_ticker": {
           "NVDA": {
-            "trades": 47,
-            "pnl": 92.82000000000001,
-            "wins": 26
+            "trades": 64,
+            "pnl": 148.62000000000003,
+            "wins": 41
           },
           "QQQ": {
-            "trades": 24,
-            "pnl": 34.49999999999999,
-            "wins": 15
-          }
-        }
-      },
-      "score": 38.785
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 48,
-      "min_score": 6,
-      "stats": {
-        "trades": 70,
-        "wins": 41,
-        "losses": 29,
-        "trail_exits": 15,
-        "time_exits": 36,
-        "win_rate": 58.57,
-        "total_pnl_pct": 6.236,
-        "total_pnl_dollar": 123.99,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.676,
-        "sharpe": 2.247,
-        "avg_score": 6.8,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 46,
-            "pnl": 77.19000000000001,
-            "wins": 25
-          },
-          "QQQ": {
-            "trades": 24,
-            "pnl": 46.79999999999999,
+            "trades": 36,
+            "pnl": -39.75000000000001,
             "wins": 16
           }
         }
       },
-      "score": 38.779
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 45,
-      "min_score": 4,
-      "stats": {
-        "trades": 75,
-        "wins": 41,
-        "losses": 34,
-        "trail_exits": 20,
-        "time_exits": 38,
-        "win_rate": 54.67,
-        "total_pnl_pct": 9.856,
-        "total_pnl_dollar": 108.53,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -1.924,
-        "sharpe": 3.29,
-        "avg_score": 6.4,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 48,
-            "pnl": 124.69000000000003,
-            "wins": 30
-          },
-          "QQQ": {
-            "trades": 27,
-            "pnl": -16.159999999999997,
-            "wins": 11
-          }
-        }
-      },
-      "score": 38.777
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 45,
-      "min_score": 4,
-      "stats": {
-        "trades": 73,
-        "wins": 40,
-        "losses": 33,
-        "trail_exits": 18,
-        "time_exits": 38,
-        "win_rate": 54.79,
-        "total_pnl_pct": 10.206,
-        "total_pnl_dollar": 110.47,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.071,
-        "sharpe": 3.543,
-        "avg_score": 6.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 48,
-            "pnl": 79.41,
-            "wins": 27
-          },
-          "QQQ": {
-            "trades": 25,
-            "pnl": 31.060000000000006,
-            "wins": 13
-          }
-        }
-      },
-      "score": 38.777
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 40,
-      "min_score": 5,
-      "stats": {
-        "trades": 72,
-        "wins": 40,
-        "losses": 32,
-        "trail_exits": 19,
-        "time_exits": 35,
-        "win_rate": 55.56,
-        "total_pnl_pct": 9.368,
-        "total_pnl_dollar": 116.76,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.862,
-        "sharpe": 3.13,
-        "avg_score": 6.6,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 100.30000000000004,
-            "wins": 28
-          },
-          "QQQ": {
-            "trades": 25,
-            "pnl": 16.46,
-            "wins": 12
-          }
-        }
-      },
-      "score": 38.727
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 40,
-      "min_score": 6,
-      "stats": {
-        "trades": 69,
-        "wins": 39,
-        "losses": 30,
-        "trail_exits": 18,
-        "time_exits": 35,
-        "win_rate": 56.52,
-        "total_pnl_pct": 8.355,
-        "total_pnl_dollar": 106.15,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.961,
-        "sharpe": 2.953,
-        "avg_score": 6.9,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 46,
-            "pnl": 87.96000000000004,
-            "wins": 27
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": 18.189999999999998,
-            "wins": 12
-          }
-        }
-      },
-      "score": 38.502
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 42,
-      "min_score": 6,
-      "stats": {
-        "trades": 69,
-        "wins": 39,
-        "losses": 30,
-        "trail_exits": 18,
-        "time_exits": 35,
-        "win_rate": 56.52,
-        "total_pnl_pct": 8.355,
-        "total_pnl_dollar": 106.15,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.961,
-        "sharpe": 2.953,
-        "avg_score": 6.9,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 46,
-            "pnl": 87.96000000000004,
-            "wins": 27
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": 18.189999999999998,
-            "wins": 12
-          }
-        }
-      },
-      "score": 38.502
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 42,
-      "min_score": 5,
-      "stats": {
-        "trades": 73,
-        "wins": 40,
-        "losses": 33,
-        "trail_exits": 19,
-        "time_exits": 36,
-        "win_rate": 54.79,
-        "total_pnl_pct": 9.505,
-        "total_pnl_dollar": 115.74,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.862,
-        "sharpe": 3.14,
-        "avg_score": 6.6,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 48,
-            "pnl": 99.28000000000003,
-            "wins": 28
-          },
-          "QQQ": {
-            "trades": 25,
-            "pnl": 16.46,
-            "wins": 12
-          }
-        }
-      },
-      "score": 38.497
-    },
-    {
-      "rsi_buy": 55,
-      "rsi_sell": 50,
-      "min_score": 5,
-      "stats": {
-        "trades": 71,
-        "wins": 40,
-        "losses": 31,
-        "trail_exits": 17,
-        "time_exits": 36,
-        "win_rate": 56.34,
-        "total_pnl_pct": 8.045,
-        "total_pnl_dollar": 104.58,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.071,
-        "sharpe": 2.908,
-        "avg_score": 6.4,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 48,
-            "pnl": 67.36999999999998,
-            "wins": 27
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": 37.21,
-            "wins": 13
-          }
-        }
-      },
-      "score": 38.488
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 40,
-      "min_score": 5,
-      "stats": {
-        "trades": 71,
-        "wins": 40,
-        "losses": 31,
-        "trail_exits": 16,
-        "time_exits": 36,
-        "win_rate": 56.34,
-        "total_pnl_pct": 7.969,
-        "total_pnl_dollar": 130.6,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.509,
-        "sharpe": 2.768,
-        "avg_score": 6.7,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 94.02,
-            "wins": 25
-          },
-          "QQQ": {
-            "trades": 24,
-            "pnl": 36.57999999999999,
-            "wins": 15
-          }
-        }
-      },
-      "score": 38.458
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 40,
-      "min_score": 4,
-      "stats": {
-        "trades": 73,
-        "wins": 40,
-        "losses": 33,
-        "trail_exits": 19,
-        "time_exits": 36,
-        "win_rate": 54.79,
-        "total_pnl_pct": 9.364,
-        "total_pnl_dollar": 116.72,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.862,
-        "sharpe": 3.106,
-        "avg_score": 6.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 100.30000000000004,
-            "wins": 28
-          },
-          "QQQ": {
-            "trades": 26,
-            "pnl": 16.42,
-            "wins": 12
-          }
-        }
-      },
-      "score": 38.441
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 45,
-      "min_score": 6,
-      "stats": {
-        "trades": 70,
-        "wins": 40,
-        "losses": 30,
-        "trail_exits": 16,
-        "time_exits": 35,
-        "win_rate": 57.14,
-        "total_pnl_pct": 6.996,
-        "total_pnl_dollar": 107.04,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.676,
-        "sharpe": 2.466,
-        "avg_score": 6.9,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 76.32000000000001,
-            "wins": 26
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": 30.72000000000001,
-            "wins": 14
-          }
-        }
-      },
-      "score": 38.368
+      "score": 35.335
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 48,
-      "min_score": 6,
+      "min_score": 4,
       "stats": {
-        "trades": 69,
-        "wins": 40,
-        "losses": 29,
-        "trail_exits": 15,
-        "time_exits": 35,
-        "win_rate": 57.97,
-        "total_pnl_pct": 6.207,
-        "total_pnl_dollar": 103.71,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.676,
-        "sharpe": 2.252,
-        "avg_score": 6.8,
+        "trades": 100,
+        "wins": 57,
+        "losses": 43,
+        "win_rate": 57.0,
+        "total_pnl_pct": 23.62,
+        "total_pnl_dollar": 108.07,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.724,
+        "sharpe": 5.997,
+        "avg_score": 8.7,
+        "profit_factor": 1.198,
+        "expectancy": 1.08,
+        "prime_win_rate": 60.0,
         "by_ticker": {
           "NVDA": {
-            "trades": 46,
-            "pnl": 60.69000000000001,
-            "wins": 25
+            "trades": 64,
+            "pnl": 148.62000000000003,
+            "wins": 41
           },
           "QQQ": {
-            "trades": 23,
-            "pnl": 43.019999999999996,
-            "wins": 15
-          }
-        }
-      },
-      "score": 38.368
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 50,
-      "min_score": 6,
-      "stats": {
-        "trades": 70,
-        "wins": 41,
-        "losses": 29,
-        "trail_exits": 15,
-        "time_exits": 34,
-        "win_rate": 58.57,
-        "total_pnl_pct": 5.183,
-        "total_pnl_dollar": 117.07,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.808,
-        "sharpe": 1.83,
-        "avg_score": 6.8,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 46,
-            "pnl": 74.29000000000002,
-            "wins": 25
-          },
-          "QQQ": {
-            "trades": 24,
-            "pnl": 42.779999999999994,
+            "trades": 36,
+            "pnl": -40.55000000000001,
             "wins": 16
           }
         }
       },
-      "score": 38.358
+      "score": 35.32
     },
     {
       "rsi_buy": 58,
-      "rsi_sell": 50,
-      "min_score": 4,
-      "stats": {
-        "trades": 71,
-        "wins": 39,
-        "losses": 32,
-        "trail_exits": 17,
-        "time_exits": 37,
-        "win_rate": 54.93,
-        "total_pnl_pct": 9.396,
-        "total_pnl_dollar": 115.6,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.071,
-        "sharpe": 3.382,
-        "avg_score": 6.3,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 70.11,
-            "wins": 26
-          },
-          "QQQ": {
-            "trades": 24,
-            "pnl": 45.48999999999998,
-            "wins": 13
-          }
-        }
-      },
-      "score": 38.323
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 42,
-      "min_score": 4,
-      "stats": {
-        "trades": 74,
-        "wins": 40,
-        "losses": 34,
-        "trail_exits": 19,
-        "time_exits": 37,
-        "win_rate": 54.05,
-        "total_pnl_pct": 9.501,
-        "total_pnl_dollar": 115.7,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.862,
-        "sharpe": 3.117,
-        "avg_score": 6.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 48,
-            "pnl": 99.28000000000003,
-            "wins": 28
-          },
-          "QQQ": {
-            "trades": 26,
-            "pnl": 16.42,
-            "wins": 12
-          }
-        }
-      },
-      "score": 38.225
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 42,
+      "rsi_sell": 48,
       "min_score": 5,
       "stats": {
-        "trades": 72,
-        "wins": 40,
-        "losses": 32,
-        "trail_exits": 16,
-        "time_exits": 37,
-        "win_rate": 55.56,
-        "total_pnl_pct": 8.106,
-        "total_pnl_dollar": 129.58,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.509,
-        "sharpe": 2.783,
-        "avg_score": 6.7,
+        "trades": 100,
+        "wins": 57,
+        "losses": 43,
+        "win_rate": 57.0,
+        "total_pnl_pct": 23.62,
+        "total_pnl_dollar": 108.07,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.724,
+        "sharpe": 5.997,
+        "avg_score": 8.7,
+        "profit_factor": 1.198,
+        "expectancy": 1.08,
+        "prime_win_rate": 60.0,
         "by_ticker": {
           "NVDA": {
-            "trades": 48,
-            "pnl": 93.0,
-            "wins": 25
+            "trades": 64,
+            "pnl": 148.62000000000003,
+            "wins": 41
           },
           "QQQ": {
-            "trades": 24,
-            "pnl": 36.57999999999999,
-            "wins": 15
+            "trades": 36,
+            "pnl": -40.55000000000001,
+            "wins": 16
           }
         }
       },
-      "score": 38.222
+      "score": 35.32
     },
     {
-      "rsi_buy": 52,
-      "rsi_sell": 48,
-      "min_score": 6,
-      "stats": {
-        "trades": 71,
-        "wins": 41,
-        "losses": 30,
-        "trail_exits": 16,
-        "time_exits": 35,
-        "win_rate": 57.75,
-        "total_pnl_pct": 5.584,
-        "total_pnl_dollar": 75.24,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.92,
-        "sharpe": 1.94,
-        "avg_score": 6.8,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 48,
-            "pnl": 75.57000000000002,
-            "wins": 28
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": -0.3300000000000072,
-            "wins": 13
-          }
-        }
-      },
-      "score": 38.209
-    },
-    {
-      "rsi_buy": 52,
+      "rsi_buy": 58,
       "rsi_sell": 45,
       "min_score": 6,
       "stats": {
-        "trades": 72,
-        "wins": 41,
-        "losses": 31,
-        "trail_exits": 17,
-        "time_exits": 35,
-        "win_rate": 56.94,
-        "total_pnl_pct": 6.312,
-        "total_pnl_dollar": 77.65,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.92,
-        "sharpe": 2.133,
-        "avg_score": 6.8,
+        "trades": 101,
+        "wins": 56,
+        "losses": 45,
+        "win_rate": 55.45,
+        "total_pnl_pct": 23.364,
+        "total_pnl_dollar": 108.63,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.021,
+        "sharpe": 5.889,
+        "avg_score": 8.6,
+        "profit_factor": 1.2,
+        "expectancy": 1.08,
+        "prime_win_rate": 60.0,
         "by_ticker": {
           "NVDA": {
-            "trades": 49,
-            "pnl": 91.20000000000005,
-            "wins": 29
+            "trades": 65,
+            "pnl": 146.41000000000005,
+            "wins": 41
           },
           "QQQ": {
-            "trades": 23,
-            "pnl": -13.549999999999999,
-            "wins": 12
-          }
-        }
-      },
-      "score": 38.195
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 40,
-      "min_score": 4,
-      "stats": {
-        "trades": 72,
-        "wins": 40,
-        "losses": 32,
-        "trail_exits": 16,
-        "time_exits": 37,
-        "win_rate": 55.56,
-        "total_pnl_pct": 7.965,
-        "total_pnl_dollar": 130.56,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.509,
-        "sharpe": 2.747,
-        "avg_score": 6.7,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 94.02,
-            "wins": 25
-          },
-          "QQQ": {
-            "trades": 25,
-            "pnl": 36.53999999999999,
+            "trades": 36,
+            "pnl": -37.77999999999998,
             "wins": 15
           }
         }
       },
-      "score": 38.166
+      "score": 34.72
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 45,
+      "min_score": 4,
+      "stats": {
+        "trades": 110,
+        "wins": 62,
+        "losses": 48,
+        "win_rate": 56.36,
+        "total_pnl_pct": 27.442,
+        "total_pnl_dollar": 99.14,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -1.973,
+        "sharpe": 6.279,
+        "avg_score": 8.6,
+        "profit_factor": 1.165,
+        "expectancy": 0.9,
+        "prime_win_rate": 56.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 73,
+            "pnl": 104.14000000000004,
+            "wins": 45
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -4.9999999999999725,
+            "wins": 17
+          }
+        }
+      },
+      "score": 34.644
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 45,
+      "min_score": 5,
+      "stats": {
+        "trades": 110,
+        "wins": 62,
+        "losses": 48,
+        "win_rate": 56.36,
+        "total_pnl_pct": 27.442,
+        "total_pnl_dollar": 99.14,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -1.973,
+        "sharpe": 6.279,
+        "avg_score": 8.6,
+        "profit_factor": 1.165,
+        "expectancy": 0.9,
+        "prime_win_rate": 56.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 73,
+            "pnl": 104.14000000000004,
+            "wins": 45
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -4.9999999999999725,
+            "wins": 17
+          }
+        }
+      },
+      "score": 34.644
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 48,
+      "min_score": 4,
+      "stats": {
+        "trades": 108,
+        "wins": 61,
+        "losses": 47,
+        "win_rate": 56.48,
+        "total_pnl_pct": 26.001,
+        "total_pnl_dollar": 92.15,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.429,
+        "sharpe": 6.072,
+        "avg_score": 8.7,
+        "profit_factor": 1.152,
+        "expectancy": 0.85,
+        "prime_win_rate": 56.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 71,
+            "pnl": 99.12000000000003,
+            "wins": 43
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -6.9699999999999855,
+            "wins": 18
+          }
+        }
+      },
+      "score": 34.537
     },
     {
       "rsi_buy": 50,
       "rsi_sell": 48,
       "min_score": 5,
       "stats": {
-        "trades": 73,
-        "wins": 40,
-        "losses": 33,
-        "trail_exits": 19,
-        "time_exits": 37,
-        "win_rate": 54.79,
-        "total_pnl_pct": 8.616,
-        "total_pnl_dollar": 92.64,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.358,
-        "sharpe": 2.962,
-        "avg_score": 6.5,
+        "trades": 108,
+        "wins": 61,
+        "losses": 47,
+        "win_rate": 56.48,
+        "total_pnl_pct": 26.001,
+        "total_pnl_dollar": 92.15,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.429,
+        "sharpe": 6.072,
+        "avg_score": 8.7,
+        "profit_factor": 1.152,
+        "expectancy": 0.85,
+        "prime_win_rate": 56.0,
         "by_ticker": {
           "NVDA": {
-            "trades": 47,
-            "pnl": 109.06,
-            "wins": 29
+            "trades": 71,
+            "pnl": 99.12000000000003,
+            "wins": 43
           },
           "QQQ": {
-            "trades": 26,
-            "pnl": -16.42,
-            "wins": 11
+            "trades": 37,
+            "pnl": -6.9699999999999855,
+            "wins": 18
           }
         }
       },
-      "score": 38.141
+      "score": 34.537
     },
     {
-      "rsi_buy": 60,
-      "rsi_sell": 40,
+      "rsi_buy": 50,
+      "rsi_sell": 48,
       "min_score": 6,
       "stats": {
-        "trades": 71,
-        "wins": 40,
-        "losses": 31,
-        "trail_exits": 16,
-        "time_exits": 36,
-        "win_rate": 56.34,
-        "total_pnl_pct": 6.96,
-        "total_pnl_dollar": 126.35,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.676,
-        "sharpe": 2.435,
-        "avg_score": 6.9,
+        "trades": 108,
+        "wins": 61,
+        "losses": 47,
+        "win_rate": 56.48,
+        "total_pnl_pct": 26.001,
+        "total_pnl_dollar": 92.15,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.429,
+        "sharpe": 6.072,
+        "avg_score": 8.7,
+        "profit_factor": 1.152,
+        "expectancy": 0.85,
+        "prime_win_rate": 56.0,
         "by_ticker": {
           "NVDA": {
-            "trades": 47,
-            "pnl": 91.85000000000001,
-            "wins": 25
+            "trades": 71,
+            "pnl": 99.12000000000003,
+            "wins": 43
           },
           "QQQ": {
-            "trades": 24,
-            "pnl": 34.49999999999999,
-            "wins": 15
+            "trades": 37,
+            "pnl": -6.9699999999999855,
+            "wins": 18
           }
         }
       },
-      "score": 38.054
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 42,
-      "min_score": 6,
-      "stats": {
-        "trades": 71,
-        "wins": 40,
-        "losses": 31,
-        "trail_exits": 16,
-        "time_exits": 36,
-        "win_rate": 56.34,
-        "total_pnl_pct": 6.96,
-        "total_pnl_dollar": 126.35,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.676,
-        "sharpe": 2.435,
-        "avg_score": 6.9,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 91.85000000000001,
-            "wins": 25
-          },
-          "QQQ": {
-            "trades": 24,
-            "pnl": 34.49999999999999,
-            "wins": 15
-          }
-        }
-      },
-      "score": 38.054
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 40,
-      "min_score": 5,
-      "stats": {
-        "trades": 70,
-        "wins": 39,
-        "losses": 31,
-        "trail_exits": 16,
-        "time_exits": 35,
-        "win_rate": 55.71,
-        "total_pnl_pct": 7.944,
-        "total_pnl_dollar": 94.85,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.499,
-        "sharpe": 2.78,
-        "avg_score": 6.7,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 55.01999999999998,
-            "wins": 25
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": 39.830000000000005,
-            "wins": 14
-          }
-        }
-      },
-      "score": 38.033
+      "score": 34.537
     },
     {
       "rsi_buy": 55,
       "rsi_sell": 48,
-      "min_score": 5,
-      "stats": {
-        "trades": 72,
-        "wins": 40,
-        "losses": 32,
-        "trail_exits": 17,
-        "time_exits": 37,
-        "win_rate": 55.56,
-        "total_pnl_pct": 7.578,
-        "total_pnl_dollar": 83.28,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.071,
-        "sharpe": 2.707,
-        "avg_score": 6.5,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 48,
-            "pnl": 60.79999999999998,
-            "wins": 27
-          },
-          "QQQ": {
-            "trades": 24,
-            "pnl": 22.480000000000004,
-            "wins": 13
-          }
-        }
-      },
-      "score": 38.011
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 50,
       "min_score": 6,
       "stats": {
-        "trades": 69,
-        "wins": 40,
-        "losses": 29,
-        "trail_exits": 15,
-        "time_exits": 33,
-        "win_rate": 57.97,
-        "total_pnl_pct": 5.154,
-        "total_pnl_dollar": 96.79,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.808,
-        "sharpe": 1.833,
-        "avg_score": 6.7,
+        "trades": 103,
+        "wins": 58,
+        "losses": 45,
+        "win_rate": 56.31,
+        "total_pnl_pct": 23.981,
+        "total_pnl_dollar": 70.33,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.724,
+        "sharpe": 5.808,
+        "avg_score": 8.8,
+        "profit_factor": 1.115,
+        "expectancy": 0.68,
+        "prime_win_rate": 59.3,
         "by_ticker": {
           "NVDA": {
-            "trades": 46,
-            "pnl": 57.79000000000002,
-            "wins": 25
+            "trades": 66,
+            "pnl": 104.48000000000008,
+            "wins": 41
           },
           "QQQ": {
-            "trades": 23,
-            "pnl": 38.999999999999986,
-            "wins": 15
+            "trades": 37,
+            "pnl": -34.15,
+            "wins": 17
           }
         }
       },
-      "score": 37.947
-    },
-    {
-      "rsi_buy": 60,
-      "rsi_sell": 42,
-      "min_score": 4,
-      "stats": {
-        "trades": 73,
-        "wins": 40,
-        "losses": 33,
-        "trail_exits": 16,
-        "time_exits": 38,
-        "win_rate": 54.79,
-        "total_pnl_pct": 8.102,
-        "total_pnl_dollar": 129.54,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.509,
-        "sharpe": 2.763,
-        "avg_score": 6.7,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 48,
-            "pnl": 93.0,
-            "wins": 25
-          },
-          "QQQ": {
-            "trades": 25,
-            "pnl": 36.53999999999999,
-            "wins": 15
-          }
-        }
-      },
-      "score": 37.936
-    },
-    {
-      "rsi_buy": 50,
-      "rsi_sell": 48,
-      "min_score": 4,
-      "stats": {
-        "trades": 74,
-        "wins": 40,
-        "losses": 34,
-        "trail_exits": 19,
-        "time_exits": 38,
-        "win_rate": 54.05,
-        "total_pnl_pct": 8.612,
-        "total_pnl_dollar": 92.6,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.358,
-        "sharpe": 2.94,
-        "avg_score": 6.4,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 109.06,
-            "wins": 29
-          },
-          "QQQ": {
-            "trades": 27,
-            "pnl": -16.460000000000008,
-            "wins": 11
-          }
-        }
-      },
-      "score": 37.87
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 48,
-      "min_score": 4,
-      "stats": {
-        "trades": 72,
-        "wins": 39,
-        "losses": 33,
-        "trail_exits": 17,
-        "time_exits": 38,
-        "win_rate": 54.17,
-        "total_pnl_pct": 8.962,
-        "total_pnl_dollar": 94.54,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.071,
-        "sharpe": 3.184,
-        "avg_score": 6.4,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 47,
-            "pnl": 63.77999999999997,
-            "wins": 26
-          },
-          "QQQ": {
-            "trades": 25,
-            "pnl": 30.76000000000001,
-            "wins": 13
-          }
-        }
-      },
-      "score": 37.87
-    },
-    {
-      "rsi_buy": 58,
-      "rsi_sell": 42,
-      "min_score": 5,
-      "stats": {
-        "trades": 71,
-        "wins": 39,
-        "losses": 32,
-        "trail_exits": 16,
-        "time_exits": 36,
-        "win_rate": 54.93,
-        "total_pnl_pct": 8.081,
-        "total_pnl_dollar": 93.83,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.499,
-        "sharpe": 2.795,
-        "avg_score": 6.6,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 48,
-            "pnl": 53.999999999999986,
-            "wins": 25
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": 39.830000000000005,
-            "wins": 14
-          }
-        }
-      },
-      "score": 37.797
-    },
-    {
-      "rsi_buy": 52,
-      "rsi_sell": 50,
-      "min_score": 6,
-      "stats": {
-        "trades": 71,
-        "wins": 41,
-        "losses": 30,
-        "trail_exits": 16,
-        "time_exits": 33,
-        "win_rate": 57.75,
-        "total_pnl_pct": 4.531,
-        "total_pnl_dollar": 68.32,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.07,
-        "sharpe": 1.545,
-        "avg_score": 6.7,
-        "by_ticker": {
-          "NVDA": {
-            "trades": 48,
-            "pnl": 72.67000000000002,
-            "wins": 28
-          },
-          "QQQ": {
-            "trades": 23,
-            "pnl": -4.350000000000003,
-            "wins": 13
-          }
-        }
-      },
-      "score": 37.787
+      "score": 34.014
     },
     {
       "rsi_buy": 55,
       "rsi_sell": 45,
       "min_score": 4,
       "stats": {
-        "trades": 75,
-        "wins": 40,
-        "losses": 35,
-        "trail_exits": 19,
-        "time_exits": 38,
-        "win_rate": 53.33,
-        "total_pnl_pct": 9.006,
-        "total_pnl_dollar": 95.55,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.071,
-        "sharpe": 3.055,
-        "avg_score": 6.4,
+        "trades": 105,
+        "wins": 59,
+        "losses": 46,
+        "win_rate": 56.19,
+        "total_pnl_pct": 25.428,
+        "total_pnl_dollar": 71.57,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.021,
+        "sharpe": 6.028,
+        "avg_score": 8.7,
+        "profit_factor": 1.118,
+        "expectancy": 0.68,
+        "prime_win_rate": 59.3,
         "by_ticker": {
           "NVDA": {
-            "trades": 49,
-            "pnl": 76.43,
-            "wins": 28
+            "trades": 68,
+            "pnl": 109.50000000000009,
+            "wins": 43
           },
           "QQQ": {
-            "trades": 26,
-            "pnl": 19.12000000000001,
-            "wins": 12
+            "trades": 37,
+            "pnl": -37.92999999999997,
+            "wins": 16
           }
         }
       },
-      "score": 37.767
+      "score": 33.996
     },
     {
-      "rsi_buy": 50,
-      "rsi_sell": 48,
-      "min_score": 6,
+      "rsi_buy": 55,
+      "rsi_sell": 45,
+      "min_score": 5,
       "stats": {
-        "trades": 68,
-        "wins": 39,
-        "losses": 29,
-        "trail_exits": 16,
-        "time_exits": 35,
-        "win_rate": 57.35,
-        "total_pnl_pct": 5.645,
-        "total_pnl_dollar": 74.13,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.961,
-        "sharpe": 2.069,
-        "avg_score": 6.8,
+        "trades": 105,
+        "wins": 59,
+        "losses": 46,
+        "win_rate": 56.19,
+        "total_pnl_pct": 25.428,
+        "total_pnl_dollar": 71.57,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.021,
+        "sharpe": 6.028,
+        "avg_score": 8.7,
+        "profit_factor": 1.118,
+        "expectancy": 0.68,
+        "prime_win_rate": 59.3,
         "by_ticker": {
           "NVDA": {
-            "trades": 45,
-            "pnl": 73.30000000000003,
-            "wins": 27
+            "trades": 68,
+            "pnl": 109.50000000000009,
+            "wins": 43
           },
           "QQQ": {
-            "trades": 23,
-            "pnl": 0.8299999999999965,
-            "wins": 12
+            "trades": 37,
+            "pnl": -37.92999999999997,
+            "wins": 16
           }
         }
       },
-      "score": 37.733
+      "score": 33.996
     },
     {
       "rsi_buy": 50,
       "rsi_sell": 45,
       "min_score": 6,
       "stats": {
-        "trades": 69,
-        "wins": 39,
-        "losses": 30,
-        "trail_exits": 17,
-        "time_exits": 35,
-        "win_rate": 56.52,
-        "total_pnl_pct": 6.321,
-        "total_pnl_dollar": 75.76,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -2.961,
-        "sharpe": 2.25,
-        "avg_score": 6.8,
+        "trades": 109,
+        "wins": 60,
+        "losses": 49,
+        "win_rate": 55.05,
+        "total_pnl_pct": 25.655,
+        "total_pnl_dollar": 91.91,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.476,
+        "sharpe": 5.948,
+        "avg_score": 8.7,
+        "profit_factor": 1.152,
+        "expectancy": 0.84,
+        "prime_win_rate": 56.0,
         "by_ticker": {
           "NVDA": {
-            "trades": 46,
-            "pnl": 88.93000000000004,
-            "wins": 28
+            "trades": 72,
+            "pnl": 96.91000000000003,
+            "wins": 43
           },
           "QQQ": {
-            "trades": 23,
-            "pnl": -13.17,
-            "wins": 11
+            "trades": 37,
+            "pnl": -4.9999999999999725,
+            "wins": 17
           }
         }
       },
-      "score": 37.688
+      "score": 33.96
     },
     {
-      "rsi_buy": 58,
-      "rsi_sell": 40,
-      "min_score": 6,
+      "rsi_buy": 55,
+      "rsi_sell": 48,
+      "min_score": 4,
       "stats": {
-        "trades": 70,
-        "wins": 39,
-        "losses": 31,
-        "trail_exits": 16,
-        "time_exits": 35,
-        "win_rate": 55.71,
-        "total_pnl_pct": 6.931,
-        "total_pnl_dollar": 106.07,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.676,
-        "sharpe": 2.442,
-        "avg_score": 6.9,
+        "trades": 103,
+        "wins": 58,
+        "losses": 45,
+        "win_rate": 56.31,
+        "total_pnl_pct": 23.987,
+        "total_pnl_dollar": 64.58,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.724,
+        "sharpe": 5.809,
+        "avg_score": 8.8,
+        "profit_factor": 1.105,
+        "expectancy": 0.63,
+        "prime_win_rate": 59.3,
         "by_ticker": {
           "NVDA": {
-            "trades": 47,
-            "pnl": 75.35000000000001,
-            "wins": 25
+            "trades": 66,
+            "pnl": 104.48000000000008,
+            "wins": 41
           },
           "QQQ": {
-            "trades": 23,
-            "pnl": 30.72000000000001,
-            "wins": 14
+            "trades": 37,
+            "pnl": -39.89999999999999,
+            "wins": 17
           }
         }
       },
-      "score": 37.627
+      "score": 33.889
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 48,
+      "min_score": 5,
+      "stats": {
+        "trades": 103,
+        "wins": 58,
+        "losses": 45,
+        "win_rate": 56.31,
+        "total_pnl_pct": 23.987,
+        "total_pnl_dollar": 64.58,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.724,
+        "sharpe": 5.809,
+        "avg_score": 8.8,
+        "profit_factor": 1.105,
+        "expectancy": 0.63,
+        "prime_win_rate": 59.3,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 66,
+            "pnl": 104.48000000000008,
+            "wins": 41
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -39.89999999999999,
+            "wins": 17
+          }
+        }
+      },
+      "score": 33.889
     },
     {
       "rsi_buy": 58,
       "rsi_sell": 42,
-      "min_score": 6,
+      "min_score": 4,
       "stats": {
-        "trades": 70,
-        "wins": 39,
-        "losses": 31,
-        "trail_exits": 16,
-        "time_exits": 35,
-        "win_rate": 55.71,
-        "total_pnl_pct": 6.931,
-        "total_pnl_dollar": 106.07,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.676,
-        "sharpe": 2.442,
-        "avg_score": 6.9,
+        "trades": 99,
+        "wins": 55,
+        "losses": 44,
+        "win_rate": 55.56,
+        "total_pnl_pct": 22.152,
+        "total_pnl_dollar": 67.35,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.046,
+        "sharpe": 5.628,
+        "avg_score": 8.5,
+        "profit_factor": 1.122,
+        "expectancy": 0.68,
+        "prime_win_rate": 56.5,
         "by_ticker": {
           "NVDA": {
-            "trades": 47,
-            "pnl": 75.35000000000001,
-            "wins": 25
+            "trades": 62,
+            "pnl": 173.05000000000004,
+            "wins": 41
           },
           "QQQ": {
-            "trades": 23,
-            "pnl": 30.72000000000001,
+            "trades": 37,
+            "pnl": -105.70000000000003,
             "wins": 14
           }
         }
       },
-      "score": 37.627
+      "score": 33.784
+    },
+    {
+      "rsi_buy": 58,
+      "rsi_sell": 42,
+      "min_score": 5,
+      "stats": {
+        "trades": 99,
+        "wins": 55,
+        "losses": 44,
+        "win_rate": 55.56,
+        "total_pnl_pct": 22.152,
+        "total_pnl_dollar": 67.35,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.046,
+        "sharpe": 5.628,
+        "avg_score": 8.5,
+        "profit_factor": 1.122,
+        "expectancy": 0.68,
+        "prime_win_rate": 56.5,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 62,
+            "pnl": 173.05000000000004,
+            "wins": 41
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -105.70000000000003,
+            "wins": 14
+          }
+        }
+      },
+      "score": 33.784
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 45,
+      "min_score": 4,
+      "stats": {
+        "trades": 109,
+        "wins": 60,
+        "losses": 49,
+        "win_rate": 55.05,
+        "total_pnl_pct": 25.556,
+        "total_pnl_dollar": 81.81,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.066,
+        "sharpe": 5.879,
+        "avg_score": 8.7,
+        "profit_factor": 1.132,
+        "expectancy": 0.75,
+        "prime_win_rate": 56.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 72,
+            "pnl": 88.29000000000008,
+            "wins": 43
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -6.479999999999987,
+            "wins": 17
+          }
+        }
+      },
+      "score": 33.715
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 45,
+      "min_score": 5,
+      "stats": {
+        "trades": 109,
+        "wins": 60,
+        "losses": 49,
+        "win_rate": 55.05,
+        "total_pnl_pct": 25.556,
+        "total_pnl_dollar": 81.81,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.066,
+        "sharpe": 5.879,
+        "avg_score": 8.7,
+        "profit_factor": 1.132,
+        "expectancy": 0.75,
+        "prime_win_rate": 56.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 72,
+            "pnl": 88.29000000000008,
+            "wins": 43
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -6.479999999999987,
+            "wins": 17
+          }
+        }
+      },
+      "score": 33.715
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 48,
+      "min_score": 4,
+      "stats": {
+        "trades": 107,
+        "wins": 59,
+        "losses": 48,
+        "win_rate": 55.14,
+        "total_pnl_pct": 24.115,
+        "total_pnl_dollar": 74.82,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.33,
+        "sharpe": 5.665,
+        "avg_score": 8.8,
+        "profit_factor": 1.12,
+        "expectancy": 0.7,
+        "prime_win_rate": 56.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 70,
+            "pnl": 83.27000000000008,
+            "wins": 41
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -8.449999999999989,
+            "wins": 18
+          }
+        }
+      },
+      "score": 33.606
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 48,
+      "min_score": 5,
+      "stats": {
+        "trades": 107,
+        "wins": 59,
+        "losses": 48,
+        "win_rate": 55.14,
+        "total_pnl_pct": 24.115,
+        "total_pnl_dollar": 74.82,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.33,
+        "sharpe": 5.665,
+        "avg_score": 8.8,
+        "profit_factor": 1.12,
+        "expectancy": 0.7,
+        "prime_win_rate": 56.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 70,
+            "pnl": 83.27000000000008,
+            "wins": 41
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -8.449999999999989,
+            "wins": 18
+          }
+        }
+      },
+      "score": 33.606
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 48,
+      "min_score": 6,
+      "stats": {
+        "trades": 107,
+        "wins": 59,
+        "losses": 48,
+        "win_rate": 55.14,
+        "total_pnl_pct": 24.115,
+        "total_pnl_dollar": 74.82,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.33,
+        "sharpe": 5.665,
+        "avg_score": 8.8,
+        "profit_factor": 1.12,
+        "expectancy": 0.7,
+        "prime_win_rate": 56.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 70,
+            "pnl": 83.27000000000008,
+            "wins": 41
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -8.449999999999989,
+            "wins": 18
+          }
+        }
+      },
+      "score": 33.606
     },
     {
       "rsi_buy": 55,
       "rsi_sell": 45,
       "min_score": 6,
       "stats": {
-        "trades": 71,
-        "wins": 40,
-        "losses": 31,
-        "trail_exits": 16,
-        "time_exits": 35,
-        "win_rate": 56.34,
-        "total_pnl_pct": 5.585,
-        "total_pnl_dollar": 91.87,
-        "best": 1.5,
-        "worst": -0.75,
-        "max_drawdown": -3.676,
-        "sharpe": 1.942,
-        "avg_score": 6.9,
+        "trades": 104,
+        "wins": 57,
+        "losses": 47,
+        "win_rate": 54.81,
+        "total_pnl_pct": 23.635,
+        "total_pnl_dollar": 70.09,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.021,
+        "sharpe": 5.681,
+        "avg_score": 8.8,
+        "profit_factor": 1.115,
+        "expectancy": 0.67,
+        "prime_win_rate": 59.3,
         "by_ticker": {
           "NVDA": {
-            "trades": 48,
-            "pnl": 72.56000000000002,
-            "wins": 27
+            "trades": 67,
+            "pnl": 102.2700000000001,
+            "wins": 41
           },
           "QQQ": {
-            "trades": 23,
-            "pnl": 19.31000000000001,
-            "wins": 13
+            "trades": 37,
+            "pnl": -32.17999999999997,
+            "wins": 16
           }
         }
       },
-      "score": 37.504
+      "score": 33.409
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 45,
+      "min_score": 6,
+      "stats": {
+        "trades": 108,
+        "wins": 58,
+        "losses": 50,
+        "win_rate": 53.7,
+        "total_pnl_pct": 23.769,
+        "total_pnl_dollar": 74.58,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.377,
+        "sharpe": 5.544,
+        "avg_score": 8.8,
+        "profit_factor": 1.12,
+        "expectancy": 0.69,
+        "prime_win_rate": 56.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 71,
+            "pnl": 81.06000000000007,
+            "wins": 41
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -6.479999999999987,
+            "wins": 17
+          }
+        }
+      },
+      "score": 33.025
+    },
+    {
+      "rsi_buy": 58,
+      "rsi_sell": 42,
+      "min_score": 6,
+      "stats": {
+        "trades": 98,
+        "wins": 53,
+        "losses": 45,
+        "win_rate": 54.08,
+        "total_pnl_pct": 20.364,
+        "total_pnl_dollar": 57.88,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.046,
+        "sharpe": 5.256,
+        "avg_score": 8.6,
+        "profit_factor": 1.105,
+        "expectancy": 0.59,
+        "prime_win_rate": 56.5,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 61,
+            "pnl": 165.82000000000005,
+            "wins": 39
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -107.94000000000004,
+            "wins": 14
+          }
+        }
+      },
+      "score": 32.977
+    },
+    {
+      "rsi_buy": 58,
+      "rsi_sell": 40,
+      "min_score": 4,
+      "stats": {
+        "trades": 94,
+        "wins": 52,
+        "losses": 42,
+        "win_rate": 55.32,
+        "total_pnl_pct": 20.445,
+        "total_pnl_dollar": 32.19,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.021,
+        "sharpe": 5.389,
+        "avg_score": 8.4,
+        "profit_factor": 1.061,
+        "expectancy": 0.34,
+        "prime_win_rate": 52.4,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 57,
+            "pnl": 156.95000000000002,
+            "wins": 38
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -124.76000000000005,
+            "wins": 14
+          }
+        }
+      },
+      "score": 32.908
+    },
+    {
+      "rsi_buy": 58,
+      "rsi_sell": 40,
+      "min_score": 5,
+      "stats": {
+        "trades": 94,
+        "wins": 52,
+        "losses": 42,
+        "win_rate": 55.32,
+        "total_pnl_pct": 20.445,
+        "total_pnl_dollar": 32.19,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.021,
+        "sharpe": 5.389,
+        "avg_score": 8.4,
+        "profit_factor": 1.061,
+        "expectancy": 0.34,
+        "prime_win_rate": 52.4,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 57,
+            "pnl": 156.95000000000002,
+            "wins": 38
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -124.76000000000005,
+            "wins": 14
+          }
+        }
+      },
+      "score": 32.908
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 42,
+      "min_score": 4,
+      "stats": {
+        "trades": 107,
+        "wins": 58,
+        "losses": 49,
+        "win_rate": 54.21,
+        "total_pnl_pct": 24.161,
+        "total_pnl_dollar": 30.64,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.046,
+        "sharpe": 5.631,
+        "avg_score": 8.6,
+        "profit_factor": 1.049,
+        "expectancy": 0.29,
+        "prime_win_rate": 52.2,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 69,
+            "pnl": 123.55000000000004,
+            "wins": 43
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -92.90999999999998,
+            "wins": 15
+          }
+        }
+      },
+      "score": 32.319
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 42,
+      "min_score": 5,
+      "stats": {
+        "trades": 107,
+        "wins": 58,
+        "losses": 49,
+        "win_rate": 54.21,
+        "total_pnl_pct": 24.161,
+        "total_pnl_dollar": 30.64,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.046,
+        "sharpe": 5.631,
+        "avg_score": 8.6,
+        "profit_factor": 1.049,
+        "expectancy": 0.29,
+        "prime_win_rate": 52.2,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 69,
+            "pnl": 123.55000000000004,
+            "wins": 43
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -92.90999999999998,
+            "wins": 15
+          }
+        }
+      },
+      "score": 32.319
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 42,
+      "min_score": 4,
+      "stats": {
+        "trades": 102,
+        "wins": 56,
+        "losses": 46,
+        "win_rate": 54.9,
+        "total_pnl_pct": 22.545,
+        "total_pnl_dollar": 16.8,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.046,
+        "sharpe": 5.466,
+        "avg_score": 8.6,
+        "profit_factor": 1.027,
+        "expectancy": 0.16,
+        "prime_win_rate": 56.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 64,
+            "pnl": 128.91000000000005,
+            "wins": 41
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -112.10999999999999,
+            "wins": 15
+          }
+        }
+      },
+      "score": 32.31
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 42,
+      "min_score": 5,
+      "stats": {
+        "trades": 102,
+        "wins": 56,
+        "losses": 46,
+        "win_rate": 54.9,
+        "total_pnl_pct": 22.545,
+        "total_pnl_dollar": 16.8,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.046,
+        "sharpe": 5.466,
+        "avg_score": 8.6,
+        "profit_factor": 1.027,
+        "expectancy": 0.16,
+        "prime_win_rate": 56.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 64,
+            "pnl": 128.91000000000005,
+            "wins": 41
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -112.10999999999999,
+            "wins": 15
+          }
+        }
+      },
+      "score": 32.31
+    },
+    {
+      "rsi_buy": 58,
+      "rsi_sell": 40,
+      "min_score": 6,
+      "stats": {
+        "trades": 93,
+        "wins": 50,
+        "losses": 43,
+        "win_rate": 53.76,
+        "total_pnl_pct": 18.657,
+        "total_pnl_dollar": 22.72,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.021,
+        "sharpe": 4.999,
+        "avg_score": 8.5,
+        "profit_factor": 1.043,
+        "expectancy": 0.24,
+        "prime_win_rate": 52.4,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 56,
+            "pnl": 149.72000000000003,
+            "wins": 36
+          },
+          "QQQ": {
+            "trades": 37,
+            "pnl": -127.00000000000006,
+            "wins": 14
+          }
+        }
+      },
+      "score": 32.054
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 42,
+      "min_score": 6,
+      "stats": {
+        "trades": 101,
+        "wins": 54,
+        "losses": 47,
+        "win_rate": 53.47,
+        "total_pnl_pct": 20.752,
+        "total_pnl_dollar": 15.32,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.046,
+        "sharpe": 5.108,
+        "avg_score": 8.7,
+        "profit_factor": 1.025,
+        "expectancy": 0.15,
+        "prime_win_rate": 56.0,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 63,
+            "pnl": 121.68000000000006,
+            "wins": 39
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -106.36000000000001,
+            "wins": 15
+          }
+        }
+      },
+      "score": 31.713
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 42,
+      "min_score": 6,
+      "stats": {
+        "trades": 106,
+        "wins": 56,
+        "losses": 50,
+        "win_rate": 52.83,
+        "total_pnl_pct": 22.374,
+        "total_pnl_dollar": 23.41,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.046,
+        "sharpe": 5.289,
+        "avg_score": 8.6,
+        "profit_factor": 1.037,
+        "expectancy": 0.22,
+        "prime_win_rate": 52.2,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 68,
+            "pnl": 116.32000000000005,
+            "wins": 41
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -92.90999999999998,
+            "wins": 15
+          }
+        }
+      },
+      "score": 31.612
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 40,
+      "min_score": 4,
+      "stats": {
+        "trades": 102,
+        "wins": 55,
+        "losses": 47,
+        "win_rate": 53.92,
+        "total_pnl_pct": 22.454,
+        "total_pnl_dollar": -4.52,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.715,
+        "sharpe": 5.412,
+        "avg_score": 8.5,
+        "profit_factor": 0.993,
+        "expectancy": -0.04,
+        "prime_win_rate": 47.6,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 64,
+            "pnl": 107.45000000000005,
+            "wins": 40
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -111.97,
+            "wins": 15
+          }
+        }
+      },
+      "score": 31.478
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 40,
+      "min_score": 5,
+      "stats": {
+        "trades": 102,
+        "wins": 55,
+        "losses": 47,
+        "win_rate": 53.92,
+        "total_pnl_pct": 22.454,
+        "total_pnl_dollar": -4.52,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.715,
+        "sharpe": 5.412,
+        "avg_score": 8.5,
+        "profit_factor": 0.993,
+        "expectancy": -0.04,
+        "prime_win_rate": 47.6,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 64,
+            "pnl": 107.45000000000005,
+            "wins": 40
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -111.97,
+            "wins": 15
+          }
+        }
+      },
+      "score": 31.478
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 40,
+      "min_score": 4,
+      "stats": {
+        "trades": 97,
+        "wins": 53,
+        "losses": 44,
+        "win_rate": 54.64,
+        "total_pnl_pct": 20.838,
+        "total_pnl_dollar": -18.36,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.021,
+        "sharpe": 5.233,
+        "avg_score": 8.5,
+        "profit_factor": 0.97,
+        "expectancy": -0.19,
+        "prime_win_rate": 52.2,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 59,
+            "pnl": 112.81000000000009,
+            "wins": 38
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -131.17000000000002,
+            "wins": 15
+          }
+        }
+      },
+      "score": 31.461
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 40,
+      "min_score": 5,
+      "stats": {
+        "trades": 97,
+        "wins": 53,
+        "losses": 44,
+        "win_rate": 54.64,
+        "total_pnl_pct": 20.838,
+        "total_pnl_dollar": -18.36,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.021,
+        "sharpe": 5.233,
+        "avg_score": 8.5,
+        "profit_factor": 0.97,
+        "expectancy": -0.19,
+        "prime_win_rate": 52.2,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 59,
+            "pnl": 112.81000000000009,
+            "wins": 38
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -131.17000000000002,
+            "wins": 15
+          }
+        }
+      },
+      "score": 31.461
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 42,
+      "min_score": 4,
+      "stats": {
+        "trades": 106,
+        "wins": 56,
+        "losses": 50,
+        "win_rate": 52.83,
+        "total_pnl_pct": 22.275,
+        "total_pnl_dollar": 14.02,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.046,
+        "sharpe": 5.226,
+        "avg_score": 8.7,
+        "profit_factor": 1.022,
+        "expectancy": 0.13,
+        "prime_win_rate": 52.2,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 68,
+            "pnl": 107.70000000000007,
+            "wins": 41
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -93.67999999999995,
+            "wins": 15
+          }
+        }
+      },
+      "score": 31.417
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 42,
+      "min_score": 5,
+      "stats": {
+        "trades": 106,
+        "wins": 56,
+        "losses": 50,
+        "win_rate": 52.83,
+        "total_pnl_pct": 22.275,
+        "total_pnl_dollar": 14.02,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.046,
+        "sharpe": 5.226,
+        "avg_score": 8.7,
+        "profit_factor": 1.022,
+        "expectancy": 0.13,
+        "prime_win_rate": 52.2,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 68,
+            "pnl": 107.70000000000007,
+            "wins": 41
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -93.67999999999995,
+            "wins": 15
+          }
+        }
+      },
+      "score": 31.417
+    },
+    {
+      "rsi_buy": 55,
+      "rsi_sell": 40,
+      "min_score": 6,
+      "stats": {
+        "trades": 96,
+        "wins": 51,
+        "losses": 45,
+        "win_rate": 53.12,
+        "total_pnl_pct": 19.045,
+        "total_pnl_dollar": -19.84,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.021,
+        "sharpe": 4.859,
+        "avg_score": 8.6,
+        "profit_factor": 0.967,
+        "expectancy": -0.21,
+        "prime_win_rate": 52.2,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 58,
+            "pnl": 105.58000000000007,
+            "wins": 36
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -125.42000000000004,
+            "wins": 15
+          }
+        }
+      },
+      "score": 30.813
+    },
+    {
+      "rsi_buy": 50,
+      "rsi_sell": 40,
+      "min_score": 6,
+      "stats": {
+        "trades": 101,
+        "wins": 53,
+        "losses": 48,
+        "win_rate": 52.48,
+        "total_pnl_pct": 20.667,
+        "total_pnl_dollar": -11.75,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.715,
+        "sharpe": 5.056,
+        "avg_score": 8.5,
+        "profit_factor": 0.981,
+        "expectancy": -0.12,
+        "prime_win_rate": 47.6,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 63,
+            "pnl": 100.22000000000003,
+            "wins": 38
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -111.97,
+            "wins": 15
+          }
+        }
+      },
+      "score": 30.742
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 42,
+      "min_score": 6,
+      "stats": {
+        "trades": 105,
+        "wins": 54,
+        "losses": 51,
+        "win_rate": 51.43,
+        "total_pnl_pct": 20.488,
+        "total_pnl_dollar": 6.79,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -3.046,
+        "sharpe": 4.879,
+        "avg_score": 8.7,
+        "profit_factor": 1.011,
+        "expectancy": 0.06,
+        "prime_win_rate": 52.2,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 67,
+            "pnl": 100.47000000000006,
+            "wins": 39
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -93.67999999999995,
+            "wins": 15
+          }
+        }
+      },
+      "score": 30.712
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 40,
+      "min_score": 4,
+      "stats": {
+        "trades": 101,
+        "wins": 53,
+        "losses": 48,
+        "win_rate": 52.48,
+        "total_pnl_pct": 20.568,
+        "total_pnl_dollar": -21.14,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.959,
+        "sharpe": 4.993,
+        "avg_score": 8.6,
+        "profit_factor": 0.966,
+        "expectancy": -0.21,
+        "prime_win_rate": 47.6,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 63,
+            "pnl": 91.60000000000008,
+            "wins": 38
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -112.73999999999997,
+            "wins": 15
+          }
+        }
+      },
+      "score": 30.547
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 40,
+      "min_score": 5,
+      "stats": {
+        "trades": 101,
+        "wins": 53,
+        "losses": 48,
+        "win_rate": 52.48,
+        "total_pnl_pct": 20.568,
+        "total_pnl_dollar": -21.14,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.959,
+        "sharpe": 4.993,
+        "avg_score": 8.6,
+        "profit_factor": 0.966,
+        "expectancy": -0.21,
+        "prime_win_rate": 47.6,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 63,
+            "pnl": 91.60000000000008,
+            "wins": 38
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -112.73999999999997,
+            "wins": 15
+          }
+        }
+      },
+      "score": 30.547
+    },
+    {
+      "rsi_buy": 52,
+      "rsi_sell": 40,
+      "min_score": 6,
+      "stats": {
+        "trades": 100,
+        "wins": 51,
+        "losses": 49,
+        "win_rate": 51.0,
+        "total_pnl_pct": 18.781,
+        "total_pnl_dollar": -28.37,
+        "best": 1.48,
+        "worst": -0.77,
+        "max_drawdown": -2.959,
+        "sharpe": 4.631,
+        "avg_score": 8.6,
+        "profit_factor": 0.955,
+        "expectancy": -0.28,
+        "prime_win_rate": 47.6,
+        "by_ticker": {
+          "NVDA": {
+            "trades": 62,
+            "pnl": 84.37000000000006,
+            "wins": 36
+          },
+          "QQQ": {
+            "trades": 38,
+            "pnl": -112.73999999999997,
+            "wins": 15
+          }
+        }
+      },
+      "score": 29.81
     }
   ]
 }
