@@ -184,7 +184,7 @@ tr.best-row td{background:rgba(26,122,74,.07)!important;font-weight:500;}
       <h1 style="font-family:var(--serif);font-size:2.2rem;font-weight:400;letter-spacing:-.02em;margin-bottom:.4rem;">
         How would NYLO have <em style="font-style:italic;color:var(--accent)">performed?</em>
       </h1>
-      <p style="font-size:.85rem;color:var(--muted);max-width:560px;line-height:1.7;">Runs the full ORB + RSI + VWAP + Volume + Multi-TF strategy on 30 days of historical 1-minute data. Fetches real Yahoo Finance data directly in your browser — no server needed.</p>
+      <p style="font-size:.85rem;color:var(--muted);max-width:560px;line-height:1.7;">Runs the v16 VWAP Reclaim + EMA Pullback + Opening Drive strategy on NVDA, AAPL, and GOOGL. Fetches real Yahoo Finance data directly in your browser — no server needed.</p>
     </div>
 
     <!-- CONFIG -->
@@ -213,6 +213,9 @@ tr.best-row td{background:rgba(26,122,74,.07)!important;font-weight:500;}
         <div class="kpi"><div class="kpi-label">Total P&L $</div><div class="kpi-val" id="r-dollar">—</div><div class="kpi-sub">paper trading</div></div>
         <div class="kpi"><div class="kpi-label">Best trade</div><div class="kpi-val g" id="r-best">—</div><div class="kpi-sub" id="r-best-sub">—</div></div>
         <div class="kpi"><div class="kpi-label">Max drawdown</div><div class="kpi-val r" id="r-dd">—</div><div class="kpi-sub">worst stretch</div></div>
+        <div class="kpi"><div class="kpi-label">Profit factor</div><div class="kpi-val" id="r-pf">—</div><div class="kpi-sub">wins / losses</div></div>
+        <div class="kpi"><div class="kpi-label">Expectancy</div><div class="kpi-val g" id="r-exp">—</div><div class="kpi-sub">$ per trade avg</div></div>
+        <div class="kpi"><div class="kpi-label">OOS result</div><div class="kpi-val" id="r-oos">—</div><div class="kpi-sub">out-of-sample</div></div>
         <div class="kpi" style="display:none"><div class="kpi-label">Sharpe ratio</div><div class="kpi-val" id="r-sharpe">—</div><div class="kpi-sub">annualized</div></div>
       </div>
 
@@ -236,10 +239,10 @@ tr.best-row td{background:rgba(26,122,74,.07)!important;font-weight:500;}
           <table id="sweep-table">
             <thead>
               <tr>
-                <th>RSI Buy</th><th>RSI Sell</th>
+                <th>RSI Buy</th><th>RSI Sell</th><th>Score</th>
                 <th>Trades</th><th>Wins</th><th>Losses</th>
-                <th>Win Rate</th><th>Total P&L %</th><th>Total P&L $</th>
-                <th>Best</th><th>Worst</th><th>Max DD</th><th>Rating</th>
+                <th>Win Rate</th><th>P&L $</th>
+                <th>Profit Factor</th><th>Expectancy</th><th>Max DD</th><th>Rating</th>
               </tr>
             </thead>
             <tbody id="sweep-tbody"></tbody>
@@ -499,6 +502,18 @@ function renderResults(trades, stats){
   document.getElementById('r-best').textContent   = '+'+(stats.best||0).toFixed(2)+'%';
   document.getElementById('r-dd').textContent     = (stats.max_drawdown||0).toFixed(2)+'%';
   document.getElementById('r-sharpe').textContent = (stats.sharpe||0).toFixed(2);
+  const pfEl = document.getElementById('r-pf');
+  if(pfEl){ pfEl.textContent=(stats.profit_factor||0).toFixed(3); pfEl.className='kpi-val '+(stats.profit_factor>=1?'g':'r'); }
+  const expEl = document.getElementById('r-exp');
+  if(expEl){ expEl.textContent='$'+(stats.expectancy||0).toFixed(2); expEl.className='kpi-val '+(stats.expectancy>=0?'g':'r'); }
+  const oosEl = document.getElementById('r-oos');
+  if(oosEl && data.out_of_sample){
+    const oos=data.out_of_sample;
+    oosEl.textContent=oos.consistent?'✅ Consistent':'⚠️ Diverged';
+    oosEl.className='kpi-val '+(oos.consistent?'g':'r');
+    document.getElementById('r-oos').parentElement.querySelector('.kpi-sub').textContent=
+      oos.test?.stats?.win_rate?.toFixed(0)+'% WR on unseen data';
+  }
 
   buildCharts(trades);
   renderLog(trades,'all');
@@ -544,14 +559,18 @@ const rating=effectiveWR>=60&&s.total_pnl_pct>0?'<span class="badge bg">Excellen
                 :s.total_pnl_pct>0?'<span class="badge bb">Profitable</span>'
                 :effectiveWR>=40?'<span class="badge ba">Fair</span>'
                 :'<span class="badge br">Poor</span>';
+    const pf = s.profit_factor||0;
+    const exp = s.expectancy||0;
+    const pfColor = pf>=1?'var(--green)':'var(--red)';
+    const expColor = exp>=0?'var(--green)':'var(--red)';
     return `<tr class="${isBest?'best-row':''}">
       <td>${r.rsi_buy}${isBest?' ⭐':''}</td><td>${r.rsi_sell}</td>
+      <td>${r.min_score||'—'}</td>
       <td>${s.trades}</td><td>${s.wins}</td><td>${s.losses}</td>
       <td><span class="badge ${wrBadge}">${s.win_rate.toFixed(0)}%</span></td>
-      <td style="color:${pc}">${s.total_pnl_pct>=0?'+':''}${s.total_pnl_pct.toFixed(2)}%</td>
       <td style="color:${pc}">${s.total_pnl_dollar>=0?'+$':'-$'}${Math.abs(s.total_pnl_dollar).toFixed(2)}</td>
-      <td style="color:var(--green)">+${s.best.toFixed(2)}%</td>
-      <td style="color:var(--red)">${s.worst.toFixed(2)}%</td>
+      <td style="color:${pfColor}">${pf.toFixed(3)}</td>
+      <td style="color:${expColor}">$${exp.toFixed(2)}</td>
       <td style="color:var(--red)">${s.max_drawdown.toFixed(2)}%</td>
       <td>${rating}</td>
     </tr>`;

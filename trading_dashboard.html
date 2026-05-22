@@ -668,13 +668,13 @@
 <!-- Live price ticker -->
 <div class="ticker-bar" id="ticker-bar">
   <div id="ticker-inner" class="ticker-item">
-    <span class="ticker-symbol">QQQ</span>
+    <span class="ticker-symbol">NVDA</span>
     <span class="ticker-price" id="t-qqq-price">—</span>
     <span class="ticker-change" id="t-qqq-chg">—</span>
   </div>
   <div class="ticker-divider"></div>
   <div class="ticker-item">
-    <span class="ticker-symbol">GLD</span>
+    <span class="ticker-symbol">AAPL</span>
     <span class="ticker-price" id="t-gld-price">—</span>
     <span class="ticker-change" id="t-gld-chg">—</span>
   </div>
@@ -791,7 +791,7 @@
     <div class="stat"><div class="sl2">Total Trades</div><div class="sv" id="s0">—</div><div class="ss">all time</div></div>
     <div class="stat"><div class="sl2">Win Rate</div><div class="sv g" id="s1">—</div><div class="ss" id="s1b">— / —</div></div>
     <div class="stat"><div class="sl2">Total P&amp;L %</div><div class="sv" id="s2">—</div><div class="ss">cumulative</div></div>
-    <div class="stat"><div class="sl2">Total P&amp;L $</div><div class="sv" id="s2d">—</div><div class="ss">paper trading $500/trade</div></div>
+    <div class="stat"><div class="sl2">Total P&amp;L $</div><div class="sv" id="s2d">—</div><div class="ss">paper trading $750-$5,000/trade</div></div>
     <div class="stat"><div class="sl2">Best Trade</div><div class="sv g" id="s4">—</div><div class="ss" id="s4b">—</div></div>
     <div class="stat"><div class="sl2">Worst Trade</div><div class="sv r" id="s5">—</div><div class="ss" id="s5b">—</div></div>
   </div>
@@ -831,8 +831,8 @@
       <h4>All Trades</h4>
       <div class="th2-right">
         <button class="filter-btn on" onclick="setFilter('all',this)">All</button>
-        <button class="filter-btn" onclick="setFilter('QQQ',this)">QQQ</button>
-        <button class="filter-btn" onclick="setFilter('GLD',this)">GLD</button>
+        <button class="filter-btn" onclick="setFilter('QQQ',this)">NVDA</button>
+        <button class="filter-btn" onclick="setFilter('GLD',this)">AAPL</button>
         <button class="filter-btn" onclick="setFilter('win',this)">Wins</button>
         <button class="filter-btn" onclick="setFilter('loss',this)">Losses</button>
         <button class="export-btn" onclick="exportPDF()">⬇ Export PDF</button>
@@ -944,8 +944,8 @@
   <div class="sl">Market news</div>
   <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
     <button class="nf active" onclick="filterNews('all',this)">All</button>
-    <button class="nf" onclick="filterNews('qqq',this)">QQQ / NASDAQ</button>
-    <button class="nf" onclick="filterNews('gld',this)">GLD / Gold</button>
+    <button class="nf" onclick="filterNews('qqq',this)">NVDA / AI</button>
+    <button class="nf" onclick="filterNews('gld',this)">AAPL / Tech</button>
   </div>
   <div id="news-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-bottom:1rem;">
     <div class="card" style="grid-column:1/-1;text-align:center;padding:2.5rem;color:var(--muted);font-size:0.82rem;">Loading headlines...</div>
@@ -1399,7 +1399,7 @@ async function tryAutoLoad() {
         : 'Agent v14 is active and watching QQQ. Trade data appears here automatically.';
       if(trades.length > 0) uploadZone.style.display = 'none';
     }
-    fetchComparison(GITHUB_CMP + '?t=' + Date.now());
+    // fetchComparison removed — file not used
     fetchLiveTrade();
     fetchHeartbeat();
     setTimeout(tryAutoLoad, 60000);
@@ -1703,7 +1703,7 @@ function exportPDF() {
   td{padding:6px 10px;border-bottom:1px solid #e8e8e4}
   @media print{body{padding:1rem}}</style></head><body>
   <h1>Trading Performance Report</h1>
-  <div class="meta">Generated ${new Date().toLocaleDateString()} · ORB/RSI Strategy · QQQ & GLD</div>
+  <div class="meta">Generated ${new Date().toLocaleDateString()} · ORB/RSI Strategy · NVDA, AAPL & GOOGL</div>
   <div class="stats">
     <div><div class="stat-label">Total Trades</div><div class="stat-val">${s0}</div></div>
     <div><div class="stat-label">Win Rate</div><div class="stat-val">${s1}</div></div>
@@ -1833,7 +1833,7 @@ renderCalendar();
 
 // ── Live price ticker ─────────────────────────────────────────────────────────
 async function fetchPrices() {
-  const tickers = ['QQQ','GLD'];
+  const tickers = ['NVDA','AAPL','GOOGL'];
   for (const t of tickers) {
     try {
       const proxy = 'https://api.allorigins.win/get?url=';
@@ -2144,7 +2144,7 @@ function renderNews() {
   }
   grid.innerHTML = filtered.map(a => {
     const ago  = timeAgo(a.publishedAt instanceof Date ? a.publishedAt : new Date(a.publishedAt));
-    const tag  = a._tag === 'qqq' ? '<span class="news-tag tag-qqq">QQQ</span>' : '<span class="news-tag tag-gld">GLD</span>';
+    const tag  = a._tag === 'qqq' ? '<span class="news-tag tag-qqq">NVDA</span>' : '<span class="news-tag tag-gld">AAPL</span>';
     const desc = a.description ? `<div class="news-desc">${a.description.slice(0,120)}${a.description.length>120?'…':''}</div>` : '';
     const src  = a.source || a.source?.name || '';
     return `<a class="news-card fade" href="${a.url}" target="_blank" rel="noopener">${tag}<div class="news-title">${a.title}</div>${desc}<div class="news-meta">${src} · ${ago}</div></a>`;

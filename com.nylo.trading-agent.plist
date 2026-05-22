@@ -28,7 +28,7 @@
     ✅ StartCalendarInterval — only fires Mon–Fri at 9:20 AM ET
 
   EDIT BEFORE INSTALLING:
-    1. Change giovanniflores to your actual home directory
+    1. Change /Users/giovanniflores to your actual home directory
     2. Change TRADING_PHONE to your actual number
     3. If agent is not in ~/Downloads, update WorkingDirectory and ProgramArguments
 -->
@@ -45,7 +45,7 @@
     <string>/usr/local/bin/python3</string>
     <string>-W</string>
     <string>ignore</string>
-    <string>/Users/giovanniflores/Downloads/trading_agent_11.py</string>
+    <string>/Users/giovanniflores/Downloads/trading_agent_14.py</string>
   </array>
 
   <!-- Working directory — agent writes trade_log.csv etc. here -->
@@ -56,7 +56,7 @@
   <key>EnvironmentVariables</key>
   <dict>
     <key>TRADING_PHONE</key>
-    <string>+13214378412</string>
+    <string>+1XXXXXXXXXX</string>
     <key>PATH</key>
     <string>/usr/local/bin:/usr/bin:/bin</string>
   </dict>
