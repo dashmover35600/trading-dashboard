@@ -58,7 +58,7 @@ CUTOFF            = datetime.time(12, 45)  # hard close — no holding into lunc
 DEAD_ZONE_START   = datetime.time(11, 30)
 DEAD_ZONE_END     = datetime.time(12, 0)   # shorter dead zone
 SERVER_PORT       = 8765
-AGENT_VERSION     = "16.2"
+AGENT_VERSION     = "17"
 
 # Pushover notifications
 PUSHOVER_TOKEN    = "apuf7f5knj2yxnsnxvtk63adchuvkf"
@@ -84,10 +84,10 @@ VIX_HIGH          = 20.0     # reduce size when VIX above this
 
 # Signal scoring thresholds
 MIN_SCORE         = 5        # v14.2: lowered from 6 — sweep shows more signals at 4-5
-RSI_BULL_MIN      = 58       # v16.1: confirmed best
+RSI_BULL_MIN      = 52       # v17: AAPL/GOOGL optimal
 RSI_BULL_MAX      = 72       # v15: tighter upper bound
 RSI_BEAR_MIN      = 28       # v15: tighter lower bound
-RSI_BEAR_MAX      = 42       # v16.1: updated from sweep (58/42 = 60% WR)
+RSI_BEAR_MAX      = 48       # v17: updated for AAPL/GOOGL
 VOLUME_MIN        = 1.2      # minimum volume ratio
 
 # Reliability settings
@@ -595,17 +595,23 @@ def score_signal(df, direction, signal_type, rsi, vol_ratio, price, vwap, ema9) 
     return min(score, 10)
 
 # ── Position sizing ───────────────────────────────────────────────────────────
-def get_position_size(score: int, ticker: str = "QQQ", vix: float = 15.0) -> float:
+# Per-ticker configs for v17
+TICKER_CONFIGS = {
+    "AAPL":  {"strategy":"ema_pullback","gain_target":0.010,"stop_loss":0.005,"pos_mult":1.0,"slippage":0.0002},
+    "GOOGL": {"strategy":"both","gain_target":0.015,"stop_loss":0.0075,"pos_mult":0.85,"slippage":0.0002},
+}
+
+def get_position_size(score: int, ticker: str = "AAPL", vix: float = 15.0) -> float:
     """
     Maximum calculated risk position sizing with VIX adjustment.
     Score 10: $5,000 / Score 9: $4,000 / Score 8: $3,000
-    Score 7: $2,000 / Score 6: $1,500 / Score 5: $1,000 / Score 4: $750
-    NVDA: 75% · VIX>20: additional 25% reduction
+    Score 7: $2,000 / Score 6: $1,500 / Score 5: $1,000 / Score 4: $750 / Score 3: $500
+    VIX>20: 25% reduction
     """
-    sizes = {10:5000, 9:4000, 8:3000, 7:2000, 6:1500, 5:1000, 4:750}
-    base = sizes.get(min(score, 10), 750)
-    if ticker in ["NVDA", "TSLA"]:
-        base = round(base * 0.75)
+    sizes = {10:5000, 9:4000, 8:3000, 7:2000, 6:1500, 5:1000, 4:750, 3:500}
+    base = sizes.get(min(score, 10), 500)
+    mult = TICKER_CONFIGS.get(ticker, {}).get("pos_mult", 1.0)
+    base = round(base * mult)
     if vix > VIX_HIGH:
         base = round(base * 0.75)
         print(f"[Risk] VIX {vix:.1f} > {VIX_HIGH} — reducing position size to ${base}")
@@ -669,8 +675,13 @@ def check_signals(df):
     s = state
     if s["in_trade"] or not s["drive_set"]:
         return
-    if now_et().time() > CUTOFF:
+    t_now = now_et().time()
+    if t_now > CUTOFF:
         return
+    # Time filter — best signals fire 9:30 AM - 12:00 PM
+    if t_now < datetime.time(9, 30) or t_now > datetime.time(12, 0):
+        if not state["in_trade"]:  # still monitor exits outside window
+            return
     # Dead zone removed in v15 — trade all hours
 
     # VIX filter — skip if market too volatile
@@ -839,7 +850,17 @@ def check_exit(df):
             daily_pnl += partial_dollar
             partial_done[ticker_key] = True
             print(f"[Exit] Partial exit +{partial_pnl_pct:.2f}% — locking in ${partial_dollar:.2f}")
-            send_push("NYLO Partial Exit", f"Partial exit +{partial_pnl_pct:.2f}% locked in ${partial_dollar:.2f}. Trail now active.")
+            send_push("NYLO Partial Exit",
+                f"Partial exit at +{partial_pnl_pct:.2f}% — locked in ${partial_dollar:.2f}
+"
+                f"Remaining 50% still running to ${s['target']}
+"
+                f"Trail now active")
+            # Activate trail on remaining 50%
+            s["trail_active"] = True
+            s["trail_peak"]   = price
+
+    # Update trailing stop
     if direction == "long":
         move_pct = (price - entry) / entry
         if move_pct >= TRAIL_TRIGGER_PCT and not s["trail_active"]:
@@ -894,6 +915,7 @@ def check_exit(df):
 
     pnl_dollar = calc_pnl(entry, exit_price, direction, s["shares"])
     pnl_pct    = round(pnl_dollar / s["position_size"] * 100, 3)
+    global trades_today, daily_pnl, consec_losses, pause_until
     trades_today += 1
     daily_pnl    += pnl_dollar
     # Track consecutive losses for pause logic
