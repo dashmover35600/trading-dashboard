@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f1e">
+<meta name="description" content="NYLO — Precision AI trading signals for QQQ and NVDA. Real-time alerts, 57% win rate, institutional-grade strategy.">
+<title>NYLO — Precision Trading Signals</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+*{cursor:none!important;}
+
+/* ── GLOW CURSOR ── */
+#cur{position:fixed;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,rgba(99,140,255,1) 0%,rgba(24,71,212,.8) 40%,transparent 70%);pointer-events:none;z-index:99999;transform:translate(-50%,-50%);filter:blur(.5px);transition:width .15s,height .15s;}
+#cur-a{position:fixed;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle,rgba(24,71,212,.12) 0%,transparent 70%);pointer-events:none;z-index:99998;transform:translate(-50%,-50%);animation:aura 2.5s ease-in-out infinite;}
+@keyframes aura{0%,100%{width:60px;height:60px;opacity:.6;}50%{width:75px;height:75px;opacity:1;}}
+#cur.c{width:28px;height:28px;}
+@media(hover:none){#cur,#cur-a{display:none;}*{cursor:auto!important;}}
+
+:root{
+  --bg:#060d1f;--bg2:#0a1428;--surface:rgba(13,25,50,.8);
+  --accent:#1847d4;--accent2:#3d6fff;--accent3:#6b9fff;
+  --text:#f0f4ff;--muted:#6070a0;--dim:#2a3a60;
+  --green:#00d97e;--green-dim:rgba(0,217,126,.1);
+  --red:#ff4560;
+  --serif:'Instrument Serif',Georgia,serif;
+  --mono:'DM Mono',monospace;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --glow:0 0 40px rgba(24,71,212,.4),0 0 80px rgba(24,71,212,.15);
+}
+
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh;}
+
+/* ── CANVAS BG ── */
+#canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* ── MESH GRADIENT ── */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 20%,rgba(24,71,212,.18) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 20% 80%,rgba(61,111,255,.12) 0%,transparent 60%),
+    radial-gradient(ellipse 80% 40% at 50% 0%,rgba(10,20,60,.8) 0%,transparent 50%);
+}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.25rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(6,13,31,.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(24,71,212,.15);}
+.nav-logo{font-family:var(--serif);font-size:1.5rem;color:#fff;letter-spacing:-.03em;}
+.nav-logo span{color:var(--accent2);}
+.nav-links{display:flex;gap:2rem;align-items:center;}
+.nav-links a{font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--text);}
+.nav-cta{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.55rem 1.25rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;transition:background .2s,box-shadow .2s;text-decoration:none;}
+.nav-cta:hover{background:var(--accent2);box-shadow:var(--glow);}
+@media(max-width:600px){.nav-links{display:none;}}
+
+/* ── HERO ── */
+.hero{position:relative;z-index:5;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem 4rem;}
+
+.hero-eyebrow{font-family:var(--mono);font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--accent3);margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s .2s ease forwards;display:flex;align-items:center;gap:.75rem;}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';flex:1;max-width:40px;height:1px;background:var(--accent2);opacity:.5;}
+
+.hero-title{font-family:var(--serif);font-size:clamp(3.5rem,9vw,7.5rem);font-weight:400;line-height:1;letter-spacing:-.03em;margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s .4s ease forwards;}
+.hero-title em{font-style:italic;color:var(--accent2);}
+
+.hero-sub{font-size:clamp(.9rem,2vw,1.15rem);color:var(--muted);max-width:560px;line-height:1.7;margin-bottom:3rem;opacity:0;animation:fadeUp .8s .6s ease forwards;}
+.hero-sub strong{color:var(--text);}
+
+.hero-actions{display:flex;gap:1rem;align-items:center;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp .8s .8s ease forwards;}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:.85rem 2rem;font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;transition:background .2s,box-shadow .2s,transform .1s;box-shadow:0 4px 20px rgba(24,71,212,.4);}
+.btn-primary:hover{background:var(--accent2);box-shadow:var(--glow);transform:translateY(-1px);}
+.btn-secondary{color:var(--muted);border:1px solid var(--dim);border-radius:10px;padding:.85rem 2rem;font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;transition:color .2s,border .2s;}
+.btn-secondary:hover{color:var(--text);border-color:var(--accent2);}
+
+/* ── LIVE STATS BAR ── */
+.stats-bar{position:relative;z-index:5;display:flex;justify-content:center;gap:0;margin:0 auto;max-width:800px;background:rgba(13,25,50,.9);border:1px solid rgba(24,71,212,.2);border-radius:16px;overflow:hidden;opacity:0;animation:fadeUp .8s 1s ease forwards;}
+.stat-item{flex:1;padding:1.25rem 1.5rem;text-align:center;border-right:1px solid rgba(24,71,212,.15);}
+.stat-item:last-child{border-right:none;}
+.stat-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;}
+.stat-value{font-family:var(--serif);font-size:1.8rem;line-height:1;}
+.stat-value.green{color:var(--green);}
+.stat-value.blue{color:var(--accent2);}
+.stat-value.white{color:var(--text);}
+.stat-sub{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.25rem;}
+@media(max-width:600px){.stats-bar{flex-direction:column;}.stat-item{border-right:none;border-bottom:1px solid rgba(24,71,212,.15);}.stat-item:last-child{border-bottom:none;}}
+
+/* ── SECTION ── */
+section{position:relative;z-index:5;padding:6rem 2rem;}
+.section-inner{max-width:1100px;margin:0 auto;}
+.section-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent3);margin-bottom:1rem;}
+.section-title{font-family:var(--serif);font-size:clamp(2rem,5vw,3.5rem);font-weight:400;line-height:1.1;letter-spacing:-.03em;margin-bottom:1.25rem;}
+.section-title em{font-style:italic;color:var(--accent2);}
+.section-body{font-size:.95rem;color:var(--muted);max-width:560px;line-height:1.8;}
+
+/* ── HOW IT WORKS ── */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-top:3rem;}
+.step{background:var(--surface);border:1px solid rgba(24,71,212,.15);border-radius:14px;padding:1.75rem;transition:border-color .2s,transform .2s;}
+.step:hover{border-color:rgba(24,71,212,.4);transform:translateY(-3px);}
+.step-num{font-family:var(--serif);font-size:3rem;color:var(--dim);line-height:1;margin-bottom:.75rem;}
+.step-title{font-size:.95rem;font-weight:600;margin-bottom:.5rem;}
+.step-body{font-size:.82rem;color:var(--muted);line-height:1.6;}
+
+/* ── SIGNAL FEED DEMO ── */
+.feed-demo{background:var(--surface);border:1px solid rgba(24,71,212,.2);border-radius:16px;padding:1.5rem;margin-top:3rem;position:relative;overflow:hidden;}
+.feed-demo::before{content:'LIVE';position:absolute;top:1rem;right:1rem;font-family:var(--mono);font-size:.55rem;letter-spacing:.15em;color:var(--green);background:var(--green-dim);padding:3px 8px;border-radius:6px;}
+.feed-header{font-family:var(--mono);font-size:.62rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(24,71,212,.1);}
+.feed-row{display:flex;align-items:center;gap:1rem;padding:.6rem 0;border-bottom:1px solid rgba(24,71,212,.06);font-family:var(--mono);font-size:.72rem;animation:feedSlide .4s ease forwards;opacity:0;}
+.feed-row:last-child{border-bottom:none;}
+@keyframes feedSlide{to{opacity:1;}}
+.feed-time{color:var(--muted);width:55px;flex-shrink:0;}
+.feed-ticker{font-weight:500;color:var(--text);width:45px;}
+.feed-dir{padding:2px 7px;border-radius:5px;font-size:.6rem;width:42px;text-align:center;flex-shrink:0;}
+.feed-long{background:rgba(0,217,126,.1);color:var(--green);}
+.feed-short{background:rgba(255,69,96,.1);color:var(--red);}
+.feed-desc{color:var(--muted);flex:1;}
+.feed-score{color:var(--accent3);margin-left:auto;flex-shrink:0;}
+.feed-pnl{font-weight:500;width:55px;text-align:right;flex-shrink:0;}
+.feed-pnl.pos{color:var(--green);}
+.feed-pnl.neg{color:var(--red);}
+
+/* ── PERFORMANCE ── */
+.perf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:3rem;}
+.perf-card{background:var(--surface);border:1px solid rgba(24,71,212,.15);border-radius:14px;padding:1.5rem;}
+.perf-card-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;}
+.perf-card-val{font-family:var(--serif);font-size:2.2rem;line-height:1;margin-bottom:.3rem;}
+.perf-card-sub{font-size:.75rem;color:var(--muted);}
+@media(max-width:600px){.perf-grid{grid-template-columns:1fr;}}
+
+/* ── TICKER FEED ── */
+.ticker-section{position:relative;z-index:5;padding:1.5rem 0;overflow:hidden;border-top:1px solid rgba(24,71,212,.1);border-bottom:1px solid rgba(24,71,212,.1);background:rgba(6,13,31,.5);}
+.ticker-track{display:flex;gap:3rem;animation:tickScroll 20s linear infinite;white-space:nowrap;}
+@keyframes tickScroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.tick-item{font-family:var(--mono);font-size:.7rem;display:flex;gap:.5rem;align-items:center;flex-shrink:0;}
+.tick-up{color:var(--green);}
+.tick-dn{color:var(--red);}
+.tick-name{color:var(--muted);}
+
+/* ── CTA SECTION ── */
+.cta-section{position:relative;z-index:5;padding:6rem 2rem;text-align:center;}
+.cta-card{max-width:600px;margin:0 auto;background:linear-gradient(135deg,rgba(24,71,212,.15),rgba(61,111,255,.08));border:1px solid rgba(24,71,212,.25);border-radius:24px;padding:4rem 3rem;}
+.cta-title{font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);margin-bottom:1rem;}
+.cta-title em{font-style:italic;color:var(--accent2);}
+.cta-body{color:var(--muted);margin-bottom:2rem;line-height:1.7;}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:5;padding:2rem 2.5rem;border-top:1px solid rgba(24,71,212,.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.footer-logo{font-family:var(--serif);font-size:1.1rem;color:var(--muted);}
+.footer-links{display:flex;gap:1.5rem;}
+.footer-links a{font-family:var(--mono);font-size:.62rem;color:var(--muted);text-decoration:none;letter-spacing:.08em;transition:color .2s;}
+.footer-links a:hover{color:var(--text);}
+.footer-copy{font-family:var(--mono);font-size:.6rem;color:var(--dim);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* scroll reveal */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-a"></div>
+<canvas id="canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">NYL<span>O</span></div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#performance">Performance</a>
+    <a href="#signals">Signals</a>
+  </div>
+  <a href="join.html" class="nav-cta">Request Access →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">AI-powered · Real-time · Institutional grade</div>
+  <h1 class="hero-title">Trade with an <em>edge.</em></h1>
+  <p class="hero-sub">
+    NYLO watches <strong>QQQ and NVDA</strong> every 60 seconds during market hours,
+    applies 5 confirmation filters, and sends you a signal the moment conditions align.
+    <strong>57% win rate. Sharpe 3.0. Real data.</strong>
+  </p>
+  <div class="hero-actions">
+    <a href="join.html" class="btn-primary">Request Access →</a>
+    <a href="trading_dashboard.html" class="btn-secondary">Sign in</a>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar" style="position:relative;z-index:5;margin:-1rem auto 4rem;max-width:800px;padding:0 2rem;">
+  <div class="stat-item">
+    <div class="stat-label">Win rate</div>
+    <div class="stat-value green" id="wr-val">57.5%</div>
+    <div class="stat-sub">120 day backtest</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-label">Sharpe ratio</div>
+    <div class="stat-value blue">3.06</div>
+    <div class="stat-sub">risk-adjusted</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-label">Total trades</div>
+    <div class="stat-value white" id="trades-val">73</div>
+    <div class="stat-sub">QQQ + NVDA</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-label">Total P&L</div>
+    <div class="stat-value green">+$129</div>
+    <div class="stat-sub">paper trading</div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-section">
+  <div class="ticker-track" id="tt">
+    <span class="tick-item"><span class="tick-name">QQQ</span><span class="tick-up">$709.83 +0.41%</span></span>
+    <span class="tick-item"><span class="tick-name">NVDA</span><span class="tick-up">$134.72 +2.18%</span></span>
+    <span class="tick-item"><span class="tick-name">SPY</span><span class="tick-up">$733.73 +0.22%</span></span>
+    <span class="tick-item"><span class="tick-name">VIX</span><span class="tick-dn">18.4 -2.1%</span></span>
+    <span class="tick-item"><span class="tick-name">NYLO</span><span class="tick-up">57.5% WR · Sharpe 3.06</span></span>
+    <span class="tick-item"><span class="tick-name">QQQ</span><span class="tick-up">$709.83 +0.41%</span></span>
+    <span class="tick-item"><span class="tick-name">NVDA</span><span class="tick-up">$134.72 +2.18%</span></span>
+    <span class="tick-item"><span class="tick-name">SPY</span><span class="tick-up">$733.73 +0.22%</span></span>
+    <span class="tick-item"><span class="tick-name">VIX</span><span class="tick-dn">18.4 -2.1%</span></span>
+    <span class="tick-item"><span class="tick-name">NYLO</span><span class="tick-up">57.5% WR · Sharpe 3.06</span></span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-inner">
+    <div class="section-label reveal">How it works</div>
+    <h2 class="section-title reveal">Five filters. <em>One signal.</em></h2>
+    <p class="section-body reveal">Every signal passes through five independent confirmation filters before firing. If any filter fails, the signal is skipped. No noise. No guessing.</p>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <div class="step-title">Opening Drive</div>
+        <div class="step-body">The first 5 minutes set the day bias. NYLO only takes longs on up-gap days, shorts on down-gap days.</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">02</div>
+        <div class="step-title">VWAP Reclaim</div>
+        <div class="step-body">Primary signal: price crosses the Volume Weighted Average Price with above-average volume. Institutional confirmation.</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">03</div>
+        <div class="step-title">EMA Pullback</div>
+        <div class="step-body">Secondary signal: price pulls back to the 9 EMA in the trend direction and bounces with momentum.</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">04</div>
+        <div class="step-title">Signal Scoring</div>
+        <div class="step-body">Each signal is scored 0-10 across 7 factors. Only signals scoring 5+ execute. Higher scores get larger positions.</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">05</div>
+        <div class="step-title">Trailing Stop</div>
+        <div class="step-body">Once a trade moves +0.75%, a trailing stop activates and locks in profit as the trade continues.</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">06</div>
+        <div class="step-title">Pushover Alert</div>
+        <div class="step-body">The moment a signal fires you get a push notification with entry, target, stop, and signal score.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIGNAL FEED DEMO -->
+<section id="signals" style="padding-top:0;">
+  <div class="section-inner">
+    <div class="section-label reveal">Live signals</div>
+    <h2 class="section-title reveal">What a <em>real signal</em> looks like.</h2>
+    <div class="feed-demo reveal">
+      <div class="feed-header">Signal feed — today's activity</div>
+      <div class="feed-row" style="animation-delay:.1s">
+        <span class="feed-time">10:59 AM</span>
+        <span class="feed-ticker">QQQ</span>
+        <span class="feed-dir feed-long">Long</span>
+        <span class="feed-desc">EMA Pullback · RSI 61 · Vol 1.96x · Bias neutral</span>
+        <span class="feed-score">6/10</span>
+        <span class="feed-pnl pos">Open</span>
+      </div>
+      <div class="feed-row" style="animation-delay:.25s">
+        <span class="feed-time">10:26 AM</span>
+        <span class="feed-ticker">QQQ</span>
+        <span class="feed-dir feed-short">Short</span>
+        <span class="feed-desc">VWAP Reclaim · RSI 43 · Vol 1.96x · Bias neutral</span>
+        <span class="feed-score">7/10</span>
+        <span class="feed-pnl pos">+1.26%</span>
+      </div>
+      <div class="feed-row" style="animation-delay:.4s">
+        <span class="feed-time">10:08 AM</span>
+        <span class="feed-ticker">NVDA</span>
+        <span class="feed-dir feed-long">Long</span>
+        <span class="feed-desc">EMA Pullback · RSI 58 · Vol 2.1x · Bias long</span>
+        <span class="feed-score">8/10</span>
+        <span class="feed-pnl pos">+1.50%</span>
+      </div>
+      <div class="feed-row" style="animation-delay:.55s">
+        <span class="feed-time">09:52 AM</span>
+        <span class="feed-ticker">QQQ</span>
+        <span class="feed-dir feed-short">Short</span>
+        <span class="feed-desc">VWAP Reclaim · RSI 31 · Vol 1.2x · Skipped (score 4)</span>
+        <span class="feed-score">4/10</span>
+        <span class="feed-pnl" style="color:var(--muted)">Skipped</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERFORMANCE -->
+<section id="performance">
+  <div class="section-inner">
+    <div class="section-label reveal">Performance</div>
+    <h2 class="section-title reveal">The numbers <em>speak.</em></h2>
+    <p class="section-body reveal">120-day backtest on real 1-minute data. Paper trading $1,000-$5,000 per signal based on confidence score.</p>
+    <div class="perf-grid">
+      <div class="perf-card reveal">
+        <div class="perf-card-label">Win rate</div>
+        <div class="perf-card-val" style="color:var(--green);">57.5%</div>
+        <div class="perf-card-sub">73 trades · QQQ + NVDA</div>
+      </div>
+      <div class="perf-card reveal">
+        <div class="perf-card-label">Sharpe ratio</div>
+        <div class="perf-card-val" style="color:var(--accent2);">3.059</div>
+        <div class="perf-card-sub">Institutional grade (>1.0 = good)</div>
+      </div>
+      <div class="perf-card reveal">
+        <div class="perf-card-label">NVDA performance</div>
+        <div class="perf-card-val" style="color:var(--green);">+$104</div>
+        <div class="perf-card-sub">50 trades · primary driver</div>
+      </div>
+      <div class="perf-card reveal">
+        <div class="perf-card-label">QQQ performance</div>
+        <div class="perf-card-val" style="color:var(--green);">+$25</div>
+        <div class="perf-card-sub">23 trades · consistent support</div>
+      </div>
+    </div>
+    <p style="font-family:var(--mono);font-size:.62rem;color:var(--muted);margin-top:1.5rem;line-height:1.7;" class="reveal">
+      ⚠️ Past performance does not guarantee future results. NYLO is a paper trading signal service for educational purposes only. Always consult a licensed financial advisor before investing real money.
+    </p>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-card reveal">
+    <h2 class="cta-title">Ready to trade with an <em>edge?</em></h2>
+    <p class="cta-body">NYLO is invite-only. Request access and Giovanni will review your application personally. Members receive real-time Pushover alerts for every signal.</p>
+    <a href="join.html" class="btn-primary" style="display:inline-block;">Request Access →</a>
+    <p style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:1rem;">Already a member? <a href="trading_dashboard.html" style="color:var(--accent3);text-decoration:none;">Sign in →</a></p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">NYLO</div>
+  <div class="footer-links">
+    <a href="join.html">Request Access</a>
+    <a href="trading_dashboard.html">Sign In</a>
+    <a href="admin.html">Admin</a>
+  </div>
+  <div class="footer-copy">© 2026 NYLO · For educational purposes only · Not financial advice</div>
+</footer>
+
+<script>
+// Glow cursor
+const cur=document.getElementById('cur'),cura=document.getElementById('cur-a');
+let mx=window.innerWidth/2,my=window.innerHeight/2,ax=mx,ay=my;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function loop(){ax+=(mx-ax)*.1;ay+=(my-ay)*.1;cura.style.left=ax+'px';cura.style.top=ay+'px';requestAnimationFrame(loop);})();
+document.addEventListener('mousedown',()=>cur.classList.add('c'));
+document.addEventListener('mouseup',()=>cur.classList.remove('c'));
+
+// Particle network
+(function(){
+  const c=document.getElementById('canvas'),ctx=c.getContext('2d');
+  let W,H,ps=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  for(let i=0;i<60;i++)ps.push({
+    x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,
+    vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
+    r:Math.random()*1.5+.5,o:Math.random()*.4+.1
+  });
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ps.forEach((p,i)=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+      // React to cursor
+      const dx=mx-p.x,dy=my-p.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<120){p.vx-=dx/d*.02;p.vy-=dy/d*.02;}
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(61,111,255,${p.o})`;ctx.fill();
+      for(let j=i+1;j<ps.length;j++){
+        const dx2=ps[j].x-p.x,dy2=ps[j].y-p.y,d2=Math.sqrt(dx2*dx2+dy2*dy2);
+        if(d2<120){
+          ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(ps[j].x,ps[j].y);
+          ctx.strokeStyle=`rgba(61,111,255,${.15*(1-d2/120)})`;ctx.lineWidth=.5;ctx.stroke();
+        }
+      }
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// Ticker duplicate
+const tt=document.getElementById('tt');
+if(tt)tt.innerHTML+=tt.innerHTML;
+
+// Scroll reveal
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// Animate stats from 0
+function countUp(el,target,suffix,dur){
+  const start=Date.now();
+  const isFloat=target%1!==0;
+  const tick=()=>{
+    const p=Math.min((Date.now()-start)/dur,1);
+    const ease=1-Math.pow(1-p,3);
+    const val=target*ease;
+    el.textContent=(isFloat?val.toFixed(1):Math.round(val))+suffix;
+    if(p<1)requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+setTimeout(()=>{
+  const wr=document.getElementById('wr-val');
+  const tr=document.getElementById('trades-val');
+  if(wr)countUp(wr,57.5,'%',1200);
+  if(tr)countUp(tr,73,'',800);
+},600);
+</script>
+</body>
+</html>
