@@ -1137,11 +1137,6 @@ function enterDashboard(member) {
   setTimeout(() => showToast('👋', `Welcome back, ${member.display || member.username}!`), 800);
 }
 
-function logout() {
-  localStorage.removeItem('nylo-user');
-  location.reload();
-}
-
 // Show login gate after splash
 async function showLoginGate() {
   const saved = localStorage.getItem('nylo-user');
@@ -2316,7 +2311,12 @@ const SUPA_KEY = 'sb_publishable_2UtHOs8J8I9QUyNm1NBABA_JfAza7CE';
 const HEADERS  = { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
 
 async function sbGet(table, filter='') {
-  const res  = await fetch(`${SUPA_URL}/rest/v1/${table}?${filter}&order=created_at.asc`, { headers: HEADERS });
+  const q   = filter ? `${filter}&order=created_at.asc` : 'order=created_at.asc';
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}?${q}`, { headers: HEADERS });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `API error ${res.status}`);
+  }
   const data = await res.json();
   return Array.isArray(data) ? data : [];
 }
@@ -2503,14 +2503,6 @@ function scrollToSection(id){
   if(el)el.scrollIntoView({behavior:'smooth'});
   document.querySelectorAll('.mobile-nav-item').forEach(i=>i.classList.remove('active'));
   event.currentTarget.classList.add('active');
-}
-function showToast(msg,type='info',duration=3000){
-  const c=document.getElementById('toast-container');
-  const t=document.createElement('div');
-  t.className='toast-item '+type;
-  t.textContent=msg;
-  c.appendChild(t);
-  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateY(20px)';t.style.transition='all .3s';setTimeout(()=>t.remove(),300);},duration);
 }
 
 
