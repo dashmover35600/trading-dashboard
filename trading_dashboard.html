@@ -1811,6 +1811,7 @@ function renderCharts(trades, closed, wins, losses, pnls) {
   const tk={};
   trades.forEach(t=>tk[t['Ticker']]=(tk[t['Ticker']]||0)+1);
   mkChart('c4','bar',{labels:Object.keys(tk),datasets:[{data:Object.values(tk),backgroundColor:['rgba(26,74,138,0.75)','rgba(26,122,74,0.75)'],borderRadius:4,borderSkipped:false}]},opts(v=>v));
+}
 
 function mkChart(id,type,data,options){ if(charts[id]) charts[id].destroy(); charts[id]=new Chart(document.getElementById(id),{type,data,options}); }
 
