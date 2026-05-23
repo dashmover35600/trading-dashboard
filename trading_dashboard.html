@@ -1747,41 +1747,6 @@ function renderTable() {
 }
 
 // ── PDF export ────────────────────────────────────────────────────────────────
-function exportPDF() {
-  const trades = allTrades;
-  const s0 = trades.length;
-  const wins = trades.filter(t=>t['Result']==='Target Hit'||(parseFloat((t['P&L %']||'0').replace('%','').replace('+',''))>0));
-  const s1 = trades.length ? Math.round(wins.length/trades.length*100)+'%' : '0%';
-  const total = trades.reduce((a,t)=>a+parseFloat((t['P&L $']||'0').replace('$','').replace('+','')),0);
-  const s2 = (total>=0?'+$':'-$')+Math.abs(total).toFixed(2);
-  const rows = trades.map(t=>{
-    const p=parseFloat((t['P&L %']||'0').replace('%','').replace('+',''));
-    const pc=p>=0?'green':'red';
-    return '<tr><td>'+t['Date']+'</td><td>'+t['Ticker']+'</td><td>'+t['Direction']+'</td><td>$'+t['Entry Price']+'</td><td>$'+(t['Exit Price']||'-')+'</td><td>'+t['Result']+'</td><td style="color:'+pc+'">'+t['P&L %']+'</td></tr>';
-  }).join('');
-  const w = window.open('','_blank');
-  const html = '<html><head><title>Trade Report</title>'
-    + '<style>body{font-family:monospace;padding:2rem}table{width:100%;border-collapse:collapse}'
-    + 'th,td{padding:6px 10px;border-bottom:1px solid #eee;text-align:left}'
-    + 'th{background:#f4f4f0;font-size:0.7rem;text-transform:uppercase}</style></head>'
-    + '<body><h1>NYLO Trading Report</h1>'
-    + '<p>Trades: '+s0+' | Win Rate: '+s1+' | P&L: '+s2+'</p>'
-    + '<table><thead><tr><th>Date</th><th>Ticker</th><th>Dir</th><th>Entry</th><th>Exit</th><th>Result</th><th>P&L</th></tr></thead>'
-    + '<tbody>'+rows+'</tbody></table>'
-    + '<script>window.print();<'+'/script></body></html>';
-  w.document.write(html);
-  w.document.close();
-</script>
-}
-
-// ── Charts ────────────────────────────────────────────────────────────────────
-function renderCharts(trades, closed, wins, losses, pnls) {
-  const tc='#8a8a82', gc='#e8e8e4', mono='DM Mono';
-  const opts = (cb) => ({ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
-    scales:{ x:{grid:{color:gc,lineWidth:0.5},ticks:{color:tc,font:{family:mono,size:10}}},
-             y:{grid:{color:gc,lineWidth:0.5},ticks:{color:tc,font:{family:mono,size:10},callback:cb}} } });
-
-  let cum=0;
   const cData=closed.map(t=>{cum+=num(t['P&L %'])||0;return Math.round(cum*100)/100;});
   mkChart('c1','line',{labels:closed.map((_,i)=>'#'+(i+1)),datasets:[{data:cData,borderColor:'#1a7a4a',backgroundColor:'rgba(26,122,74,0.07)',borderWidth:1.5,fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#1a7a4a',pointBorderColor:'#fff',pointBorderWidth:1.5}]},opts(v=>v+'%'));
 
