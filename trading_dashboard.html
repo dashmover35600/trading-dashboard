@@ -1462,34 +1462,35 @@ function shareStats() {
 
 // ── Auto-load ─────────────────────────────────────────────────────────────────
 async function tryAutoLoad() {
-  // 1. Try GitHub first (works for all users, updated every 15 min by cron)
   try {
     const res = await fetch(GITHUB_CSV + '?t=' + Date.now(), {cache:'no-store'});
-    if (!res.ok) throw new Error();
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const text = await res.text();
     const trades = parseCSV(text);
-    console.log('[NYLO] Loaded', trades.length, 'trades from GitHub:', trades);
-    render(trades);
-    console.log('[NYLO] allTrades after render:', allTrades.length);
+
+    // Update status BEFORE render so a chart error can never block this
     document.getElementById('ts').textContent = 'Loaded from GitHub · ' + new Date().toLocaleTimeString();
     const uploadZone = document.getElementById('upload-zone');
-    if(uploadZone) {
+    if (uploadZone) {
       uploadZone.style.borderColor = 'var(--accent)';
       document.getElementById('upload-icon').textContent = '📊';
       document.getElementById('upload-title').textContent = trades.length > 0 ? 'Loaded from GitHub ✅' : '🟢 Agent running — no signals yet today';
       document.getElementById('upload-desc').textContent = trades.length > 0
-        ? `${trades.length} trade${trades.length>1?'s':''} loaded · Updates every 15 min`
-        : 'Agent v14 is active and watching QQQ. Trade data appears here automatically.';
-      if(trades.length > 0) uploadZone.style.display = 'none';
+        ? `${trades.length} trade${trades.length > 1 ? 's' : ''} loaded · Updates every 60s`
+        : 'Agent is active. Trade data appears here automatically.';
+      if (trades.length > 0) uploadZone.style.display = 'none';
     }
-    // fetchComparison removed — file not used
+
+    // Render in its own try so chart errors don't abort the loop
+    try { render(trades); } catch(re) { console.error('[NYLO] render error:', re); }
+
     fetchLiveTrade();
     fetchHeartbeat();
     setTimeout(tryAutoLoad, 60000);
-    return;
   } catch(e) {
-    // retry in 30 s; keep upload zone visible for manual fallback
-    document.getElementById('upload-desc').textContent = 'Auto-loads from GitHub every 60s — or click to upload manually.';
+    console.error('[NYLO] Auto-load failed:', e);
+    const desc = document.getElementById('upload-desc');
+    if (desc) desc.textContent = 'Auto-loads from GitHub every 60s — or click to upload manually.';
     setTimeout(tryAutoLoad, 30000);
   }
 }
@@ -1761,8 +1762,17 @@ function renderTable() {
 }
 
 function renderCharts(trades, closed, wins, losses, pnls) {
+  const tc   = getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#0a1028';
+  const mono = "'DM Mono', monospace";
+  const opts = fmt => ({
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { color: tc, font: { family: mono, size: 9 }, maxRotation: 0 }, grid: { color: 'rgba(0,0,0,0.04)' } },
+      y: { ticks: { color: tc, font: { family: mono, size: 9 }, callback: fmt }, grid: { color: 'rgba(0,0,0,0.04)' } }
+    }
+  });
   let cum = 0;
-// ── PDF export ────────────────────────────────────────────────────────────────
   const cData=closed.map(t=>{cum+=num(t['P&L %'])||0;return Math.round(cum*100)/100;});
   mkChart('c1','line',{labels:closed.map((_,i)=>'#'+(i+1)),datasets:[{data:cData,borderColor:'#1a7a4a',backgroundColor:'rgba(26,122,74,0.07)',borderWidth:1.5,fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#1a7a4a',pointBorderColor:'#fff',pointBorderWidth:1.5}]},opts(v=>v+'%'));
 
@@ -1778,7 +1788,7 @@ function renderCharts(trades, closed, wins, losses, pnls) {
   mkChart('c4','bar',{labels:Object.keys(tk),datasets:[{data:Object.values(tk),backgroundColor:['rgba(26,74,138,0.75)','rgba(26,122,74,0.75)'],borderRadius:4,borderSkipped:false}]},opts(v=>v));
 }
 
-function mkChart(id,type,data,options){ if(charts[id]) charts[id].destroy(); charts[id]=new Chart(document.getElementById(id),{type,data,options}); }
+function mkChart(id,type,data,options){ const el=document.getElementById(id); if(!el) return; if(charts[id]) charts[id].destroy(); charts[id]=new Chart(el,{type,data,options}); }
 
 // ── Calendar ──────────────────────────────────────────────────────────────────
 function changeMonth(d) { calMonth+=d; if(calMonth>11){calMonth=0;calYear++;} if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
