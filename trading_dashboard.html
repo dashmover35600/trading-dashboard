@@ -1027,6 +1027,28 @@ function _oldCheckDisclaimer() {
 <footer>Created by Giovanni Flores</footer>
 </div>
 
+<!-- Disclaimer Modal — shown after login if not yet accepted -->
+<div id="disclaimer-overlay" style="display:none;">
+  <div id="disclaimer-modal">
+    <div class="disclaimer-logo">NYLO</div>
+    <div class="disclaimer-badge">RISK DISCLOSURE</div>
+    <div class="disclaimer-title">Important — Please Read Before Continuing</div>
+    <div class="disclaimer-body">NYLO is an educational tool showing live trading signals and performance data. All results are for informational purposes only and do not constitute financial advice.</div>
+    <ul class="disclaimer-points">
+      <li>Past performance does not guarantee future results. You can lose money trading.</li>
+      <li>Signals are generated algorithmically and are not personalized investment advice.</li>
+      <li>Always conduct your own research before making any trading decisions.</li>
+      <li>Never risk capital you cannot afford to lose.</li>
+    </ul>
+    <label class="disclaimer-check">
+      <input type="checkbox" id="disclaimer-checkbox" onchange="toggleDisclaimerBtn()">
+      <span>I understand this is not financial advice and I accept full responsibility for my trading decisions.</span>
+    </label>
+    <button class="disclaimer-btn" id="disclaimer-btn" onclick="acceptDisclaimer()">I Understand — Enter Dashboard</button>
+    <div class="disclaimer-footer">By continuing you acknowledge you have read and agree to these terms.</div>
+  </div>
+</div>
+
 <script>
 // Hide splash screen after 4 seconds with slow fade
 setTimeout(() => {
