@@ -390,7 +390,7 @@ async function loadResults(){
       `Vol ${data.config.baseline.vol_mult}x · $${data.config.position_size}/trade · `+
       `${data.config.lookback_days} days`;
 
-    renderResults(data.baseline.trades, data.baseline.stats, data);
+    renderResults(data.baseline.trades, data.baseline.stats);
     renderSweep(data.sweep);
     setProgress(100,'Done!');
     setTimeout(()=>document.getElementById('progress-wrap').style.display='none', 600);
@@ -480,7 +480,7 @@ function buildCharts(trades){
 // ═══════════════════════════════════════════════
 let allLogTrades=[];
 
-function renderResults(trades, stats, data){
+function renderResults(trades, stats){
   allLogTrades = trades;
 
   const pnlEl = document.getElementById('r-pnl');
@@ -526,7 +526,7 @@ function renderLog(trades, filter){
              : trades;
   if(!show.length){ tbody.innerHTML=`<tr><td colspan="11" style="text-align:center;padding:2rem;color:var(--muted);">No trades</td></tr>`; return; }
   tbody.innerHTML = show.map(t=>{
-    const badge = t.result==='Target Hit'?'<span class="badge bg">Win</span>':'<span class="badge br">Loss</span>';
+    const res = t.result||''; const badge = (res.includes('Target Hit')||res.includes('Partial')||(res.includes('Trail')&&t.pnl_pct>0)||(res.includes('Time')&&t.pnl_pct>0))?'<span class="badge bg">Win ✅</span>':(res.includes('Stop')||(t.pnl_pct<=0))?'<span class="badge br">Loss 🛑</span>':'<span class="badge bg">Win ✅</span>';
     const pc = t.pnl_pct>=0?'var(--green)':'var(--red)';
     return `<tr>
       <td>${t.date}</td><td><strong>${t.ticker}</strong></td><td>${t.direction}</td>
@@ -564,7 +564,7 @@ const rating=effectiveWR>=60&&s.total_pnl_pct>0?'<span class="badge bg">Excellen
     const pfColor = pf>=1?'var(--green)':'var(--red)';
     const expColor = exp>=0?'var(--green)':'var(--red)';
     return `<tr class="${isBest?'best-row':''}">
-      <td>${r.rsi_buy}${isBest?' ⭐':''}</td><td>${r.rsi_sell}</td>
+      <td>${r.rsi_adj?('adj '+r.rsi_adj[0]):(r.rsi_buy||'base')}${isBest?' ⭐':''}</td><td>${r.rsi_adj?('adj '+r.rsi_adj[1]):(r.rsi_sell||'base')}</td>
       <td>${r.min_score||'—'}</td>
       <td>${s.trades}</td><td>${s.wins}</td><td>${s.losses}</td>
       <td><span class="badge ${wrBadge}">${s.win_rate.toFixed(0)}%</span></td>
@@ -579,4 +579,3 @@ const rating=effectiveWR>=60&&s.total_pnl_pct>0?'<span class="badge bg">Excellen
 </script>
 </body>
 </html>
- 
