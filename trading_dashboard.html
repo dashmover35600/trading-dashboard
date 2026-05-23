@@ -21,7 +21,24 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%230a1a5c'/%3E%3Cstop offset='100%25' stop-color='%231847d4'/%3E%3C/linearGradient%3E%3ClinearGradient id='tx' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='100%25' stop-color='%23c8d8ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='80' fill='url(%23bg)'/%3E%3Ctext x='258' y='295' font-family='Georgia,serif' font-size='168' font-weight='700' fill='url(%23tx)' text-anchor='middle' letter-spacing='-2'%3ENYLO%3C/text%3E%3Crect x='100' y='316' width='312' height='3' rx='1.5' fill='rgba(255,255,255,0.9)'/%3E%3Ctext x='256' y='356' font-family='Georgia,serif' font-size='28' font-weight='700' fill='rgba(255,255,255,0.85)' text-anchor='middle' letter-spacing='6'%3EPRECISION TRADING%3C/text%3E%3C/svg%3E">
 
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js">
+function checkDisclaimer() {
+  if (localStorage.getItem('nylo-disclaimer-accepted')) return;
+  const tryShow = () => {
+    const ov = document.getElementById('disclaimer-overlay');
+    if (ov) { ov.style.display='flex'; ov.style.zIndex='99999'; }
+    else setTimeout(tryShow, 300);
+  };
+  setTimeout(tryShow, 1000);
+}
+function _oldCheckDisclaimer() {
+  if (localStorage.getItem('nylo-disclaimer-accepted')) return;
+  setTimeout(function(){
+    var ov = document.getElementById('disclaimer-overlay');
+    if (ov) { ov.style.display='flex'; ov.style.zIndex='99999'; }
+  }, 1000);
+}
+</script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -883,8 +900,8 @@
       <h4>All Trades</h4>
       <div class="th2-right">
         <button class="filter-btn on" onclick="setFilter('all',this)">All</button>
-        <button class="filter-btn" onclick="setFilter('QQQ',this)">AAPL</button>
-        <button class="filter-btn" onclick="setFilter('GLD',this)">AAPL</button>
+        <button class="filter-btn" onclick="setFilter('AAPL',this)">AAPL</button>
+        <button class="filter-btn" onclick="setFilter('GOOGL',this)">GOOGL</button>
         <button class="filter-btn" onclick="setFilter('win',this)">Wins</button>
         <button class="filter-btn" onclick="setFilter('loss',this)">Losses</button>
         <button class="export-btn" onclick="exportPDF()">⬇ Export PDF</button>
@@ -996,8 +1013,8 @@
   <div class="sl">Market news</div>
   <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
     <button class="nf active" onclick="filterNews('all',this)">All</button>
-    <button class="nf" onclick="filterNews('qqq',this)">NVDA / AI</button>
-    <button class="nf" onclick="filterNews('gld',this)">AAPL / Tech</button>
+    <button class="nf" onclick="filterNews('qqq',this)">AAPL / Tech</button>
+    <button class="nf" onclick="filterNews('googl',this)">GOOGL / AI</button>
   </div>
   <div id="news-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-bottom:1rem;">
     <div class="card" style="grid-column:1/-1;text-align:center;padding:2.5rem;color:var(--muted);font-size:0.82rem;">Loading headlines...</div>
@@ -3123,5 +3140,35 @@ function closeStockPanel() {
 
 // Close panel on escape key
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeStockPanel(); });
+
+
+// ── Live P&L ticker for open trades ──────────────────────────────────────────
+let livePnlInterval = null;
+
+function startLivePnl(entryPrice, direction, posSize) {
+  const el = document.getElementById('live-pnl-display');
+  if (!el) return;
+  if (livePnlInterval) clearInterval(livePnlInterval);
+  livePnlInterval = setInterval(async () => {
+    try {
+      const ticker = direction === 'long' ? 'AAPL' : 'GOOGL';
+      const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1m&range=1d`);
+      const data = await res.json();
+      const price = data.chart.result[0].meta.regularMarketPrice;
+      const pnlPct = direction === 'long'
+        ? ((price - entryPrice) / entryPrice * 100)
+        : ((entryPrice - price) / entryPrice * 100);
+      const pnlDollar = pnlPct / 100 * posSize;
+      el.textContent = `${pnlPct >= 0 ? '+' : ''}${pnlPct.toFixed(2)}% (${pnlDollar >= 0 ? '+$' : '-$'}${Math.abs(pnlDollar).toFixed(2)})`;
+      el.style.color = pnlPct >= 0 ? 'var(--green, #16a34a)' : 'var(--red, #dc2626)';
+    } catch(e) {}
+  }, 30000);
+}
+
+function stopLivePnl() {
+  if (livePnlInterval) { clearInterval(livePnlInterval); livePnlInterval = null; }
+  const el = document.getElementById('live-pnl-display');
+  if (el) { el.textContent = ''; }
+}
 
 </script>

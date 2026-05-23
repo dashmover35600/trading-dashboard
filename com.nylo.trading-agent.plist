@@ -1,115 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!--
-  com.nylo.trading-agent.plist
-  ─────────────────────────────────────────────────────────────────────────────
-  NYLO Trading Agent v11 — launchd service definition
-
-  INSTALL:
-    cp com.nylo.trading-agent.plist ~/Library/LaunchAgents/
-    launchctl load ~/Library/LaunchAgents/com.nylo.trading-agent.plist
-
-  UNLOAD:
-    launchctl unload ~/Library/LaunchAgents/com.nylo.trading-agent.plist
-
-  CHECK STATUS:
-    launchctl list | grep nylo
-
-  VIEW LOGS:
-    tail -f /tmp/nylo_agent.log
-    tail -f /tmp/nylo_agent_error.log
-
-  KEY CHANGES FROM OLD PLIST:
-    ✅ KeepAlive = true  — agent auto-restarts if it crashes (not just on schedule)
-    ✅ ThrottleInterval  — 30s cooldown between restarts (prevents crash loop)
-    ✅ TRADING_PHONE env — set your number here so you never forget to export it
-    ✅ StandardOutPath + StandardErrorPath — separate stdout/stderr logs
-    ✅ StartCalendarInterval — only fires Mon–Fri at 9:20 AM ET
-
-  EDIT BEFORE INSTALLING:
-    1. Change /Users/giovanniflores to your actual home directory
-    2. Change TRADING_PHONE to your actual number
-    3. If agent is not in ~/Downloads, update WorkingDirectory and ProgramArguments
--->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-
-  <!-- Service identifier — must be unique on this Mac -->
-  <key>Label</key>
-  <string>com.nylo.trading-agent</string>
-
-  <!-- Full path to Python 3.9 and the agent script -->
-  <key>ProgramArguments</key>
-  <array>
-    <string>/usr/local/bin/python3</string>
-    <string>-W</string>
-    <string>ignore</string>
-    <string>/Users/giovanniflores/Downloads/trading_agent_14.py</string>
-  </array>
-
-  <!-- Working directory — agent writes trade_log.csv etc. here -->
-  <key>WorkingDirectory</key>
-  <string>/Users/giovanniflores/Downloads</string>
-
-  <!-- Environment variables — no more "export TRADING_PHONE" every morning -->
-  <key>EnvironmentVariables</key>
-  <dict>
-    <key>TRADING_PHONE</key>
-    <string>+1XXXXXXXXXX</string>
-    <key>PATH</key>
-    <string>/usr/local/bin:/usr/bin:/bin</string>
-  </dict>
-
-  <!--
-    KeepAlive = true
-    ─────────────────
-    THIS IS THE KEY CHANGE.
-    Old plist: agent starts at 9:20 AM — if it crashes, it's dead until tomorrow.
-    New plist: launchd watches the process; if it exits for ANY reason, it
-    restarts it automatically (subject to ThrottleInterval).
-  -->
-  <key>KeepAlive</key>
-  <true/>
-
-  <!--
-    ThrottleInterval = 30 seconds
-    ──────────────────────────────
-    Prevents a rapid crash loop from hammering yfinance or CPU.
-    launchd waits 30s before restarting after a crash.
-  -->
-  <key>ThrottleInterval</key>
-  <integer>30</integer>
-
-  <!--
-    StartCalendarInterval
-    ──────────────────────
-    Starts the agent at 9:20 AM ET on Monday–Friday.
-    Note: the times here are in YOUR LOCAL TIME ZONE.
-    If your Mac is set to Eastern Time, use 9:20.
-    If set to Pacific, use 6:20 (3 hours earlier).
-    Add one entry per weekday (Weekday 1=Mon … 5=Fri).
-  -->
-  <key>StartCalendarInterval</key>
-  <array>
-    <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>20</integer></dict>
-    <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>20</integer></dict>
-    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>20</integer></dict>
-    <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>20</integer></dict>
-    <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>20</integer></dict>
-  </array>
-
-  <!-- stdout → /tmp/nylo_agent.log -->
-  <key>StandardOutPath</key>
-  <string>/tmp/nylo_agent.log</string>
-
-  <!-- stderr → /tmp/nylo_agent_error.log (separate from trade logs) -->
-  <key>StandardErrorPath</key>
-  <string>/tmp/nylo_agent_error.log</string>
-
-  <!-- Run as a regular user process (not root) -->
-  <key>RunAtLoad</key>
-  <false/>
-
+    <key>Label</key>
+    <string>com.nylo.trading-agent</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>-W</string>
+        <string>ignore</string>
+        <string>/Users/giovanniflores/Downloads/trading_agent_14.py</string>
+    </array>
+    <key>StandardOutPath</key>
+    <string>/tmp/nylo_v14.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/nylo_v14.log</string>
+    <key>KeepAlive</key>
+    <dict>
+        <key>Crashed</key>
+        <true/>
+    </dict>
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict><key>Hour</key><integer>9</integer><key>Minute</key><integer>20</integer><key>Weekday</key><integer>1</integer></dict>
+        <dict><key>Hour</key><integer>9</integer><key>Minute</key><integer>20</integer><key>Weekday</key><integer>2</integer></dict>
+        <dict><key>Hour</key><integer>9</integer><key>Minute</key><integer>20</integer><key>Weekday</key><integer>3</integer></dict>
+        <dict><key>Hour</key><integer>9</integer><key>Minute</key><integer>20</integer><key>Weekday</key><integer>4</integer></dict>
+        <dict><key>Hour</key><integer>9</integer><key>Minute</key><integer>20</integer><key>Weekday</key><integer>5</integer></dict>
+    </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin</string>
+        <key>TRADING_PHONE</key>
+        <string>+13214378412</string>
+    </dict>
+    <key>WorkingDirectory</key>
+    <string>/Users/giovanniflores/Downloads</string>
+    <key>ThrottleInterval</key>
+    <integer>60</integer>
 </dict>
 </plist>

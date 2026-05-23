@@ -47,8 +47,8 @@ import traceback
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TICKERS = ["AAPL", "GOOGL"]  # v17: NVDA dropped, QQQ = market filter  # v16.2: QQQ added back - profitable in latest test
-VOLATILE_TICKERS  = ["NVDA"]  # NVDA gets 75% — AAPL/GOOGL full size
+TICKERS           = ["AAPL", "GOOGL"]  # v17: filtered winners — NVDA/QQQ dropped
+VOLATILE_TICKERS  = []  # no volatile tickers — AAPL/GOOGL both stable
 TICKER            = "QQQ"  # kept for compatibility
 IMESSAGE_TO       = os.environ.get("TRADING_PHONE", "+1XXXXXXXXXX")
 MARKET_TZ         = pytz.timezone("America/New_York")
@@ -58,7 +58,7 @@ CUTOFF            = datetime.time(12, 45)  # hard close — no holding into lunc
 DEAD_ZONE_START   = datetime.time(11, 30)
 DEAD_ZONE_END     = datetime.time(12, 0)   # shorter dead zone
 SERVER_PORT       = 8765
-AGENT_VERSION     = "17"
+AGENT_VERSION     = "17.1"
 
 # Pushover notifications
 PUSHOVER_TOKEN    = "apuf7f5knj2yxnsnxvtk63adchuvkf"
@@ -83,11 +83,11 @@ CONSEC_LOSS_PAUSE = 3        # pause 30 min after 3 consecutive losses
 VIX_HIGH          = 20.0     # reduce size when VIX above this
 
 # Signal scoring thresholds
-MIN_SCORE         = 5        # v14.2: lowered from 6 — sweep shows more signals at 4-5
-RSI_BULL_MIN      = 52       # v17: AAPL/GOOGL optimal
+MIN_SCORE         = 3        # v17: sweep best — 79.7% WR at score 3
+RSI_BULL_MIN      = 52       # v17: confirmed optimal for AAPL/GOOGL
 RSI_BULL_MAX      = 72       # v15: tighter upper bound
 RSI_BEAR_MIN      = 28       # v15: tighter lower bound
-RSI_BEAR_MAX      = 48       # v17: updated for AAPL/GOOGL
+RSI_BEAR_MAX      = 48       # v17: confirmed optimal
 VOLUME_MIN        = 1.2      # minimum volume ratio
 
 # Reliability settings
@@ -198,7 +198,7 @@ def log_entry_csv(s):
     shares = calc_shares(s["entry_price"], s["position_size"])
     with open(LOG_FILE, "a", newline="") as f:
         csv.writer(f).writerow([
-            s["entry_time"].strftime("%Y-%m-%d"), TICKER,
+            s["entry_time"].strftime("%Y-%m-%d"), s.get("ticker", TICKERS[0]),
             "Long" if s["trade_dir"] == "long" else "Short",
             s["entry_price"], "", s["target"], s["stop"],
             "", "", "", shares,
@@ -850,7 +850,7 @@ def check_exit(df):
             daily_pnl += partial_dollar
             partial_done[ticker_key] = True
             print(f"[Exit] Partial exit +{partial_pnl_pct:.2f}% — locking in ${partial_dollar:.2f}")
-            send_push("NYLO Partial Exit", f"Partial exit +{partial_pnl_pct:.2f}% locked in ${partial_dollar:.2f}. Trail now active.")
+            send_push("NYLO Partial Exit", f"Partial exit +{partial_pnl_pct:.2f}% locked ${partial_dollar:.2f}. Trail active.")
             # Activate trail on remaining 50%
             s["trail_active"] = True
             s["trail_peak"]   = price
@@ -994,6 +994,18 @@ def run_agent():
     write_heartbeat("running")
 
 # ── Daily / weekly summaries ──────────────────────────────────────────────────
+def send_morning_brief():
+    """8:30 AM morning briefing push notification"""
+    now = now_et()
+    if now.weekday() >= 5: return  # skip weekends
+    send_push("NYLO Morning Brief",
+        f"Good morning! Market opens in 1 hour.\n"
+        f"Watching: {', '.join(TICKERS)}\n"
+        f"Strategy: v{AGENT_VERSION} | Min score: {MIN_SCORE}/10\n"
+        f"Bias sets at 9:35 AM ET",
+        priority=0)
+    print("[Brief] Morning brief sent")
+
 def send_daily_summary():
     today  = now_et().strftime("%Y-%m-%d")
     trades = []
@@ -1121,10 +1133,11 @@ if __name__ == "__main__":
 
     print("[Agent] Startup complete. Monitoring QQQ.")
     try:
-        send_push("NYLO Started", f"NYLO Elite v{AGENT_VERSION} started. Monitoring QQQ. Bias sets at 9:35 AM.")
+        send_push("NYLO Started", f"NYLO Elite v{AGENT_VERSION} started.\nWatching: {', '.join(TICKERS)}\nBias sets at 9:35 AM ET")
     except Exception:
         pass
     for day in ["monday", "tuesday", "wednesday", "thursday", "friday"]:
+        getattr(schedule.every(), day).at("08:30").do(send_morning_brief)
         getattr(schedule.every(), day).at("09:00").do(pre_market_scan)
         getattr(schedule.every(), day).at("09:25").do(reset_daily)
         getattr(schedule.every(), day).at("09:25").do(market_open_guard)
