@@ -1083,6 +1083,38 @@ function switchTab(tab, btn) {
   document.getElementById('panel-register').style.display = tab === 'register' ? 'block' : 'none';
 }
 
+// ── Supabase ──────────────────────────────────────────────────────────────────
+const SUPA_URL = 'https://hwczpidgbtycddiakhnx.supabase.co';
+const SUPA_KEY = 'sb_publishable_2UtHOs8J8I9QUyNm1NBABA_JfAza7CE';
+const HEADERS  = { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
+const HEADERS_POST = { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
+
+async function sbGet(table, filter='') {
+  const q   = filter ? `${filter}&order=created_at.asc` : 'order=created_at.asc';
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}?${q}`, { headers: HEADERS });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `API error ${res.status}`);
+  }
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+}
+async function sbInsert(table, data) {
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}`, { method:'POST', headers:{...HEADERS_POST,'Prefer':'return=representation'}, body: JSON.stringify(data) });
+  return res.json();
+}
+async function sbDelete(table, filter) {
+  await fetch(`${SUPA_URL}/rest/v1/${table}?${filter}`, { method:'DELETE', headers: HEADERS });
+}
+
+async function getMembers()  { try { const d = await sbGet('members');  return Array.isArray(d) ? d : []; } catch(e) { return []; } }
+async function getRequests() { try { const d = await sbGet('requests'); return Array.isArray(d) ? d : []; } catch(e) { return []; } }
+async function getComments() { try { const d = await sbGet('comments','order=created_at.desc'); return Array.isArray(d) ? d : []; } catch(e) { return []; } }
+
+async function saveMembers(m)  { /* handled by sbInsert individually */ }
+async function saveRequests(r) { /* handled by sbInsert individually */ }
+async function saveComments(c) { /* handled by sbInsert individually */ }
+
 async function doLogin() {
   const email    = document.getElementById('login-username').value.trim().toLowerCase();
   const password = document.getElementById('login-password').value;
@@ -2305,38 +2337,6 @@ function replayPlay() {
 // Hook replay into table rows
 // renderTable click handlers moved inline
 
-// ── Supabase ──────────────────────────────────────────────────────────────────
-const SUPA_URL = 'https://hwczpidgbtycddiakhnx.supabase.co';
-const SUPA_KEY = 'sb_publishable_2UtHOs8J8I9QUyNm1NBABA_JfAza7CE';
-const HEADERS  = { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
-const HEADERS_POST = { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
-
-async function sbGet(table, filter='') {
-  const q   = filter ? `${filter}&order=created_at.asc` : 'order=created_at.asc';
-  const res = await fetch(`${SUPA_URL}/rest/v1/${table}?${q}`, { headers: HEADERS });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `API error ${res.status}`);
-  }
-  const data = await res.json();
-  return Array.isArray(data) ? data : [];
-}
-async function sbInsert(table, data) {
-  const res = await fetch(`${SUPA_URL}/rest/v1/${table}`, { method:'POST', headers:{...HEADERS_POST,'Prefer':'return=representation'}, body: JSON.stringify(data) });
-  return res.json();
-}
-async function sbDelete(table, filter) {
-  await fetch(`${SUPA_URL}/rest/v1/${table}?${filter}`, { method:'DELETE', headers: HEADERS });
-}
-
-async function getMembers()  { try { const d = await sbGet('members');  return Array.isArray(d) ? d : []; } catch(e) { return []; } }
-async function getRequests() { try { const d = await sbGet('requests'); return Array.isArray(d) ? d : []; } catch(e) { return []; } }
-async function getComments() { try { const d = await sbGet('comments','order=created_at.desc'); return Array.isArray(d) ? d : []; } catch(e) { return []; } }
-
-async function saveMembers(m)  { /* handled by sbInsert individually */ }
-async function saveRequests(r) { /* handled by sbInsert individually */ }
-async function saveComments(c) { /* handled by sbInsert individually */ }
-
 // ── Leaderboard & Friends (Supabase powered) ──────────────────────────────────
 const ADMIN_PASS = 'nylo2024';
 let adminUnlocked = false;
@@ -2473,7 +2473,7 @@ async function syncSubscribersToAgent(members) {
 renderLeaderboard();
 renderAdminComments();
 
-}</script>
+</script>
 
 <!-- Toast container -->
 <div id="toast-container"></div>
