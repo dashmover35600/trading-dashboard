@@ -2307,8 +2307,9 @@ function replayPlay() {
 
 // ── Supabase ──────────────────────────────────────────────────────────────────
 const SUPA_URL = 'https://hwczpidgbtycddiakhnx.supabase.co';
-const SUPA_KEY = 'sb_publishable_2UtHOs8J8I9QUyNm1NBABA_JfAza7CE';
-const HEADERS  = { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3Y3pwaWRnYnR5Y2RkaWFraG54Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcwODU0NzMsImV4cCI6MjA2MjY2MTQ3M30.hCO04DUgHkFPFKBxPIGMFOiZLRKvGFOdMBrAlUUDKKU';
+const HEADERS  = { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
+const HEADERS_POST = { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
 
 async function sbGet(table, filter='') {
   const q   = filter ? `${filter}&order=created_at.asc` : 'order=created_at.asc';
@@ -2321,7 +2322,7 @@ async function sbGet(table, filter='') {
   return Array.isArray(data) ? data : [];
 }
 async function sbInsert(table, data) {
-  const res = await fetch(`${SUPA_URL}/rest/v1/${table}`, { method:'POST', headers:{...HEADERS,'Prefer':'return=representation'}, body: JSON.stringify(data) });
+  const res = await fetch(`${SUPA_URL}/rest/v1/${table}`, { method:'POST', headers:{...HEADERS_POST,'Prefer':'return=representation'}, body: JSON.stringify(data) });
   return res.json();
 }
 async function sbDelete(table, filter) {
