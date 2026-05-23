@@ -2256,7 +2256,7 @@ setInterval(() => fetchMemeCoin(activeCoin), 30000);
 // ── Market mood ───────────────────────────────────────────────────────────────
 async function fetchMarketMood() {
   try {
-    const url  = `https://api.allorigins.win/get?url=${encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/SPY?interval=1d&range=2d')}`;
+    const url  = `https://api.allorigins.win/get?url=${encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/AAPL?interval=1d&range=2d')}`;
     const res  = await fetch(url);
     const wrap = await res.json();
     const data = JSON.parse(wrap.contents);
