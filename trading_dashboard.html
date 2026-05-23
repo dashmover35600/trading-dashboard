@@ -717,6 +717,7 @@ function _oldCheckDisclaimer() {
       <span class="notif-dot" id="notif-dot"></span>
     </button>
     <button class="dark-toggle" onclick="toggleDark()" id="dark-btn" title="Toggle dark mode">◑</button>
+      <button onclick="logout()" style="background:rgba(220,38,38,.2);border:1px solid rgba(220,38,38,.4);border-radius:20px;padding:4px 12px;font-family:var(--mono);font-size:.65rem;color:#fff;cursor:pointer;">Sign out</button>
       <button onclick="showSection('stocks')" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;font-family:var(--mono);font-size:.65rem;color:#fff;" id="stocks-nav-btn">Stocks</button>
     <div class="pill"><div class="dot"></div>Live</div>
   </div>
@@ -770,7 +771,7 @@ function _oldCheckDisclaimer() {
         <div id="mood-icon" style="font-size:2.2rem;">⏳</div>
         <div>
           <div id="mood-label" style="font-family:var(--mono);font-size:0.85rem;font-weight:500;color:var(--text);">Loading...</div>
-          <div id="mood-spy" style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:2px;">AAPL: —</div>
+          <div id="mood-spy" style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:2px;">SPY: —</div>
         </div>
       </div>
     </div>
@@ -2256,7 +2257,7 @@ setInterval(() => fetchMemeCoin(activeCoin), 30000);
 // ── Market mood ───────────────────────────────────────────────────────────────
 async function fetchMarketMood() {
   try {
-    const url  = `https://api.allorigins.win/get?url=${encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/AAPL?interval=1d&range=2d')}`;
+    const url  = `https://api.allorigins.win/get?url=${encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/SPY?interval=1d&range=2d')}`;
     const res  = await fetch(url);
     const wrap = await res.json();
     const data = JSON.parse(wrap.contents);
@@ -3169,6 +3170,15 @@ function stopLivePnl() {
   if (livePnlInterval) { clearInterval(livePnlInterval); livePnlInterval = null; }
   const el = document.getElementById('live-pnl-display');
   if (el) { el.textContent = ''; }
+}
+
+
+// ── Logout ────────────────────────────────────────────────────────────────────
+function logout() {
+  localStorage.removeItem('nylo-user');
+  localStorage.removeItem('nylo-disclaimer-accepted');
+  sessionStorage.clear();
+  location.reload();
 }
 
 </script>
