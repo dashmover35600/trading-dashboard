@@ -390,7 +390,7 @@ async function loadResults(){
       `Vol ${data.config.baseline.vol_mult}x · $${data.config.position_size}/trade · `+
       `${data.config.lookback_days} days`;
 
-    renderResults(data.baseline.trades, data.baseline.stats);
+    renderResults(data.baseline.trades, data.baseline.stats, data);
     renderSweep(data.sweep);
     setProgress(100,'Done!');
     setTimeout(()=>document.getElementById('progress-wrap').style.display='none', 600);
@@ -480,7 +480,7 @@ function buildCharts(trades){
 // ═══════════════════════════════════════════════
 let allLogTrades=[];
 
-function renderResults(trades, stats){
+function renderResults(trades, stats, data){
   allLogTrades = trades;
 
   const pnlEl = document.getElementById('r-pnl');
@@ -507,7 +507,7 @@ function renderResults(trades, stats){
   const expEl = document.getElementById('r-exp');
   if(expEl){ expEl.textContent='$'+(stats.expectancy||0).toFixed(2); expEl.className='kpi-val '+(stats.expectancy>=0?'g':'r'); }
   const oosEl = document.getElementById('r-oos');
-  if(oosEl && data.out_of_sample){
+  if(oosEl && data && data.out_of_sample){
     const oos=data.out_of_sample;
     oosEl.textContent=oos.consistent?'✅ Consistent':'⚠️ Diverged';
     oosEl.className='kpi-val '+(oos.consistent?'g':'r');
