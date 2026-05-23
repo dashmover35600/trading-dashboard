@@ -1807,30 +1807,7 @@ function exportPDF() {
 
 
 
-<!-- ── Disclaimer Modal ── -->
-<div id="disclaimer-overlay" style="display:none;opacity:1;">
-  <div id="disclaimer-modal">
-    <div class="disclaimer-logo">NYLO</div>
-    <div class="disclaimer-badge">⚠ IMPORTANT DISCLAIMER</div>
-    <div class="disclaimer-title">Before you continue, please read and acknowledge the following</div>
-    <div class="disclaimer-body">
-      NYLO is a <strong>paper trading signal dashboard</strong> created for educational and entertainment purposes only.
-    </div>
-    <ul class="disclaimer-points">
-      <li>This platform does <strong>not</strong> provide financial, investment, or trading advice of any kind.</li>
-      <li>All signals are <strong>simulated</strong> and based on algorithmic strategies. Past performance does not guarantee future results.</li>
-      <li>You may <strong>lose money</strong> if you choose to replicate any signals with real funds. NYLO accepts zero responsibility for any financial losses.</li>
-      <li>This is <strong>purely for fun</strong> and educational exploration of trading strategies.</li>
-      <li>Always consult a <strong>licensed financial advisor</strong> before making any real investment decisions.</li>
-    </ul>
-    <label class="disclaimer-check">
-      <input type="checkbox" id="disclaimer-checkbox" onchange="toggleDisclaimerBtn()">
-      <span>I understand that NYLO is for entertainment purposes only, does not guarantee any profits, and I accept full responsibility for any actions I take with real money. I will not hold NYLO or Giovanni Flores liable for any losses.</span>
-    </label>
-    <button class="disclaimer-btn" id="disclaimer-btn" onclick="acceptDisclaimer()">I Acknowledge & Continue →</button>
-    <div class="disclaimer-footer">This agreement is stored locally and will not be shown again on this device.</div>
-  </div>
-</div>
+
 
 
 <!-- ── STOCK PANEL (slides in from right) ── -->
@@ -1857,6 +1834,30 @@ function exportPDF() {
   </div>
 </div>
 
+<!-- ── Disclaimer Modal ── -->
+<div id="disclaimer-overlay" style="display:none;opacity:1;">
+  <div id="disclaimer-modal">
+    <div class="disclaimer-logo">NYLO</div>
+    <div class="disclaimer-badge">⚠ IMPORTANT DISCLAIMER</div>
+    <div class="disclaimer-title">Before you continue, please read and acknowledge the following</div>
+    <div class="disclaimer-body">
+      NYLO is a <strong>paper trading signal dashboard</strong> created for educational and entertainment purposes only.
+    </div>
+    <ul class="disclaimer-points">
+      <li>This platform does <strong>not</strong> provide financial, investment, or trading advice of any kind.</li>
+      <li>All signals are <strong>simulated</strong> and based on algorithmic strategies. Past performance does not guarantee future results.</li>
+      <li>You may <strong>lose money</strong> if you choose to replicate any signals with real funds. NYLO accepts zero responsibility for any financial losses.</li>
+      <li>This is <strong>purely for fun</strong> and educational exploration of trading strategies.</li>
+      <li>Always consult a <strong>licensed financial advisor</strong> before making any real investment decisions.</li>
+    </ul>
+    <label class="disclaimer-check">
+      <input type="checkbox" id="disclaimer-checkbox" onchange="toggleDisclaimerBtn()">
+      <span>I understand that NYLO is for entertainment purposes only, does not guarantee any profits, and I accept full responsibility for any actions I take with real money. I will not hold NYLO or Giovanni Flores liable for any losses.</span>
+    </label>
+    <button class="disclaimer-btn" id="disclaimer-btn" onclick="acceptDisclaimer()">I Acknowledge & Continue →</button>
+    <div class="disclaimer-footer">This agreement is stored locally and will not be shown again on this device.</div>
+  </div>
+</div>
 </body></html>`);
   w.document.close();
 }
