@@ -730,7 +730,7 @@ function _oldCheckDisclaimer() {
 <!-- Confetti canvas -->
 <canvas id="confetti-canvas"></canvas>
 
-<div class="wrap">
+<div class="wrap" id="wrap">
 
   <!-- NYLO intro + slogan at very top -->
   <div style="margin-bottom:2rem;">
@@ -998,6 +998,21 @@ function _oldCheckDisclaimer() {
   </div>
   <div id="news-ts" style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-align:right;margin-bottom:2.5rem;"></div>
 
+</div>
+
+<!-- Stocks hub section -->
+<div id="stocks-section">
+  <div id="stock-hub-grid" class="stock-hub-grid"></div>
+</div>
+
+<!-- Stock detail panel -->
+<div id="stock-panel">
+  <div class="sp-nav">
+    <button onclick="closeStockPanel()" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 14px;font-family:var(--mono);font-size:.7rem;color:#fff;cursor:pointer;">← Back</button>
+    <span id="sp-title" style="font-family:var(--mono);font-size:.85rem;font-weight:500;color:#fff;"></span>
+    <span id="sp-price" style="font-family:var(--mono);font-size:.72rem;color:rgba(255,255,255,.8);margin-left:auto;"></span>
+  </div>
+  <div id="sp-content" style="padding:1.5rem 1.5rem 4rem;"></div>
 </div>
 
 <footer>Created by Giovanni Flores</footer>
@@ -2806,7 +2821,7 @@ const STOCK_CONFIGS = {
 };
 
 // ── SECTION SWITCHING ──────────────────────────────────────────────────────
-const mainSections = ['upload-zone','stat-row','charts-section','trade-log-section','news-section'];
+const mainSections = ['wrap'];
 
 function showSection(name) {
   // Hide stocks section first
@@ -2887,7 +2902,8 @@ async function fetchStockPrice(ticker) {
       chgEl.style.color = chg>=0?'var(--green)':'var(--red)';
     }
     // Update panel price if open
-    if(document.getElementById('stock-panel').classList.contains('open')){
+    const panel = document.getElementById('stock-panel');
+    if(panel && panel.classList.contains('open')){
       const pp = document.getElementById('sp-price');
       if(pp) pp.textContent = '$'+price.toFixed(2)+' '+(chg>=0?'+':'')+chg.toFixed(2)+'%';
     }
