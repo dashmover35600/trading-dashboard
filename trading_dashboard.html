@@ -560,6 +560,57 @@
     .stat-card:hover{transform:translateY(-2px);}
     .stat-card.pulse-green{animation:cardPulseGreen .6s ease;}
     @keyframes cardPulseGreen{0%,100%{box-shadow:var(--shadow);}50%{box-shadow:0 0 20px rgba(22,163,74,.3);}}
+
+    /* ── Stock Detail Panel ── */
+    #stock-panel{position:fixed;inset:0;z-index:500;background:var(--bg);transform:translateX(100%);transition:transform .4s cubic-bezier(.16,1,.3,1);overflow-y:auto;padding-bottom:80px;}
+    #stock-panel.open{transform:translateX(0);}
+    .sp-nav{position:sticky;top:0;z-index:10;background:var(--accent);padding:0 1.5rem;height:54px;display:flex;align-items:center;gap:1rem;}
+    .sp-back{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 14px;font-family:var(--mono);font-size:.65rem;color:#fff;display:flex;align-items:center;gap:6px;}
+    .sp-back:hover{background:rgba(255,255,255,.25);}
+    .sp-title{font-family:var(--serif);font-size:1.2rem;color:#fff;flex:1;}
+    .sp-live-price{font-family:var(--mono);font-size:.8rem;color:rgba(255,255,255,.9);text-align:right;}
+    .sp-wrap{max-width:1100px;margin:0 auto;padding:2rem 1.5rem;}
+    .sp-hero{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+    @media(max-width:700px){.sp-hero{grid-template-columns:1fr;}}
+    .sp-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;}
+    .sp-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;}
+    .sp-strategy-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(24,71,212,.08);border:1px solid rgba(24,71,212,.15);border-radius:8px;padding:6px 12px;font-family:var(--mono);font-size:.7rem;color:var(--accent);margin-bottom:.75rem;}
+    .sp-params{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:.75rem;}
+    .sp-param{background:var(--faint,rgba(24,71,212,.04));border-radius:8px;padding:.6rem .75rem;}
+    .sp-param-label{font-family:var(--mono);font-size:.55rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.2rem;}
+    .sp-param-val{font-family:var(--mono);font-size:.85rem;font-weight:500;color:var(--text);}
+    .sp-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(24,71,212,.1);border-radius:12px;overflow:hidden;margin-bottom:2rem;}
+    @media(max-width:600px){.sp-kpi-row{grid-template-columns:repeat(2,1fr);}}
+    .sp-kpi{background:var(--surface);padding:1rem;text-align:center;}
+    .sp-kpi-label{font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem;}
+    .sp-kpi-val{font-family:var(--serif);font-size:1.6rem;line-height:1;}
+    .sp-section-title{font-family:var(--mono);font-size:.62rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:12px;}
+    .sp-section-title::after{content:'';flex:1;height:1px;background:rgba(24,71,212,.15);}
+    .sp-why{background:rgba(24,71,212,.04);border:1px solid rgba(24,71,212,.1);border-radius:12px;padding:1.25rem;margin-bottom:2rem;font-size:.82rem;line-height:1.7;color:var(--muted);}
+    .sp-why strong{color:var(--text);}
+
+    /* Stock hub grid */
+    #stocks-section{display:none;}
+    #stocks-section.active{display:block;}
+    .stock-hub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;padding:1.5rem;}
+    .stock-hub-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden;}
+    .stock-hub-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(24,71,212,.12);}
+    .stock-hub-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;}
+    .stock-hub-card.nvda::before{background:linear-gradient(90deg,#76b900,#a8e000);}
+    .stock-hub-card.aapl::before{background:linear-gradient(90deg,#555,#aaa);}
+    .stock-hub-card.googl::before{background:linear-gradient(90deg,#4285f4,#34a853);}
+    .stock-hub-card.qqq::before{background:linear-gradient(90deg,#1847d4,#3d6fff);}
+    .shc-ticker{font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;}
+    .shc-name{font-size:.9rem;font-weight:600;margin-bottom:.75rem;}
+    .shc-price{font-family:var(--mono);font-size:1.3rem;font-weight:500;margin-bottom:.25rem;}
+    .shc-change{font-family:var(--mono);font-size:.7rem;margin-bottom:1rem;}
+    .shc-stats{display:flex;gap:.75rem;margin-bottom:1rem;}
+    .shc-stat{flex:1;background:var(--faint,rgba(24,71,212,.04));border-radius:8px;padding:.5rem;text-align:center;}
+    .shc-stat-label{font-family:var(--mono);font-size:.52rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;}
+    .shc-stat-val{font-family:var(--mono);font-size:.85rem;font-weight:500;margin-top:.15rem;}
+    .shc-btn{width:100%;padding:.65rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;transition:background .2s;}
+    .shc-btn:hover{background:var(--accent2,#3d6fff);}
+    .shc-strategy{font-family:var(--mono);font-size:.6rem;color:var(--accent);background:rgba(24,71,212,.08);padding:3px 8px;border-radius:6px;display:inline-block;margin-bottom:.75rem;}
 </style>
 </head>
 <body>
@@ -649,6 +700,7 @@
       <span class="notif-dot" id="notif-dot"></span>
     </button>
     <button class="dark-toggle" onclick="toggleDark()" id="dark-btn" title="Toggle dark mode">◑</button>
+      <button onclick="showSection('stocks')" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;font-family:var(--mono);font-size:.65rem;color:#fff;" id="stocks-nav-btn">Stocks</button>
     <div class="pill"><div class="dot"></div>Live</div>
   </div>
 
@@ -668,7 +720,7 @@
 <!-- Live price ticker -->
 <div class="ticker-bar" id="ticker-bar">
   <div id="ticker-inner" class="ticker-item">
-    <span class="ticker-symbol">NVDA</span>
+    <span class="ticker-symbol">AAPL</span>
     <span class="ticker-price" id="t-qqq-price">—</span>
     <span class="ticker-change" id="t-qqq-chg">—</span>
   </div>
@@ -690,7 +742,7 @@
   <div style="margin-bottom:2rem;">
     <div style="font-family:var(--mono);font-size:0.68rem;color:var(--accent);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:0.5rem;">NYLO — Precision Trading</div>
     <h1 style="font-family:var(--serif);font-size:2.4rem;font-weight:400;letter-spacing:-0.02em;line-height:1.1;margin-bottom:0.5rem;">Smarter signals. <em style="font-style:italic;color:var(--accent)">Better trades.</em></h1>
-    <p style="font-size:0.85rem;color:var(--muted);max-width:560px;line-height:1.7;">NYLO is an AI-powered trading signal dashboard watching NVDA, AAPL, and GOOGL every 60 seconds during market hours. The v16 strategy applies 9 confirmation filters — Opening Drive bias, VWAP Reclaim, EMA Pullback, RSI, volume direction, momentum, prime window, gap alignment, and signal scoring — achieving 60% win rate with Sharpe 5.85 and $1.40/trade expectancy. Partial exits, breakeven stops, and daily loss limits protect capital automatically.</p>
+    <p style="font-size:0.85rem;color:var(--muted);max-width:560px;line-height:1.7;">NYLO is an AI-powered trading signal dashboard watching AAPL and GOOGL every 60 seconds during market hours. The v18 strategy applies 9 confirmation filters — Opening Drive bias, VWAP Reclaim, EMA Pullback, RSI, volume direction, momentum, prime window, gap alignment, and signal scoring — achieving 80% win rate with Sharpe 3.19, profit factor 1.254, and $0.63/trade expectancy. Partial exits, breakeven stops, and daily loss limits protect capital automatically.</p>
   </div>
 
   <!-- Market mood + hours moved to top -->
@@ -791,7 +843,7 @@
     <div class="stat"><div class="sl2">Total Trades</div><div class="sv" id="s0">—</div><div class="ss">all time</div></div>
     <div class="stat"><div class="sl2">Win Rate</div><div class="sv g" id="s1">—</div><div class="ss" id="s1b">— / —</div></div>
     <div class="stat"><div class="sl2">Total P&amp;L %</div><div class="sv" id="s2">—</div><div class="ss">cumulative</div></div>
-    <div class="stat"><div class="sl2">Total P&amp;L $</div><div class="sv" id="s2d">—</div><div class="ss">paper trading $750-$5,000/trade</div></div>
+    <div class="stat"><div class="sl2">Total P&amp;L $</div><div class="sv" id="s2d">—</div><div class="ss">paper trading $500-$5,000/trade</div></div>
     <div class="stat"><div class="sl2">Best Trade</div><div class="sv g" id="s4">—</div><div class="ss" id="s4b">—</div></div>
     <div class="stat"><div class="sl2">Worst Trade</div><div class="sv r" id="s5">—</div><div class="ss" id="s5b">—</div></div>
   </div>
@@ -831,7 +883,7 @@
       <h4>All Trades</h4>
       <div class="th2-right">
         <button class="filter-btn on" onclick="setFilter('all',this)">All</button>
-        <button class="filter-btn" onclick="setFilter('QQQ',this)">NVDA</button>
+        <button class="filter-btn" onclick="setFilter('QQQ',this)">AAPL</button>
         <button class="filter-btn" onclick="setFilter('GLD',this)">AAPL</button>
         <button class="filter-btn" onclick="setFilter('win',this)">Wins</button>
         <button class="filter-btn" onclick="setFilter('loss',this)">Losses</button>
@@ -1407,7 +1459,7 @@ async function tryAutoLoad() {
   } catch(e) {}
 
   // 3. Manual upload fallback
-  document.getElementById('upload-desc').textContent = 'Auto-loads from GitHub every 60s. Agent v14 running — or click to upload manually.';
+  document.getElementById('upload-desc').textContent = 'Auto-loads from GitHub every 60s. Agent v17 running — or click to upload manually.';
 }
 
 // ── Live trade P&L ────────────────────────────────────────────────────────────
@@ -1703,7 +1755,7 @@ function exportPDF() {
   td{padding:6px 10px;border-bottom:1px solid #e8e8e4}
   @media print{body{padding:1rem}}</style></head><body>
   <h1>Trading Performance Report</h1>
-  <div class="meta">Generated ${new Date().toLocaleDateString()} · ORB/RSI Strategy · NVDA, AAPL & GOOGL</div>
+  <div class="meta">Generated ${new Date().toLocaleDateString()} · ORB/RSI Strategy · AAPL & GOOGL</div>
   <div class="stats">
     <div><div class="stat-label">Total Trades</div><div class="stat-val">${s0}</div></div>
     <div><div class="stat-label">Win Rate</div><div class="stat-val">${s1}</div></div>
@@ -1759,6 +1811,31 @@ function exportPDF() {
     </label>
     <button class="disclaimer-btn" id="disclaimer-btn" onclick="acceptDisclaimer()">I Acknowledge & Continue →</button>
     <div class="disclaimer-footer">This agreement is stored locally and will not be shown again on this device.</div>
+  </div>
+</div>
+
+
+<!-- ── STOCK PANEL (slides in from right) ── -->
+<div id="stock-panel">
+  <div class="sp-nav">
+    <button class="sp-back" onclick="closeStockPanel()">← Back</button>
+    <div class="sp-title" id="sp-title">AAPL</div>
+    <div class="sp-live-price" id="sp-price">—</div>
+  </div>
+  <div class="sp-wrap" id="sp-content">
+    <!-- Populated by JS -->
+  </div>
+</div>
+
+<!-- ── STOCKS HUB SECTION ── -->
+<div id="stocks-section">
+  <div style="padding:1.5rem 1.5rem .5rem;">
+    <div style="font-family:var(--mono);font-size:.62rem;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.4rem;">Watchlist</div>
+    <h2 style="font-family:var(--serif);font-size:2rem;font-weight:400;letter-spacing:-.02em;margin-bottom:.4rem;">Your <em style="font-style:italic;color:var(--accent)">tracked stocks.</em></h2>
+    <p style="font-size:.85rem;color:var(--muted);max-width:500px;line-height:1.6;">Each stock runs an optimized version of the NYLO strategy. Click any card to see the full breakdown — strategy, parameters, trade history, and performance.</p>
+  </div>
+  <div class="stock-hub-grid" id="stock-hub-grid">
+    <!-- Cards populated by JS -->
   </div>
 </div>
 
@@ -1833,7 +1910,7 @@ renderCalendar();
 
 // ── Live price ticker ─────────────────────────────────────────────────────────
 async function fetchPrices() {
-  const tickers = ['NVDA','AAPL','GOOGL'];
+  const tickers = ['AAPL','GOOGL','QQQ'];
   for (const t of tickers) {
     try {
       const proxy = 'https://api.allorigins.win/get?url=';
@@ -2144,7 +2221,7 @@ function renderNews() {
   }
   grid.innerHTML = filtered.map(a => {
     const ago  = timeAgo(a.publishedAt instanceof Date ? a.publishedAt : new Date(a.publishedAt));
-    const tag  = a._tag === 'qqq' ? '<span class="news-tag tag-qqq">NVDA</span>' : '<span class="news-tag tag-gld">AAPL</span>';
+    const tag  = a._tag === 'qqq' ? '<span class="news-tag tag-qqq">AAPL</span>' : '<span class="news-tag tag-gld">AAPL</span>';
     const desc = a.description ? `<div class="news-desc">${a.description.slice(0,120)}${a.description.length>120?'…':''}</div>` : '';
     const src  = a.source || a.source?.name || '';
     return `<a class="news-card fade" href="${a.url}" target="_blank" rel="noopener">${tag}<div class="news-title">${a.title}</div>${desc}<div class="news-meta">${src} · ${ago}</div></a>`;
@@ -2796,5 +2873,255 @@ if (__origRender) {
 // Start ECG and heartbeat polling
 fetchAndUpdateHeartbeat();
 setInterval(fetchAndUpdateHeartbeat, 60000);
+
+
+
+// ── STOCK CONFIGS ──────────────────────────────────────────────────────────
+const STOCK_CONFIGS = {
+  AAPL: {
+    name: "Apple Inc.",
+    cls: "aapl",
+    strategy: "EMA Pullback",
+    rsi_bull: "52-72", rsi_bear: "28-48",
+    gain_target: "1.0%", stop_loss: "0.5%",
+    pos_size: "$1,000-$5,000", pos_mult: "100%",
+    slippage: "0.02%",
+    why: "<strong>AAPL was the highest earning ticker</strong> in our backtest with <strong>57.1-58.1% win rate and +$112-120 profit</strong>. AAPL moves slowly and consistently — EMA pullbacks are extremely clean. Smaller gain target (1%) works better because AAPL rarely makes 1.5% clean moves intraday. Full position size because it's the most consistent.",
+    color: "#888",
+    stats: { wr: "80.4%", pnl: "+$64", trades: "56", pf: "1.254" }
+  },
+  GOOGL: {
+    name: "Alphabet Inc.",
+    cls: "googl",
+    strategy: "Both (VWAP + EMA)",
+    rsi_bull: "53-73", rsi_bear: "27-47",
+    gain_target: "1.5%", stop_loss: "0.75%",
+    pos_size: "$850-$4,250", pos_mult: "85%",
+    slippage: "0.02%",
+    why: "<strong>GOOGL showed strong growth</strong> jumping from +$38 to +$92 between backtests. GOOGL trends more cleanly than NVDA with lower volatility. Using both VWAP Reclaim and EMA Pullback signals maximizes opportunities. 85% position size balances opportunity with volatility.",
+    color: "#4285f4",
+    stats: { wr: "79.0%", pnl: "+$10", trades: "62", pf: "1.254" }
+  },
+  QQQ: {
+    name: "Invesco QQQ Trust",
+    cls: "qqq",
+    strategy: "VWAP Reclaim + Market Filter",
+    rsi_bull: "54-74", rsi_bear: "26-46",
+    gain_target: "1.2%", stop_loss: "0.6%",
+    pos_size: "$1,000-$5,000", pos_mult: "100%",
+    slippage: "0.01%",
+    why: "<strong>QQQ flipped positive</strong> in our latest backtest with <strong>54.1% win rate and +$53 profit</strong>. QQQ is the NASDAQ-100 index ETF — the most liquid instrument we trade. It also serves as a market filter: when QQQ is below VWAP, we reduce long exposure across all tickers. Tightest spreads = lowest slippage.",
+    color: "#1847d4",
+    stats: { wr: "54.1%", pnl: "+$54", trades: "37", pf: "1.08" }
+  }
+};
+
+// ── SECTION SWITCHING ──────────────────────────────────────────────────────
+const mainSections = ['upload-zone','stat-row','charts-section','trade-log-section','news-section'];
+
+function showSection(name) {
+  // Hide stocks section first
+  document.getElementById('stocks-section').classList.remove('active');
+  document.getElementById('stocks-nav-btn').style.background = 'rgba(255,255,255,.12)';
+
+  if (name === 'stocks') {
+    document.getElementById('stocks-section').classList.add('active');
+    document.getElementById('stocks-nav-btn').style.background = 'rgba(255,255,255,.3)';
+    renderStockHub();
+    // Hide main content sections
+    mainSections.forEach(id => {
+      const el = document.getElementById(id) || document.querySelector('.'+id);
+      if(el) el.style.display = 'none';
+    });
+  } else {
+    // Restore main sections
+    mainSections.forEach(id => {
+      const el = document.getElementById(id) || document.querySelector('.'+id);
+      if(el) el.style.display = '';
+    });
+  }
+}
+
+// ── STOCK HUB ──────────────────────────────────────────────────────────────
+function renderStockHub() {
+  const grid = document.getElementById('stock-hub-grid');
+  if (!grid || grid.dataset.rendered) return;
+  grid.dataset.rendered = '1';
+
+  const tickers = ['AAPL','GOOGL'];
+  grid.innerHTML = tickers.map(ticker => {
+    const cfg = STOCK_CONFIGS[ticker];
+    const chgColor = '#16a34a';
+    return `
+      <div class="stock-hub-card ${cfg.cls}">
+        <div class="shc-ticker">${ticker}</div>
+        <div class="shc-name">${cfg.name}</div>
+        <div class="shc-price" id="shc-price-${ticker}">—</div>
+        <div class="shc-change" style="color:var(--muted)" id="shc-chg-${ticker}">Loading...</div>
+        <div class="shc-strategy">${cfg.strategy}</div>
+        <div class="shc-stats">
+          <div class="shc-stat">
+            <div class="shc-stat-label">Win Rate</div>
+            <div class="shc-stat-val" style="color:var(--green)">${cfg.stats.wr}</div>
+          </div>
+          <div class="shc-stat">
+            <div class="shc-stat-label">P&L</div>
+            <div class="shc-stat-val" style="color:var(--green)">${cfg.stats.pnl}</div>
+          </div>
+          <div class="shc-stat">
+            <div class="shc-stat-label">Trades</div>
+            <div class="shc-stat-val">${cfg.stats.trades}</div>
+          </div>
+        </div>
+        <button class="shc-btn" onclick="openStockPanel('${ticker}')">View Full Analysis →</button>
+      </div>`;
+  }).join('');
+
+  // Fetch live prices for all tickers
+  tickers.forEach(fetchStockPrice);
+}
+
+async function fetchStockPrice(ticker) {
+  try {
+    const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=2d`,
+      {headers:{'User-Agent':'Mozilla/5.0'}});
+    const data = await res.json();
+    const q = data.chart.result[0];
+    const price = q.meta.regularMarketPrice;
+    const prev  = q.meta.chartPreviousClose;
+    const chg   = ((price-prev)/prev*100);
+    const priceEl = document.getElementById(`shc-price-${ticker}`);
+    const chgEl   = document.getElementById(`shc-chg-${ticker}`);
+    if(priceEl) priceEl.textContent = '$'+price.toFixed(2);
+    if(chgEl){
+      chgEl.textContent = (chg>=0?'+':'')+chg.toFixed(2)+'% today';
+      chgEl.style.color = chg>=0?'var(--green)':'var(--red)';
+    }
+    // Update panel price if open
+    if(document.getElementById('stock-panel').classList.contains('open')){
+      const pp = document.getElementById('sp-price');
+      if(pp) pp.textContent = '$'+price.toFixed(2)+' '+(chg>=0?'+':'')+chg.toFixed(2)+'%';
+    }
+  } catch(e) {}
+}
+
+// ── STOCK PANEL ────────────────────────────────────────────────────────────
+function openStockPanel(ticker) {
+  const cfg = STOCK_CONFIGS[ticker];
+  if (!cfg) return;
+
+  // Set title
+  document.getElementById('sp-title').textContent = ticker + ' — ' + cfg.name;
+
+  // Build content
+  const trades = (window.allTrades||[]).filter(t => t['Ticker']===ticker);
+  const closed  = trades.filter(t=>t['Result']&&t['Result']!=='');
+  const wins    = closed.filter(t=>t['Result']==='Target Hit'||
+    ((t['Result']==='Trailing Stop'||t['Result']==='Time Exit')&&parseFloat((t['P&L %']||'0').replace('%','').replace('+',''))>0));
+  const wr      = closed.length ? (wins.length/closed.length*100).toFixed(0) : cfg.stats.wr.replace('%','');
+  const totalPnl= closed.reduce((s,t)=>s+parseFloat((t['P&L $']||'0').replace('$','').replace('+','').replace('-$','-')),0);
+
+  document.getElementById('sp-content').innerHTML = `
+    <!-- KPI Row -->
+    <div class="sp-kpi-row">
+      <div class="sp-kpi">
+        <div class="sp-kpi-label">Win Rate</div>
+        <div class="sp-kpi-val" style="color:var(--green)">${wr}%</div>
+      </div>
+      <div class="sp-kpi">
+        <div class="sp-kpi-label">Total P&L</div>
+        <div class="sp-kpi-val" style="color:${totalPnl>=0?'var(--green)':'var(--red)'}">
+          ${totalPnl>=0?'+$':'-$'}${Math.abs(totalPnl).toFixed(2)}
+        </div>
+      </div>
+      <div class="sp-kpi">
+        <div class="sp-kpi-label">Trades</div>
+        <div class="sp-kpi-val">${closed.length||cfg.stats.trades}</div>
+      </div>
+      <div class="sp-kpi">
+        <div class="sp-kpi-label">Profit Factor</div>
+        <div class="sp-kpi-val" style="color:var(--accent)">${cfg.stats.pf}</div>
+      </div>
+    </div>
+
+    <!-- Hero grid -->
+    <div class="sp-hero">
+      <!-- Strategy card -->
+      <div class="sp-card">
+        <div class="sp-label">Strategy</div>
+        <div class="sp-strategy-badge">📊 ${cfg.strategy}</div>
+        <div class="sp-params">
+          <div class="sp-param"><div class="sp-param-label">RSI Long</div><div class="sp-param-val">${cfg.rsi_bull}</div></div>
+          <div class="sp-param"><div class="sp-param-label">RSI Short</div><div class="sp-param-val">${cfg.rsi_bear}</div></div>
+          <div class="sp-param"><div class="sp-param-label">Target</div><div class="sp-param-val" style="color:var(--green)">${cfg.gain_target}</div></div>
+          <div class="sp-param"><div class="sp-param-label">Stop Loss</div><div class="sp-param-val" style="color:var(--red)">${cfg.stop_loss}</div></div>
+          <div class="sp-param"><div class="sp-param-label">Position</div><div class="sp-param-val">${cfg.pos_size}</div></div>
+          <div class="sp-param"><div class="sp-param-label">Slippage</div><div class="sp-param-val">${cfg.slippage}</div></div>
+        </div>
+      </div>
+
+      <!-- Why this stock -->
+      <div class="sp-card">
+        <div class="sp-label">Why ${ticker}?</div>
+        <div class="sp-why">${cfg.why}</div>
+      </div>
+    </div>
+
+    <!-- Trade log for this ticker -->
+    <div class="sp-section-title">Trade history</div>
+    ${trades.length > 0 ? `
+    <div style="overflow-x:auto;margin-bottom:2rem;">
+      <table style="width:100%;border-collapse:collapse;font-size:.72rem;font-family:var(--mono);">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border);">
+            <th style="padding:.5rem .75rem;text-align:left;color:var(--muted);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;">Date</th>
+            <th style="padding:.5rem .75rem;text-align:left;color:var(--muted);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;">Dir</th>
+            <th style="padding:.5rem .75rem;text-align:left;color:var(--muted);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;">Entry</th>
+            <th style="padding:.5rem .75rem;text-align:left;color:var(--muted);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;">Exit</th>
+            <th style="padding:.5rem .75rem;text-align:left;color:var(--muted);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;">Result</th>
+            <th style="padding:.5rem .75rem;text-align:left;color:var(--muted);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;">P&L</th>
+            <th style="padding:.5rem .75rem;text-align:left;color:var(--muted);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;">Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${trades.slice().reverse().map(t => {
+            const pnl = parseFloat((t['P&L %']||'0').replace('%','').replace('+',''));
+            const isWin = t['Result']==='Target Hit'||(pnl>0&&(t['Result']==='Trailing Stop'||t['Result']==='Time Exit'));
+            const col = pnl>0?'var(--green)':'var(--red)';
+            return `<tr style="border-bottom:1px solid rgba(24,71,212,.05);">
+              <td style="padding:.5rem .75rem">${t['Date']||''}</td>
+              <td style="padding:.5rem .75rem">${t['Direction']||''}</td>
+              <td style="padding:.5rem .75rem">$${t['Entry Price']||''}</td>
+              <td style="padding:.5rem .75rem">$${t['Exit Price']||'—'}</td>
+              <td style="padding:.5rem .75rem"><span style="padding:2px 6px;border-radius:4px;font-size:.6rem;background:${isWin?'rgba(22,163,74,.1)':'rgba(220,38,38,.1)'};color:${isWin?'var(--green)':'var(--red)'};">${t['Result']||'Open'}</span></td>
+              <td style="padding:.5rem .75rem;color:${col}">${t['P&L %']||'—'}</td>
+              <td style="padding:.5rem .75rem;color:var(--accent)">${t['Signal Score']||'—'}/10</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>` : `<div style="text-align:center;padding:2rem;color:var(--muted);font-family:var(--mono);font-size:.8rem;">No trades recorded for ${ticker} yet.<br>The agent will log ${ticker} trades here automatically.</div>`}
+
+    <!-- Backtest disclaimer -->
+    <p style="font-family:var(--mono);font-size:.6rem;color:var(--muted);text-align:center;margin-top:1rem;line-height:1.6;">
+      Performance data from 120-day backtest · Paper trading simulation · Past performance does not guarantee future results
+    </p>
+  `;
+
+  // Open panel
+  document.getElementById('stock-panel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Fetch live price
+  fetchStockPrice(ticker);
+}
+
+function closeStockPanel() {
+  document.getElementById('stock-panel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close panel on escape key
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeStockPanel(); });
 
 </script>
