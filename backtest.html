@@ -390,7 +390,7 @@ async function loadResults(){
       `Vol ${data.config.baseline.vol_mult}x · $${data.config.position_size}/trade · `+
       `${data.config.lookback_days} days`;
 
-    renderResults(data.baseline.trades, data.baseline.stats);
+    renderResults(data.baseline.trades, data.baseline.stats, data);
     renderSweep(data.sweep);
     setProgress(100,'Done!');
     setTimeout(()=>document.getElementById('progress-wrap').style.display='none', 600);
@@ -480,7 +480,7 @@ function buildCharts(trades){
 // ═══════════════════════════════════════════════
 let allLogTrades=[];
 
-function renderResults(trades, stats){
+function renderResults(trades, stats, data){
   allLogTrades = trades;
 
   const pnlEl = document.getElementById('r-pnl');
