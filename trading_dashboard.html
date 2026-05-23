@@ -1099,7 +1099,7 @@ async function doLogin() {
       enterDashboard(m); return;
     }
     status.textContent = 'Email not found. Contact Giovanni for access.'; status.style.color = 'var(--red)';
-  } catch(e) { status.textContent = 'Connection error — try again.'; status.style.color = 'var(--red)'; }
+  } catch(e) { console.error('[NYLO] Login error:', e.message); status.textContent = 'Connection error — try again.'; status.style.color = 'var(--red)'; }
 }
 
 async function doRegister() {
@@ -2307,7 +2307,7 @@ function replayPlay() {
 
 // ── Supabase ──────────────────────────────────────────────────────────────────
 const SUPA_URL = 'https://hwczpidgbtycddiakhnx.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3Y3pwaWRnYnR5Y2RkaWFraG54Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcwODU0NzMsImV4cCI6MjA2MjY2MTQ3M30.hCO04DUgHkFPFKBxPIGMFOiZLRKvGFOdMBrAlUUDKKU';
+const SUPA_KEY = 'sb_publishable_2UtHOs8J8I9QUyNm1NBABA_JfAza7CE';
 const HEADERS  = { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
 const HEADERS_POST = { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
 
