@@ -1835,7 +1835,7 @@ function exportPDF() {
 </div>
 
 <!-- ── Disclaimer Modal ── -->
-<div id="disclaimer-overlay" style="display:none;opacity:1;">
+<div id="disclaimer-overlay" style="display:flex;opacity:1;z-index:99999;">
   <div id="disclaimer-modal">
     <div class="disclaimer-logo">NYLO</div>
     <div class="disclaimer-badge">⚠ IMPORTANT DISCLAIMER</div>
@@ -1858,6 +1858,14 @@ function exportPDF() {
     <div class="disclaimer-footer">This agreement is stored locally and will not be shown again on this device.</div>
   </div>
 </div>
+<script>
+(function(){
+  if(localStorage.getItem('nylo-disclaimer-accepted')){
+    var ov=document.getElementById('disclaimer-overlay');
+    if(ov) ov.style.display='none';
+  }
+})();
+</script>
 </body></html>`);
   w.document.close();
 }
