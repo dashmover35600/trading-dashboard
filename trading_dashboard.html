@@ -1748,107 +1748,29 @@ function renderTable() {
 
 // ── PDF export ────────────────────────────────────────────────────────────────
 function exportPDF() {
+  const trades = allTrades;
+  const s0 = trades.length;
+  const wins = trades.filter(t=>t['Result']==='Target Hit'||(parseFloat((t['P&L %']||'0').replace('%','').replace('+',''))>0));
+  const s1 = trades.length ? Math.round(wins.length/trades.length*100)+'%' : '0%';
+  const total = trades.reduce((a,t)=>a+parseFloat((t['P&L $']||'0').replace('$','').replace('+','')),0);
+  const s2 = (total>=0?'+$':'-$')+Math.abs(total).toFixed(2);
+  const rows = trades.map(t=>{
+    const p=parseFloat((t['P&L %']||'0').replace('%','').replace('+',''));
+    const pc=p>=0?'green':'red';
+    return '<tr><td>'+t['Date']+'</td><td>'+t['Ticker']+'</td><td>'+t['Direction']+'</td><td>$'+t['Entry Price']+'</td><td>$'+(t['Exit Price']||'-')+'</td><td>'+t['Result']+'</td><td style="color:'+pc+'">'+t['P&L %']+'</td></tr>';
+  }).join('');
   const w = window.open('','_blank');
-  const s2 = document.getElementById('s2').textContent;
-  const s1 = document.getElementById('s1').textContent;
-  const s0 = document.getElementById('s0').textContent;
-  let rows = '';
-  allTrades.forEach(t => {
-    const p = num(t['P&L %']);
-    rows += `<tr>
-      <td>${t['Date']}</td><td>${t['Ticker']}</td><td>${t['Direction']}</td>
-      <td>$${t['Entry Price']}</td><td>${t['Exit Price']?'$'+t['Exit Price']:'—'}</td>
-      <td>${t['Result']||'Open'}</td>
-      <td style="color:${p===null?'#666':p>=0?'#1a7a4a':'#c0392b'}">${fmt(p)}</td>
-    </tr>`;
-  });
-  w.document.write("<head><title>Trade Report</title>\n  <style>body{font-family:monospace;padding:2rem;color:#1a1a18}h1{font-size:1.4rem;margin-bottom:0.5rem}\n  .meta{color:#8a8a82;font-size:0.8rem;margin-bottom:1.5rem}\n  .stats{display:flex;gap:2rem;margin-bottom:1.5rem;background:#f4f4f0;padding:1rem;border-radius:8px}\n  .stat-label{font-size:0.65rem;color:#8a8a82;text-transform:uppercase;letter-spacing:0.1em}\n  .stat-val{font-size:1.2rem;font-weight:bold}\n  table{width:100%;border-collapse:collapse;font-size:0.8rem}\n  th{background:#f4f4f0;padding:6px 10px;text-align:left;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid #e8e8e4}\n  td{padding:6px 10px;border-bottom:1px solid #e8e8e4}\n  @media print{body{padding:1rem}}</style></head>\n  <h1>Trading Performance Report</h1>\n  <div class="meta">Generated ${new Date().toLocaleDateString()} · ORB/RSI Strategy · AAPL & GOOGL</div>\n  <div class="stats">\n    <div><div class="stat-label">Total Trades</div><div class="stat-val">${s0}</div></div>\n    <div><div class="stat-label">Win Rate</div><div class="stat-val">${s1}</div></div>\n    <div><div class="stat-label">Total P&L</div><div class="stat-val">${s2}</div></div>\n  </div>\n  <table><thead><tr><th>Date</th><th>Ticker</th><th>Direction</th><th>Entry</th><th>Exit</th><th>Result</th><th>P&L</th></tr></thead>\n  <tbody>${rows}</tbody></table>\n  <scr" + "ipt>window.print();<\/scr" + "ipt>\n");
-
-<!-- Toast container -->
-<div id="toast-container"></div>
-
-<!-- Mobile bottom nav -->
-<div class="mobile-bottom-nav">
-  <div class="mobile-nav-item active" onclick="scrollToSection('trades')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-    Trades
-  </div>
-  <div class="mobile-nav-item" onclick="scrollToSection('charts')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    Charts
-  </div>
-  <div class="mobile-nav-item" onclick="scrollToSection('agent')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-    Agent
-  </div>
-  <div class="mobile-nav-item" onclick="window.location.href='backtest.html'">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.49"/></svg>
-    Backtest
-  </div>
-</div>
-
-
-
-
-
-
-<!-- ── STOCK PANEL (slides in from right) ── -->
-<div id="stock-panel">
-  <div class="sp-nav">
-    <button class="sp-back" onclick="closeStockPanel()">← Back</button>
-    <div class="sp-title" id="sp-title">AAPL</div>
-    <div class="sp-live-price" id="sp-price">—</div>
-  </div>
-  <div class="sp-wrap" id="sp-content">
-    <!-- Populated by JS -->
-  </div>
-</div>
-
-<!-- ── STOCKS HUB SECTION ── -->
-<div id="stocks-section">
-  <div style="padding:1.5rem 1.5rem .5rem;">
-    <div style="font-family:var(--mono);font-size:.62rem;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:.4rem;">Watchlist</div>
-    <h2 style="font-family:var(--serif);font-size:2rem;font-weight:400;letter-spacing:-.02em;margin-bottom:.4rem;">Your <em style="font-style:italic;color:var(--accent)">tracked stocks.</em></h2>
-    <p style="font-size:.85rem;color:var(--muted);max-width:500px;line-height:1.6;">Each stock runs an optimized version of the NYLO strategy. Click any card to see the full breakdown — strategy, parameters, trade history, and performance.</p>
-  </div>
-  <div class="stock-hub-grid" id="stock-hub-grid">
-    <!-- Cards populated by JS -->
-  </div>
-</div>
-
-<!-- ── Disclaimer Modal ── -->
-<div id="disclaimer-overlay" style="display:none;z-index:99999;">
-  <div id="disclaimer-modal">
-    <div class="disclaimer-logo">NYLO</div>
-    <div class="disclaimer-badge">⚠ IMPORTANT DISCLAIMER</div>
-    <div class="disclaimer-title">Before you continue, please read and acknowledge the following</div>
-    <div class="disclaimer-body">
-      NYLO is a <strong>paper trading signal dashboard</strong> created for educational and entertainment purposes only.
-    </div>
-    <ul class="disclaimer-points">
-      <li>This platform does <strong>not</strong> provide financial, investment, or trading advice of any kind.</li>
-      <li>All signals are <strong>simulated</strong> and based on algorithmic strategies. Past performance does not guarantee future results.</li>
-      <li>You may <strong>lose money</strong> if you choose to replicate any signals with real funds. NYLO accepts zero responsibility for any financial losses.</li>
-      <li>This is <strong>purely for fun</strong> and educational exploration of trading strategies.</li>
-      <li>Always consult a <strong>licensed financial advisor</strong> before making any real investment decisions.</li>
-    </ul>
-    <label class="disclaimer-check">
-      <input type="checkbox" id="disclaimer-checkbox" onchange="toggleDisclaimerBtn()">
-      <span>I understand that NYLO is for entertainment purposes only, does not guarantee any profits, and I accept full responsibility for any actions I take with real money. I will not hold NYLO or Giovanni Flores liable for any losses.</span>
-    </label>
-    <button class="disclaimer-btn" id="disclaimer-btn" onclick="acceptDisclaimer()">I Acknowledge & Continue →</button>
-    <div class="disclaimer-footer">This agreement is stored locally and will not be shown again on this device.</div>
-  </div>
-</div>
-<script>
-(function(){
-  // Show disclaimer after login if not yet accepted
-  var accepted = localStorage.getItem('nylo-disclaimer-accepted');
-  var user = localStorage.getItem('nylo-user');
-  if(!accepted && user){
-    var ov=document.getElementById('disclaimer-overlay');
-    if(ov) ov.style.display='flex';
-  }
+  const html = '<html><head><title>Trade Report</title>'
+    + '<style>body{font-family:monospace;padding:2rem}table{width:100%;border-collapse:collapse}'
+    + 'th,td{padding:6px 10px;border-bottom:1px solid #eee;text-align:left}'
+    + 'th{background:#f4f4f0;font-size:0.7rem;text-transform:uppercase}</style></head>'
+    + '<body><h1>NYLO Trading Report</h1>'
+    + '<p>Trades: '+s0+' | Win Rate: '+s1+' | P&L: '+s2+'</p>'
+    + '<table><thead><tr><th>Date</th><th>Ticker</th><th>Dir</th><th>Entry</th><th>Exit</th><th>Result</th><th>P&L</th></tr></thead>'
+    + '<tbody>'+rows+'</tbody></table>'
+    + '<script>window.print();<'+'/script></body></html>';
+  w.document.write(html);
+  w.document.close();
 })();
 </script>
 </body></html>;
