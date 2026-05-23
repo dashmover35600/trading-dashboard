@@ -42,26 +42,6 @@ function _oldCheckDisclaimer() {
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ── Glow cursor ─────────────────────────────────────────────── */
-    * { cursor: none !important; }
-    #cursor-glow {
-      position: fixed; width: 16px; height: 16px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(99,140,255,1) 0%, rgba(24,71,212,0.85) 40%, rgba(24,71,212,0) 70%);
-      pointer-events: none; z-index: 99999; transform: translate(-50%,-50%);
-      filter: blur(0.5px); transition: width .15s, height .15s;
-    }
-    #cursor-aura {
-      position: fixed; width: 56px; height: 56px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(24,71,212,0.16) 0%, rgba(24,71,212,0.05) 55%, transparent 70%);
-      pointer-events: none; z-index: 99998; transform: translate(-50%,-50%);
-      animation: glowPulse 2.5s ease-in-out infinite;
-    }
-    @keyframes glowPulse { 0%,100%{width:56px;height:56px;opacity:.7;} 50%{width:70px;height:70px;opacity:1;} }
-    #cursor-glow.clicking { width: 28px; height: 28px; background: radial-gradient(circle, rgba(150,180,255,1) 0%, rgba(24,71,212,0.9) 40%, transparent 70%); }
-    #cursor-glow.on-input { width: 3px; height: 20px; border-radius: 2px; background: rgba(24,71,212,0.9); filter: none; animation: cursorBlink 1s step-end infinite; }
-    @keyframes cursorBlink { 50%{opacity:0;} }
-    @media (hover: none) { #cursor-glow, #cursor-aura { display: none; } * { cursor: auto !important; } }
-
     /* ── Animated gradient mesh background ──────────────────────── */
     body::before {
       content: '';
@@ -523,8 +503,8 @@ function _oldCheckDisclaimer() {
     @keyframes streakPop{0%{transform:scale(1);}50%{transform:scale(1.4);}100%{transform:scale(1);}}
 
     /* ── Disclaimer Modal ── */
-    #disclaimer-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:1rem;}
-    #disclaimer-modal{background:var(--surface,#fff);border-radius:18px;max-width:480px;width:100%;padding:2rem;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:modalIn .4s cubic-bezier(.16,1,.3,1);}
+    #disclaimer-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:1rem;pointer-events:all;}
+    #disclaimer-modal{background:var(--surface,#fff);border-radius:18px;max-width:480px;width:100%;padding:2rem;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:modalIn .4s cubic-bezier(.16,1,.3,1);pointer-events:all;}
     @keyframes modalIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
     .disclaimer-logo{font-family:'Instrument Serif',serif;font-size:2rem;color:var(--accent,#1847d4);letter-spacing:-.03em;margin-bottom:.25rem;}
     .disclaimer-badge{display:inline-block;background:rgba(220,38,38,.1);color:#dc2626;font-size:.65rem;padding:3px 10px;border-radius:10px;font-family:monospace;letter-spacing:.06em;margin-bottom:1.25rem;}
@@ -631,10 +611,6 @@ function _oldCheckDisclaimer() {
 </style>
 </head>
 <body>
-
-<!-- Glow cursor -->
-<div id="cursor-glow"></div>
-<div id="cursor-aura"></div>
 
 <!-- Particle canvas -->
 <canvas id="particle-canvas"></canvas>
@@ -771,7 +747,7 @@ function _oldCheckDisclaimer() {
         <div id="mood-icon" style="font-size:2.2rem;">⏳</div>
         <div>
           <div id="mood-label" style="font-family:var(--mono);font-size:0.85rem;font-weight:500;color:var(--text);">Loading...</div>
-          <div id="mood-spy" style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:2px;">SPY: —</div>
+          <div id="mood-spy" style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:2px;">AAPL: —</div>
         </div>
       </div>
     </div>
@@ -1163,6 +1139,7 @@ function enterDashboard(member) {
     const mc = document.getElementById('main-content');
     mc.style.display = 'block';
     requestAnimationFrame(() => requestAnimationFrame(() => mc.classList.add('unlocked')));
+    tryAutoLoad();
   }, 600);
   document.getElementById('current-user').textContent = member.display || member.username;
   playSound('swoosh');
@@ -1194,19 +1171,6 @@ setTimeout(showLoginGate, 4100);
 // Enter key support
 document.getElementById('login-username').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('login-password').focus(); });
 document.getElementById('login-password').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-
-// ── Custom cursor ─────────────────────────────────────────────────────────────
-const glowEl = document.getElementById('cursor-glow');
-const auraEl = document.getElementById('cursor-aura');
-let mx = 0, my = 0, ax = window.innerWidth/2, ay = window.innerHeight/2;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; glowEl.style.left = mx+'px'; glowEl.style.top = my+'px'; });
-(function animAura() { ax += (mx-ax)*0.12; ay += (my-ay)*0.12; auraEl.style.left = ax+'px'; auraEl.style.top = ay+'px'; requestAnimationFrame(animAura); })();
-document.addEventListener('mousedown', () => glowEl.classList.add('clicking'));
-document.addEventListener('mouseup',   () => glowEl.classList.remove('clicking'));
-document.querySelectorAll('input,textarea').forEach(el => {
-  el.addEventListener('focus', () => glowEl.classList.add('on-input'));
-  el.addEventListener('blur',  () => glowEl.classList.remove('on-input'));
-});
 
 // ── Particles ─────────────────────────────────────────────────────────────────
 (function initParticles() {
@@ -1523,10 +1487,11 @@ async function tryAutoLoad() {
     fetchHeartbeat();
     setTimeout(tryAutoLoad, 60000);
     return;
-  } catch(e) {}
-
-  // 3. Manual upload fallback
-  document.getElementById('upload-desc').textContent = 'Auto-loads from GitHub every 60s. Agent v17 running — or click to upload manually.';
+  } catch(e) {
+    // retry in 30 s; keep upload zone visible for manual fallback
+    document.getElementById('upload-desc').textContent = 'Auto-loads from GitHub every 60s — or click to upload manually.';
+    setTimeout(tryAutoLoad, 30000);
+  }
 }
 
 // ── Live trade P&L ────────────────────────────────────────────────────────────
@@ -2186,7 +2151,7 @@ setInterval(() => fetchMemeCoin(activeCoin), 30000);
 // ── Market mood ───────────────────────────────────────────────────────────────
 async function fetchMarketMood() {
   try {
-    const url  = `https://api.allorigins.win/get?url=${encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/SPY?interval=1d&range=2d')}`;
+    const url  = `https://api.allorigins.win/get?url=${encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/AAPL?interval=1d&range=2d')}`;
     const res  = await fetch(url);
     const wrap = await res.json();
     const data = JSON.parse(wrap.contents);
@@ -2204,7 +2169,7 @@ async function fetchMarketMood() {
     else                   { icon = '⛈️'; label = 'Strongly bearish'; }
     document.getElementById('mood-icon').textContent  = icon;
     document.getElementById('mood-label').textContent = label;
-    document.getElementById('mood-spy').textContent   = `SPY $${price.toFixed(2)} (${up?'+':''}${change}%)`;
+    document.getElementById('mood-spy').textContent   = `AAPL $${price.toFixed(2)} (${up?'+':''}${change}%)`;
   } catch(e) {}
 }
 fetchMarketMood();

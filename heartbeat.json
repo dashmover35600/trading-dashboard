@@ -1,15 +1,15 @@
 {
   "status": "running",
   "version": "17.1",
-  "updated_at": "2026-05-23T01:22:13.425147-04:00",
-  "updated_str": "01:22:13 AM ET",
-  "uptime_sec": 15198,
-  "uptime_str": "4h 13m",
-  "last_run": null,
+  "updated_at": "2026-05-23T10:07:22.406228-04:00",
+  "updated_str": "10:07:22 AM ET",
+  "uptime_sec": 29273,
+  "uptime_str": "8h 7m",
+  "last_run": "10:07:22 AM ET",
   "last_run_ok": true,
   "errors_today": 0,
   "last_error": null,
-  "cycles_total": 0,
+  "cycles_total": 36,
   "tickers": [
     "AAPL",
     "GOOGL"
