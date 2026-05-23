@@ -1,17 +1,18 @@
 {
   "status": "running",
-  "version": "14.1",
-  "updated_at": "2026-05-19T17:21:02.135512-04:00",
-  "updated_str": "05:21:02 PM ET",
-  "uptime_sec": 300,
-  "uptime_str": "5m 0s",
+  "version": "17.1",
+  "updated_at": "2026-05-23T01:22:13.425147-04:00",
+  "updated_str": "01:22:13 AM ET",
+  "uptime_sec": 15198,
+  "uptime_str": "4h 13m",
   "last_run": null,
   "last_run_ok": true,
   "errors_today": 0,
   "last_error": null,
   "cycles_total": 0,
   "tickers": [
-    "QQQ"
+    "AAPL",
+    "GOOGL"
   ],
   "trades_today": 0,
   "daily_pnl": 0.0,
