@@ -1746,6 +1746,8 @@ function renderTable() {
   });
 }
 
+function renderCharts(trades, closed, wins, losses, pnls) {
+  let cum = 0;
 // ── PDF export ────────────────────────────────────────────────────────────────
   const cData=closed.map(t=>{cum+=num(t['P&L %'])||0;return Math.round(cum*100)/100;});
   mkChart('c1','line',{labels:closed.map((_,i)=>'#'+(i+1)),datasets:[{data:cData,borderColor:'#1a7a4a',backgroundColor:'rgba(26,122,74,0.07)',borderWidth:1.5,fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#1a7a4a',pointBorderColor:'#fff',pointBorderWidth:1.5}]},opts(v=>v+'%'));
