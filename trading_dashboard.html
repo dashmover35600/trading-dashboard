@@ -1762,7 +1762,7 @@ function exportPDF() {
       <td style="color:${p===null?'#666':p>=0?'#1a7a4a':'#c0392b'}">${fmt(p)}</td>
     </tr>`;
   });
-  w.document.write(`<html><head><title>Trade Report</title>
+  w.document.write(`<head><title>Trade Report</title>
   <style>body{font-family:monospace;padding:2rem;color:#1a1a18}h1{font-size:1.4rem;margin-bottom:0.5rem}
   .meta{color:#8a8a82;font-size:0.8rem;margin-bottom:1.5rem}
   .stats{display:flex;gap:2rem;margin-bottom:1.5rem;background:#f4f4f0;padding:1rem;border-radius:8px}
@@ -1771,7 +1771,7 @@ function exportPDF() {
   table{width:100%;border-collapse:collapse;font-size:0.8rem}
   th{background:#f4f4f0;padding:6px 10px;text-align:left;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid #e8e8e4}
   td{padding:6px 10px;border-bottom:1px solid #e8e8e4}
-  @media print{body{padding:1rem}}</style></head><body>
+  @media print{body{padding:1rem}}</style></head>
   <h1>Trading Performance Report</h1>
   <div class="meta">Generated ${new Date().toLocaleDateString()} · ORB/RSI Strategy · AAPL & GOOGL</div>
   <div class="stats">
