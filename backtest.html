@@ -535,8 +535,11 @@ function renderResults(trades, stats, data){
   const oosEl = document.getElementById('r-oos');
   if(oosEl && data && data.out_of_sample){
     const oos=data.out_of_sample;
-    oosEl.textContent=oos.consistent?'✅ Consistent':'⚠️ Diverged';
-    oosEl.className='kpi-val '+(oos.consistent?'g':'r');
+    const trainWR = oos.train?.stats?.win_rate||0;
+    const testWR  = oos.test?.stats?.win_rate||0;
+    const improving = !oos.consistent && testWR > trainWR;
+    oosEl.textContent = oos.consistent ? '✅ Consistent' : improving ? '📈 Improving' : '⚠️ Diverged';
+    oosEl.className   = 'kpi-val ' + (oos.consistent || improving ? 'g' : 'r');
     document.getElementById('r-oos').parentElement.querySelector('.kpi-sub').textContent=
       oos.test?.stats?.win_rate?.toFixed(0)+'% WR on unseen data';
   }
