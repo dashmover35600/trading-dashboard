@@ -21,7 +21,9 @@
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%230a1a5c'/%3E%3Cstop offset='100%25' stop-color='%231847d4'/%3E%3C/linearGradient%3E%3ClinearGradient id='tx' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='100%25' stop-color='%23c8d8ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='80' fill='url(%23bg)'/%3E%3Ctext x='258' y='295' font-family='Georgia,serif' font-size='168' font-weight='700' fill='url(%23tx)' text-anchor='middle' letter-spacing='-2'%3ENYLO%3C/text%3E%3Crect x='100' y='316' width='312' height='3' rx='1.5' fill='rgba(255,255,255,0.9)'/%3E%3Ctext x='256' y='356' font-family='Georgia,serif' font-size='28' font-weight='700' fill='rgba(255,255,255,0.85)' text-anchor='middle' letter-spacing='6'%3EPRECISION TRADING%3C/text%3E%3C/svg%3E">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%230a1a5c'/%3E%3Cstop offset='100%25' stop-color='%231847d4'/%3E%3C/linearGradient%3E%3ClinearGradient id='tx' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='100%25' stop-color='%23c8d8ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='80' fill='url(%23bg)'/%3E%3Ctext x='258' y='295' font-family='Georgia,serif' font-size='168' font-weight='700' fill='url(%23tx)' text-anchor='middle' letter-spacing='-2'%3ENYLO%3C/text%3E%3Crect x='100' y='316' width='312' height='3' rx='1.5' fill='rgba(255,255,255,0.9)'/%3E%3Ctext x='256' y='356' font-family='Georgia,serif' font-size='28' font-weight='700' fill='rgba(255,255,255,0.85)' text-anchor='middle' letter-spacing='6'%3EPRECISION TRADING%3C/text%3E%3C/svg%3E">
 
+  <link rel="manifest" href="/manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js">
 function checkDisclaimer() {
   if (localStorage.getItem('nylo-disclaimer-accepted')) return;
@@ -609,6 +611,33 @@ function _oldCheckDisclaimer() {
     .shc-btn{width:100%;padding:.65rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;transition:background .2s;}
     .shc-btn:hover{background:var(--accent2,#3d6fff);}
     .shc-strategy{font-family:var(--mono);font-size:.6rem;color:var(--accent);background:rgba(24,71,212,.08);padding:3px 8px;border-radius:6px;display:inline-block;margin-bottom:.75rem;}
+
+    /* ── Agent status bar ── */
+    .agent-bar{display:flex;align-items:center;gap:10px;padding:7px 1rem;background:rgba(22,163,74,.05);border-bottom:1px solid rgba(22,163,74,.12);font-family:var(--mono);font-size:.63rem;flex-wrap:wrap;}
+    .agent-bar.err{background:rgba(220,38,38,.05);border-bottom-color:rgba(220,38,38,.2);}
+    .agent-bar.err .ecg-dot{background:var(--red,#dc2626)!important;animation:none;}
+    /* ── Drawdown meter ── */
+    .dd-section{display:flex;align-items:center;gap:5px;margin-left:auto;}
+    .dd-track{width:72px;height:5px;background:rgba(0,0,0,.1);border-radius:3px;overflow:hidden;}
+    .dd-fill{height:100%;border-radius:3px;transition:width .6s,background .4s;background:var(--green,#16a34a);}
+    .dd-label{font-size:.6rem;font-family:var(--mono);color:var(--muted);}
+    /* ── Signal filter dots ── */
+    .fdots{display:flex;gap:2px;align-items:center;}
+    .fdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;cursor:default;}
+    .fdot-on{background:#16a34a;box-shadow:0 0 3px rgba(22,163,74,.4);}
+    .fdot-off{background:rgba(120,120,150,.18);}
+    /* ── Weekly P&L card ── */
+    .week-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem;}
+    .week-half{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.9rem 1rem;}
+    .week-label{font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;}
+    .week-val{font-family:var(--mono);font-size:1.15rem;font-weight:500;}
+    .week-sub{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.2rem;}
+    .week-badge{display:inline-block;font-family:var(--mono);font-size:.6rem;padding:2px 7px;border-radius:20px;margin-top:.4rem;}
+    /* ── Duration stats ── */
+    .dur-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.75rem;}
+    .dur-item{background:var(--faint,rgba(24,71,212,.04));border-radius:10px;padding:.65rem .75rem;}
+    .dur-label{font-family:var(--mono);font-size:.55rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+    .dur-val{font-family:var(--mono);font-size:1rem;font-weight:500;margin-top:.2rem;}
 </style>
 </head>
 <body>
@@ -728,6 +757,24 @@ function _oldCheckDisclaimer() {
   <div class="ticker-time" id="ticker-time"></div>
 </div>
 
+<!-- Agent status bar with ECG waveform + drawdown meter -->
+<div id="agent-status-bar" class="agent-bar">
+  <div id="ecg-widget" style="display:none;" class="ecg-wrap">
+    <div class="ecg-dot"></div>
+    <svg class="ecg-svg" viewBox="0 0 80 24">
+      <polyline class="ecg-line" points="0,12 8,12 12,4 16,20 20,12 32,12 36,2 40,22 44,12 56,12 60,7 64,17 80,12"/>
+    </svg>
+    <span class="ecg-text" id="ecg-cycles">0 cycles</span>
+  </div>
+  <span id="agent-status-text">Agent offline</span>
+  <div class="dd-section" id="dd-section" style="display:none;">
+    <span class="dd-label">Daily P&amp;L</span>
+    <div class="dd-track"><div class="dd-fill" id="dd-fill" style="width:0%"></div></div>
+    <span class="dd-label" id="dd-label">$0.00</span>
+    <span class="dd-label" style="opacity:.6">/ $500 limit</span>
+  </div>
+</div>
+
 <!-- Confetti canvas -->
 <canvas id="confetti-canvas"></canvas>
 
@@ -843,6 +890,38 @@ function _oldCheckDisclaimer() {
     <div class="stat"><div class="sl2">Worst Trade</div><div class="sv r" id="s5">—</div><div class="ss" id="s5b">—</div></div>
   </div>
 
+  <!-- Weekly P&L summary -->
+  <div class="week-grid" id="weekly-pnl-section" style="display:none;">
+    <div class="week-half">
+      <div class="week-label">This week</div>
+      <div class="week-val" id="week-cur-val">—</div>
+      <div class="week-sub" id="week-cur-trades">— trades</div>
+      <div class="week-badge" id="week-badge">—</div>
+    </div>
+    <div class="week-half">
+      <div class="week-label">Last week</div>
+      <div class="week-val" id="week-prev-val">—</div>
+      <div class="week-sub" id="week-prev-trades">— trades</div>
+    </div>
+  </div>
+
+  <!-- Trade duration tracker -->
+  <div class="card" id="duration-section" style="display:none;margin-bottom:2rem;">
+    <div class="ct">Avg hold time — wins vs losses</div>
+    <div class="dur-grid">
+      <div class="dur-item">
+        <div class="dur-label">Winning trades</div>
+        <div class="dur-val g" id="dur-win">—</div>
+        <div class="dur-label" style="margin-top:.2rem;" id="dur-win-n">— trades</div>
+      </div>
+      <div class="dur-item">
+        <div class="dur-label">Losing trades</div>
+        <div class="dur-val r" id="dur-loss">—</div>
+        <div class="dur-label" style="margin-top:.2rem;" id="dur-loss-n">— trades</div>
+      </div>
+    </div>
+  </div>
+
   <div class="sl">Charts</div>
   <div class="charts-a">
     <div class="card"><div class="ct">Cumulative P&amp;L</div><div class="cw"><canvas id="c1"></canvas></div></div>
@@ -900,9 +979,10 @@ function _oldCheckDisclaimer() {
             <th onclick="sortTable(9)">P&amp;L $ <span class="sort-icon">↕</span></th>
             <th>Shares</th>
             <th>In</th><th>Out</th><th>RSI</th><th>Volume</th>
+            <th title="OD=Opening Drive VP=VWAP EM=EMA RS=RSI VL=Volume MO=Momentum PW=Prime Window GP=Gap SC=Score">Filters</th>
           </tr>
         </thead>
-        <tbody id="tb"><tr><td colspan="13"><div class="es">No trades yet — agent will log them automatically.</div></td></tr></tbody>
+        <tbody id="tb"><tr><td colspan="16"><div class="es">No trades yet — agent will log them automatically.</div></td></tr></tbody>
       </table>
     </div>
   </div>
@@ -1326,10 +1406,35 @@ async function fetchHeartbeat() {
     const d = await res.json();
     const bar = document.getElementById('agent-status-bar');
     const txt = document.getElementById('agent-status-text');
-    if(txt) txt.textContent = d.status === 'running'
-      ? 'Agent v' + (d.version||'?') + ' running · ' + (d.last_run||'—')
+    const running = d.status === 'running';
+    if(bar) bar.className = running ? 'agent-bar' : 'agent-bar err';
+    if(txt) txt.textContent = running
+      ? `Agent v${d.version||'?'} · ${d.uptime_str||'—'} uptime · last scan ${d.last_run||'—'} · ${d.cycles_total||0} cycles`
       : 'Agent offline';
-    if(bar) bar.className = d.status === 'running' ? 'agent-bar' : 'agent-bar err';
+
+    // ECG widget
+    const ecgWidget = document.getElementById('ecg-widget');
+    const cycleEl   = document.getElementById('ecg-cycles');
+    if (ecgWidget) ecgWidget.style.display = running ? 'flex' : 'none';
+    if (cycleEl)   cycleEl.textContent = (d.cycles_total||0) + ' cycles';
+
+    // Drawdown meter
+    const ddSection = document.getElementById('dd-section');
+    const ddFill    = document.getElementById('dd-fill');
+    const ddLabel   = document.getElementById('dd-label');
+    if (ddSection && running) {
+      ddSection.style.display = 'flex';
+      const pnl   = parseFloat(d.daily_pnl) || 0;
+      const limit = 500;
+      const loss  = Math.max(0, -pnl);
+      const pct   = Math.min(100, (loss / limit) * 100);
+      const color = loss < 250 ? '#16a34a' : loss < 400 ? '#f59e0b' : '#dc2626';
+      if (ddFill)  { ddFill.style.width = pct + '%'; ddFill.style.background = color; }
+      if (ddLabel) ddLabel.textContent = (pnl >= 0 ? '+$' : '-$') + Math.abs(pnl).toFixed(2);
+    } else if (ddSection) {
+      ddSection.style.display = 'none';
+    }
+
     ['agent-uptime','agent-errors','agent-lastrun','agent-trades'].forEach(id => {
       const el = document.getElementById(id);
       if(!el) return;
@@ -1653,6 +1758,8 @@ function render(trades) {
   renderTable();
   renderCharts(trades, closed, wins, losses, pnls);
   renderCalendar();
+  renderWeeklyPnl(trades);
+  renderDurationStats(trades);
 
   // New features
   updateStreak(trades);
@@ -1745,7 +1852,7 @@ function renderTable() {
   document.getElementById('tc-count').textContent = trades.length + ' trades';
   const tb = document.getElementById('tb');
   tb.innerHTML = '';
-  if (!trades.length) { tb.innerHTML = '<tr><td colspan="13"><div class="es">No trades match this filter.</div></td></tr>'; return; }
+  if (!trades.length) { tb.innerHTML = '<tr><td colspan="16"><div class="es">No trades match this filter.</div></td></tr>'; return; }
 
   trades.forEach(t => {
     const p = num(t['P&L %']);
@@ -1754,7 +1861,6 @@ function renderTable() {
       : t['Result']==='Target Hit' ? '<span class="badge bw">Win ✅</span>'
       : t['Result']==='Trailing Stop' ? (num(t['P&L %'])>0?'<span class="badge bw">Trail ✅</span>':'<span class="badge bl">Trail 🛑</span>')
       : t['Result']==='Time Exit' ? (num(t['P&L %'])>0?'<span class="badge bw">Time Exit ✅</span>':'<span class="badge bl">Time Exit 🛑</span>')
-      : t['Result']==='Target Hit' ? '<span class="badge bw">Win</span>'
       : '<span class="badge bx">Loss</span>';
     const pStr = p!==null ? `<span class="${p>=0?'g':'r'}">${fmt(p)}</span>` : '<span style="color:var(--muted)">—</span>';
     const dStr = t['P&L $'] ? `<span class="${t['P&L $'].startsWith('-')?'r':'g'}">${t['P&L $']}</span>` : '<span style="color:var(--muted)">—</span>';
@@ -1772,9 +1878,118 @@ function renderTable() {
       <td style="color:var(--muted)">${t['Exit Time']||'—'}</td>
       <td style="color:var(--muted)">${t['RSI at Entry']}</td>
       <td style="color:var(--muted)">${t['Volume Ratio']}</td>
-      <td>${t['Signal Score']?`<span class="score-pips">${[...Array(10)].map((_,i)=>`<span class="score-pip${i<parseInt(t['Signal Score'])?' on'+(parseInt(t['Signal Score'])>=8?' high':''):''}"></span>`).join('')}</span> <span style="font-size:.65rem;color:var(--muted)">${t['Signal Score']}/10</span>`:''}</td>
+      <td>${signalFilterDots(t)}</td>
     </tr>`;
   });
+}
+
+function signalFilterDots(t) {
+  const sig   = (t['Signal Type'] || '').toLowerCase();
+  const score = parseInt(t['Signal Score']) || 0;
+  const rsi   = parseFloat(t['RSI at Entry']) || 0;
+  const vol   = parseFloat((t['Volume Ratio']||'0').replace('x','')) || 0;
+  const timeStr = t['Entry Time'] || '';
+  let primeWindow = false;
+  if (timeStr) {
+    const [hm, ap] = [timeStr.replace(/\s*(AM|PM)/i,''), timeStr.match(/(AM|PM)/i)?.[0]||''];
+    let [h, m] = hm.split(':').map(Number);
+    if (ap.toUpperCase()==='PM' && h!==12) h+=12; else if(ap.toUpperCase()==='AM'&&h===12) h=0;
+    const mins = h*60+m;
+    primeWindow = mins >= 9*60+30 && mins <= 11*60+30;
+  }
+  const filters = [
+    { key:'OD', pass: sig.includes('opening')||sig.includes('drive') },
+    { key:'VP', pass: sig.includes('vwap') },
+    { key:'EM', pass: sig.includes('ema') },
+    { key:'RS', pass: rsi >= 45 && rsi <= 77 },
+    { key:'VL', pass: vol >= 1.5 },
+    { key:'MO', pass: score >= 5 },
+    { key:'PW', pass: primeWindow },
+    { key:'GP', pass: score >= 6 },
+    { key:'SC', pass: score >= 3 },
+  ];
+  const dots = filters.map(f=>`<span class="fdot ${f.pass?'fdot-on':'fdot-off'}" title="${f.key}:${f.pass?'✓':'✗'}"></span>`).join('');
+  return `<div class="fdots" title="${filters.map(f=>f.key+(f.pass?'✓':'✗')).join(' ')}">${dots}</div>`;
+}
+
+// ── Weekly P&L summary ────────────────────────────────────────────────────────
+function renderWeeklyPnl(trades) {
+  const closed = trades.filter(t => t['P&L $'] && t['P&L $'] !== '');
+  if (!closed.length) return;
+  const now  = new Date();
+  const dow  = now.getDay(); // 0=Sun
+  const startOfThisWeek = new Date(now); startOfThisWeek.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1)); startOfThisWeek.setHours(0,0,0,0);
+  const startOfLastWeek = new Date(startOfThisWeek); startOfLastWeek.setDate(startOfThisWeek.getDate() - 7);
+  const endOfLastWeek   = new Date(startOfThisWeek); endOfLastWeek.setMilliseconds(-1);
+
+  function weekDollar(rows) {
+    return rows.reduce((s, t) => {
+      if (!t['P&L $']) return s;
+      const raw = parseFloat(t['P&L $'].replace('$','').replace('+','').replace(',',''));
+      return s + (isNaN(raw) ? 0 : (t['P&L $'].startsWith('-') ? -Math.abs(raw) : Math.abs(raw)));
+    }, 0);
+  }
+  const thisW = closed.filter(t => { const d = new Date(t['Date']); return d >= startOfThisWeek; });
+  const lastW = closed.filter(t => { const d = new Date(t['Date']); return d >= startOfLastWeek && d <= endOfLastWeek; });
+  const curPnl  = weekDollar(thisW);
+  const prevPnl = weekDollar(lastW);
+  const pctChange = prevPnl !== 0 ? ((curPnl - prevPnl) / Math.abs(prevPnl) * 100) : null;
+
+  const fmt$ = v => (v >= 0 ? '+$' : '-$') + Math.abs(v).toFixed(2);
+  document.getElementById('week-cur-val').textContent  = fmt$(curPnl);
+  document.getElementById('week-cur-val').className    = 'week-val ' + (curPnl >= 0 ? 'g' : 'r');
+  document.getElementById('week-cur-trades').textContent = thisW.length + ' trades this week';
+  document.getElementById('week-prev-val').textContent  = fmt$(prevPnl);
+  document.getElementById('week-prev-val').className    = 'week-val ' + (prevPnl >= 0 ? 'g' : 'r');
+  document.getElementById('week-prev-trades').textContent = lastW.length + ' trades last week';
+  const badge = document.getElementById('week-badge');
+  if (pctChange !== null) {
+    const up = pctChange >= 0;
+    badge.textContent = (up ? '▲ +' : '▼ ') + pctChange.toFixed(1) + '% vs last week';
+    badge.className   = 'week-badge ' + (up ? 'g' : 'r');
+    badge.style.background = up ? 'rgba(22,163,74,.1)' : 'rgba(220,38,38,.1)';
+  } else {
+    badge.textContent = '— no prior week data';
+    badge.className = 'week-badge';
+    badge.style.background = 'rgba(0,0,0,.05)';
+  }
+  document.getElementById('weekly-pnl-section').style.display = 'grid';
+}
+
+// ── Trade duration tracker ─────────────────────────────────────────────────────
+function renderDurationStats(trades) {
+  function parseMins(timeStr) {
+    if (!timeStr) return null;
+    const [hm, ap] = [timeStr.replace(/\s*(AM|PM)/i,''), (timeStr.match(/(AM|PM)/i)||[''])[0]];
+    const [h, m] = hm.split(':').map(Number);
+    let h24 = h;
+    if (ap.toUpperCase()==='PM'&&h!==12) h24=h+12;
+    else if(ap.toUpperCase()==='AM'&&h===12) h24=0;
+    return h24*60+(m||0);
+  }
+  function fmtMins(m) {
+    if (m === null || isNaN(m)) return '—';
+    if (m < 60) return Math.round(m) + 'm';
+    return Math.floor(m/60) + 'h ' + (m%60|0) + 'm';
+  }
+  const closed = trades.filter(t => t['Entry Time'] && t['Exit Time'] && t['P&L %'] && t['P&L %'] !== '');
+  if (closed.length < 2) return;
+  const wins   = closed.filter(t => num(t['P&L %']) > 0);
+  const losses = closed.filter(t => num(t['P&L %']) <= 0);
+  function avgDur(rows) {
+    const durs = rows.map(t => {
+      const e = parseMins(t['Entry Time']), x = parseMins(t['Exit Time']);
+      return (e !== null && x !== null && x > e) ? x - e : null;
+    }).filter(v => v !== null);
+    return durs.length ? durs.reduce((a,b)=>a+b,0)/durs.length : null;
+  }
+  const winDur  = avgDur(wins);
+  const lossDur = avgDur(losses);
+  document.getElementById('dur-win').textContent   = fmtMins(winDur);
+  document.getElementById('dur-loss').textContent  = fmtMins(lossDur);
+  document.getElementById('dur-win-n').textContent  = wins.length + ' trades';
+  document.getElementById('dur-loss-n').textContent = losses.length + ' trades';
+  document.getElementById('duration-section').style.display = 'block';
 }
 
 function renderCharts(trades, closed, wins, losses, pnls) {
@@ -1847,30 +2062,44 @@ function renderCalendar() {
 renderCalendar();
 
 // ── Live price ticker ─────────────────────────────────────────────────────────
+async function fetchYahooChart(ticker) {
+  const yUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1m&range=1d`;
+  // Try 1: direct (works without CORS restriction in some environments)
+  try {
+    const r = await fetch(yUrl, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(4000) });
+    if (r.ok) { const d = await r.json(); if (d?.chart?.result) return d; }
+  } catch(e) {}
+  // Try 2: corsproxy.io
+  try {
+    const r = await fetch('https://corsproxy.io/?' + encodeURIComponent(yUrl), { signal: AbortSignal.timeout(5000) });
+    if (r.ok) { const d = await r.json(); if (d?.chart?.result) return d; }
+  } catch(e) {}
+  // Try 3: allorigins fallback
+  const r = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(yUrl));
+  const w = await r.json();
+  return JSON.parse(w.contents);
+}
+
 async function fetchPrices() {
   const tickers = ['AAPL','GOOGL','QQQ'];
   for (const t of tickers) {
     try {
-      const proxy = 'https://api.allorigins.win/get?url=';
-      const url   = `https://query1.finance.yahoo.com/v8/finance/chart/${t}?interval=1m&range=1d`;
-      const res   = await fetch(proxy + encodeURIComponent(url));
-      const wrap  = await res.json();
-      const data  = JSON.parse(wrap.contents);
-      const meta  = data?.chart?.result?.[0]?.meta;
+      const data = await fetchYahooChart(t);
+      const meta = data?.chart?.result?.[0]?.meta;
       if (!meta) continue;
       const price  = meta.regularMarketPrice?.toFixed(2);
       const prev   = meta.previousClose;
       const change = ((meta.regularMarketPrice - prev) / prev * 100).toFixed(2);
       const up     = change >= 0;
       const id     = t.toLowerCase();
-      document.getElementById(`t-${id}-price`).textContent = '$' + price;
-      const chgEl = document.getElementById(`t-${id}-chg`);
-      chgEl.textContent = (up?'+':'') + change + '%';
-      chgEl.className   = 'ticker-change ' + (up?'tc-up':'tc-down');
+      const priceEl = document.getElementById(`t-${id}-price`);
+      const chgEl   = document.getElementById(`t-${id}-chg`);
+      if (priceEl) priceEl.textContent = '$' + price;
+      if (chgEl) { chgEl.textContent = (up?'+':'') + change + '%'; chgEl.className = 'ticker-change ' + (up?'tc-up':'tc-down'); }
     } catch(e) {}
   }
-  document.getElementById('ticker-time').textContent = 'Prices as of ' + new Date().toLocaleTimeString();
-  // Re-render open trade P&L with new prices
+  const ttEl = document.getElementById('ticker-time');
+  if (ttEl) ttEl.textContent = 'Prices as of ' + new Date().toLocaleTimeString();
   if (allTrades.length) renderOpenTrade(allTrades);
 }
 
@@ -2776,7 +3005,8 @@ if (__origRender) {
   };
 }
 
-// Start ECG and heartbeat polling
+// Start ECG and heartbeat polling — fetchHeartbeat is the canonical updater
+fetchHeartbeat();
 fetchAndUpdateHeartbeat();
 setInterval(fetchAndUpdateHeartbeat, 60000);
 
