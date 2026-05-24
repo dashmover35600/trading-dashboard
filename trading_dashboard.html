@@ -1889,10 +1889,18 @@ function render(trades) {
     const uz = document.getElementById('upload-zone');
     if(uz) uz.style.display = 'none';
   }
+  // Only fire alerts for trades not previously notified — tracked by fingerprint in localStorage
   if (wins.length > 0) {
-    setTimeout(fireConfetti, 600);
-    playSound('success');
-    if (wins.length > 0 && typeof showToast === 'function') showToast('💰', `${wins.length} winning trade${wins.length>1?'s':''}! Keep it up!`);
+    const SEEN_KEY = 'nylo-notified-wins';
+    const seen = new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]'));
+    const newWins = wins.filter(t => !seen.has(`${t['Date']}|${t['Ticker']}|${t['Entry Time']}`));
+    if (newWins.length > 0) {
+      setTimeout(fireConfetti, 600);
+      playSound('success');
+      if (typeof showToast === 'function') showToast('💰', `${newWins.length} new winning trade${newWins.length>1?'s':''}! Keep it up!`);
+      newWins.forEach(t => seen.add(`${t['Date']}|${t['Ticker']}|${t['Entry Time']}`));
+      localStorage.setItem(SEEN_KEY, JSON.stringify([...seen]));
+    }
   }
   // Draw KPI sparklines
   setTimeout(() => { if (typeof renderSparklines === 'function') renderSparklines(trades); }, 200);
@@ -2944,17 +2952,7 @@ if (_origRender) {
       animateStatCards();
       animateTradeRows();
       addAgentDot();
-      // Fire confetti if there's a new win
-      const wins = trades.filter(t => t['Result'] === 'Target Hit' ||
-        ((t['Result']==='Trailing Stop'||t['Result']==='Time Exit') &&
-         parseFloat((t['P&L %']||'0').replace('%','').replace('+','')) > 0));
-      if (wins.length > 0 && trades.length === 1) {
-        const kpi = document.querySelector('.stat-card');
-        if (kpi) {
-          const r = kpi.getBoundingClientRect();
-          burstConfetti(r.left + r.width/2, r.top);
-        }
-      }
+      // Confetti burst handled inside render() with dedup — nothing extra here
     }, 100);
   };
 }
