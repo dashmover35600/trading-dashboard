@@ -214,13 +214,25 @@ function _oldCheckDisclaimer() {
       --sans: 'DM Sans', sans-serif;
     }
     body.dark {
-      --bg: #060d1f; --surface: #0d1829; --border: #1a2744; --faint: #111e35;
-      --text: #e8eeff; --muted: #5a6a9a;
-      --accent: #3d6fff; --accent-bg: #0d1829; --accent-light: #1a2f5a;
-      --green: #00c878; --green-bg: #001a0e;
-      --red: #ff4d6a; --red-bg: #1a0008;
+      --bg: #050a14; --surface: #0a1220; --border: #152035; --faint: #0d1828;
+      --text: #d8e4ff; --muted: #4a5a80;
+      --accent: #3d6fff; --accent-bg: #0a1220; --accent-light: #182d55;
+      --green: #00d97e; --green-bg: #001e10;
+      --red: #ff4560; --red-bg: #1a0008;
       --amber: #ffb830; --amber-bg: #1a1000;
     }
+    /* Bloomberg terminal grid overlay in dark mode */
+    body.dark::after {
+      content: '';
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(61,111,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(61,111,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    /* Monospace numbers in dark mode */
+    body.dark .sv, body.dark .ot-val, body.dark .week-val, body.dark .dur-val,
+    body.dark .shc-price, body.dark .live-pnl-num { font-family: var(--mono) !important; letter-spacing: -0.02em; }
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; transition: background 0.3s, color 0.3s; }
 
     /* Dark mode toggle */
@@ -392,30 +404,70 @@ function _oldCheckDisclaimer() {
 
     /* Login gate */
     #login-gate {
-      position: fixed; inset: 0; background: var(--bg);
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse 80% 80% at 50% 40%, #0d1f4a 0%, #050a14 70%);
       display: none; align-items: center; justify-content: center;
       z-index: 999; padding: 2rem;
       opacity: 0; pointer-events: none;
       transition: opacity 0.6s ease;
+      overflow: hidden;
     }
     #login-gate.visible { opacity: 1; pointer-events: all; }
+    #login-particle-canvas { position: absolute; inset: 0; pointer-events: none; }
     .login-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 20px; padding: 2.5rem;
+      background: rgba(10,18,32,0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(61,111,255,0.25);
+      border-radius: 24px; padding: 2.5rem;
       width: 100%; max-width: 400px;
-      box-shadow: 0 20px 60px rgba(24,71,212,0.08);
+      box-shadow: 0 0 60px rgba(61,111,255,0.12), 0 24px 64px rgba(0,0,0,0.5);
+      position: relative; z-index: 1;
+      animation: loginCardUp 0.55s cubic-bezier(0.16,1,0.3,1) both;
     }
-    .login-logo { font-family: var(--mono); font-size: 1.4rem; color: var(--accent); letter-spacing: 0.2em; font-weight: 500; margin-bottom: 0.25rem; }
-    .login-sub  { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 2rem; }
-    .login-tab  { display: flex; gap: 4px; margin-bottom: 1.5rem; background: var(--faint); border-radius: 10px; padding: 4px; }
-    .login-tab-btn { flex: 1; font-family: var(--mono); font-size: 0.68rem; padding: 6px; border: none; border-radius: 7px; cursor: pointer; background: transparent; color: var(--muted); transition: all 0.2s; letter-spacing: 0.06em; }
-    .login-tab-btn.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-    .login-input { width: 100%; margin-bottom: 10px; font-family: var(--mono); font-size: 0.8rem; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); outline: none; transition: border-color 0.2s; }
-    .login-input:focus { border-color: var(--accent); }
-    .login-btn { width: 100%; padding: 10px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-family: var(--mono); font-size: 0.78rem; cursor: pointer; letter-spacing: 0.08em; transition: opacity 0.2s; margin-top: 4px; }
-    .login-btn:hover { opacity: 0.9; }
-    .login-status { font-family: var(--mono); font-size: 0.68rem; text-align: center; margin-top: 10px; min-height: 20px; }
-    .login-divider { text-align: center; font-family: var(--mono); font-size: 0.6rem; color: var(--muted); margin: 1rem 0; letter-spacing: 0.1em; }
+    @keyframes loginCardUp {
+      from { opacity: 0; transform: translateY(32px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .login-logo {
+      font-family: var(--serif, 'Instrument Serif', serif);
+      font-size: 2.6rem; font-weight: 400; letter-spacing: -0.02em;
+      color: #fff; margin-bottom: 0.2rem;
+      text-shadow: 0 0 30px rgba(61,111,255,0.7), 0 0 60px rgba(61,111,255,0.35);
+      animation: logoGlow 3s ease-in-out infinite alternate;
+    }
+    @keyframes logoGlow {
+      from { text-shadow: 0 0 20px rgba(61,111,255,0.5), 0 0 40px rgba(61,111,255,0.2); }
+      to   { text-shadow: 0 0 40px rgba(61,111,255,0.9), 0 0 80px rgba(61,111,255,0.45); }
+    }
+    .login-sub  { font-family: var(--mono); font-size: 0.6rem; color: rgba(100,140,255,0.6); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 2rem; }
+    .login-tab  { display: flex; gap: 4px; margin-bottom: 1.5rem; background: rgba(255,255,255,0.05); border-radius: 10px; padding: 4px; }
+    .login-tab-btn { flex: 1; font-family: var(--mono); font-size: 0.68rem; padding: 6px; border: none; border-radius: 7px; cursor: pointer; background: transparent; color: rgba(255,255,255,0.4); transition: all 0.2s; letter-spacing: 0.06em; }
+    .login-tab-btn.active { background: rgba(61,111,255,0.2); color: #fff; border: 1px solid rgba(61,111,255,0.3); }
+    .login-input {
+      width: 100%; margin-bottom: 10px; font-family: var(--mono); font-size: 0.8rem;
+      padding: 11px 14px; border: 1px solid rgba(61,111,255,0.2);
+      border-radius: 10px; background: rgba(255,255,255,0.04); color: #fff; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .login-input::placeholder { color: rgba(255,255,255,0.25); }
+    .login-input:focus { border-color: #3d6fff; box-shadow: 0 0 0 3px rgba(61,111,255,0.15); }
+    .login-btn {
+      width: 100%; padding: 12px; background: #3d6fff; color: #fff; border: none;
+      border-radius: 10px; font-family: var(--mono); font-size: 0.78rem; cursor: pointer;
+      letter-spacing: 0.1em; margin-top: 4px;
+      box-shadow: 0 4px 20px rgba(61,111,255,0.4);
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+      animation: btnPulse 2.5s ease-in-out infinite;
+    }
+    .login-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(61,111,255,0.55); background: #5580ff; animation: none; }
+    .login-btn:active { transform: scale(0.97); }
+    @keyframes btnPulse {
+      0%,100% { box-shadow: 0 4px 20px rgba(61,111,255,0.4); }
+      50%      { box-shadow: 0 4px 30px rgba(61,111,255,0.7), 0 0 0 4px rgba(61,111,255,0.1); }
+    }
+    .login-status { font-family: var(--mono); font-size: 0.68rem; text-align: center; margin-top: 10px; min-height: 20px; color: rgba(255,255,255,0.5); }
+    .login-divider { text-align: center; font-family: var(--mono); font-size: 0.6rem; color: rgba(255,255,255,0.2); margin: 1rem 0; letter-spacing: 0.1em; }
     #current-user { font-family: var(--mono); font-size: 0.65rem; color: rgba(255,255,255,0.7); }
 
     #main-content { display: none; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
@@ -561,6 +613,58 @@ function _oldCheckDisclaimer() {
     .stat-card.pulse-green{animation:cardPulseGreen .6s ease;}
     @keyframes cardPulseGreen{0%,100%{box-shadow:var(--shadow);}50%{box-shadow:0 0 20px rgba(22,163,74,.3);}}
 
+    /* ── Enhanced KPI hover — blue glow ── */
+    .stat { transition: transform .2s, box-shadow .2s, background .2s; cursor: default; }
+    .stat:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(61,111,255,0.18), 0 0 0 1px rgba(61,111,255,0.15) !important; background: var(--accent-bg) !important; }
+    .stat .sv { transition: color .2s; }
+
+    /* ── KPI sparkline ── */
+    .kpi-spark { display: block; width: 100%; height: 28px; margin-top: 6px; opacity: 0.7; }
+
+    /* ── Trade row win/loss border ── */
+    #tb tr.tr-win td:first-child  { border-left: 3px solid var(--green); padding-left: calc(1.2rem - 3px); }
+    #tb tr.tr-loss td:first-child { border-left: 3px solid var(--red);   padding-left: calc(1.2rem - 3px); }
+    #tb tr.tr-open td:first-child { border-left: 3px solid var(--accent); padding-left: calc(1.2rem - 3px); }
+
+    /* ── Score pip bar ── */
+    .score-bar { display: inline-flex; gap: 2px; vertical-align: middle; }
+    .score-bar-pip { width: 6px; height: 6px; border-radius: 1.5px; background: var(--border); }
+    .score-bar-pip.on-high { background: var(--green); }
+    .score-bar-pip.on-mid  { background: var(--accent); }
+    .score-bar-pip.on-low  { background: var(--amber); }
+
+    /* ── Enhanced agent status bar ── */
+    .agent-bar {
+      display: flex; align-items: center; gap: 10px; padding: 9px 1rem;
+      background: linear-gradient(90deg, rgba(0,217,126,0.06) 0%, rgba(61,111,255,0.04) 100%);
+      border-bottom: 1px solid rgba(0,217,126,0.15);
+      font-family: var(--mono); font-size: .63rem; flex-wrap: wrap;
+      min-height: 42px;
+    }
+    .agent-bar.err {
+      background: linear-gradient(90deg, rgba(220,38,38,0.06) 0%, rgba(61,111,255,0.02) 100%);
+      border-bottom-color: rgba(220,38,38,0.2);
+    }
+    .agent-bar.err .ecg-dot { background: var(--red,#dc2626) !important; animation: none; }
+    .agent-clock { font-family: var(--mono); font-size: .72rem; font-weight: 500; color: var(--text); letter-spacing: .05em; }
+    .agent-bias-badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 20px; font-family: var(--mono); font-size: .6rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
+    .bias-long    { background: rgba(0,217,126,0.12); color: var(--green); border: 1px solid rgba(0,217,126,0.25); }
+    .bias-short   { background: rgba(255,69,96,0.1);  color: var(--red);   border: 1px solid rgba(255,69,96,0.2); }
+    .bias-neutral { background: rgba(90,106,154,0.12); color: var(--muted); border: 1px solid rgba(90,106,154,0.2); }
+
+    /* ── ECG more prominent ── */
+    .ecg-wrap { padding: 6px 14px; background: rgba(0,217,126,0.08); border-radius: 8px; border: 1px solid rgba(0,217,126,0.2); }
+    .ecg-svg { width: 96px; height: 28px; }
+    .ecg-line { stroke-width: 2; }
+
+    /* ── Mobile larger touch targets ── */
+    @media(max-width:600px){
+      .mobile-nav-item { min-height: 52px; padding: 6px 0; font-size: 11px; }
+      .mobile-nav-item svg { width: 24px; height: 24px; }
+      .filter-btn { padding: 7px 14px; font-size: .65rem; }
+      .login-card { padding: 2rem 1.5rem; }
+    }
+
     /* ── Stock Detail Panel ── */
     #stock-panel{position:fixed;inset:0;z-index:500;background:var(--bg);transform:translateX(100%);transition:transform .4s cubic-bezier(.16,1,.3,1);overflow-y:auto;padding-bottom:80px;}
     #stock-panel.open{transform:translateX(0);}
@@ -697,6 +801,7 @@ function _oldCheckDisclaimer() {
 
 <!-- Login gate -->
 <div id="login-gate">
+  <canvas id="login-particle-canvas"></canvas>
   <div class="login-card">
     <div class="login-logo">NYLO</div>
     <div class="login-sub">WHERE PRECISION MEETS PROFIT</div>
@@ -759,13 +864,15 @@ function _oldCheckDisclaimer() {
 
 <!-- Agent status bar with ECG waveform + drawdown meter -->
 <div id="agent-status-bar" class="agent-bar">
+  <span class="agent-clock" id="agent-clock"></span>
   <div id="ecg-widget" style="display:none;" class="ecg-wrap">
     <div class="ecg-dot"></div>
-    <svg class="ecg-svg" viewBox="0 0 80 24">
-      <polyline class="ecg-line" points="0,12 8,12 12,4 16,20 20,12 32,12 36,2 40,22 44,12 56,12 60,7 64,17 80,12"/>
+    <svg class="ecg-svg" viewBox="0 0 96 28">
+      <polyline class="ecg-line" points="0,14 8,14 13,4 18,24 23,14 36,14 41,2 46,26 51,14 64,14 69,7 74,21 80,14 96,14"/>
     </svg>
     <span class="ecg-text" id="ecg-cycles">0 cycles</span>
   </div>
+  <span id="agent-bias-badge" class="agent-bias-badge bias-neutral" style="display:none;">Neutral</span>
   <span id="agent-status-text">Agent offline</span>
   <div class="dd-section" id="dd-section" style="display:none;">
     <span class="dd-label">Daily P&amp;L</span>
@@ -882,12 +989,12 @@ function _oldCheckDisclaimer() {
     </div>
   </div>
   <div class="stats">
-    <div class="stat"><div class="sl2">Total Trades</div><div class="sv" id="s0">—</div><div class="ss">all time</div></div>
-    <div class="stat"><div class="sl2">Win Rate</div><div class="sv g" id="s1">—</div><div class="ss" id="s1b">— / —</div></div>
-    <div class="stat"><div class="sl2">Total P&amp;L %</div><div class="sv" id="s2">—</div><div class="ss">cumulative</div></div>
-    <div class="stat"><div class="sl2">Total P&amp;L $</div><div class="sv" id="s2d">—</div><div class="ss">paper trading $500-$5,000/trade</div></div>
-    <div class="stat"><div class="sl2">Best Trade</div><div class="sv g" id="s4">—</div><div class="ss" id="s4b">—</div></div>
-    <div class="stat"><div class="sl2">Worst Trade</div><div class="sv r" id="s5">—</div><div class="ss" id="s5b">—</div></div>
+    <div class="stat"><div class="sl2">Total Trades</div><div class="sv" id="s0">—</div><div class="ss">all time</div><canvas class="kpi-spark" id="spark-trades"></canvas></div>
+    <div class="stat"><div class="sl2">Win Rate</div><div class="sv g" id="s1">—</div><div class="ss" id="s1b">— / —</div><canvas class="kpi-spark" id="spark-wr"></canvas></div>
+    <div class="stat"><div class="sl2">Total P&amp;L %</div><div class="sv" id="s2">—</div><div class="ss">cumulative</div><canvas class="kpi-spark" id="spark-pnl"></canvas></div>
+    <div class="stat"><div class="sl2">Total P&amp;L $</div><div class="sv" id="s2d">—</div><div class="ss">paper trading $500-$5,000/trade</div><canvas class="kpi-spark" id="spark-dollar"></canvas></div>
+    <div class="stat"><div class="sl2">Best Trade</div><div class="sv g" id="s4">—</div><div class="ss" id="s4b">—</div><canvas class="kpi-spark" id="spark-best"></canvas></div>
+    <div class="stat"><div class="sl2">Worst Trade</div><div class="sv r" id="s5">—</div><div class="ss" id="s5b">—</div><canvas class="kpi-spark" id="spark-worst"></canvas></div>
   </div>
 
   <!-- Weekly P&L summary -->
@@ -1418,6 +1525,18 @@ async function fetchHeartbeat() {
     if (ecgWidget) ecgWidget.style.display = running ? 'flex' : 'none';
     if (cycleEl)   cycleEl.textContent = (d.cycles_total||0) + ' cycles';
 
+    // Day bias badge
+    const biasBadge = document.getElementById('agent-bias-badge');
+    if (biasBadge && running) {
+      const bias = (d.day_bias || '').toLowerCase();
+      biasBadge.style.display = 'inline-flex';
+      if (bias === 'long')       { biasBadge.className='agent-bias-badge bias-long';    biasBadge.textContent='▲ Long'; }
+      else if (bias === 'short') { biasBadge.className='agent-bias-badge bias-short';   biasBadge.textContent='▼ Short'; }
+      else                       { biasBadge.className='agent-bias-badge bias-neutral'; biasBadge.textContent='— Neutral'; }
+    } else if (biasBadge) {
+      biasBadge.style.display = 'none';
+    }
+
     // Drawdown meter
     const ddSection = document.getElementById('dd-section');
     const ddFill    = document.getElementById('dd-fill');
@@ -1775,6 +1894,8 @@ function render(trades) {
     playSound('success');
     if (wins.length > 0 && typeof showToast === 'function') showToast('💰', `${wins.length} winning trade${wins.length>1?'s':''}! Keep it up!`);
   }
+  // Draw KPI sparklines
+  setTimeout(() => { if (typeof renderSparklines === 'function') renderSparklines(trades); }, 200);
 }
 
 // ── Open trade monitor ────────────────────────────────────────────────────────
@@ -1854,9 +1975,13 @@ function renderTable() {
   tb.innerHTML = '';
   if (!trades.length) { tb.innerHTML = '<tr><td colspan="16"><div class="es">No trades match this filter.</div></td></tr>'; return; }
 
+  const rows = [];
   trades.forEach(t => {
     const p = num(t['P&L %']);
     const open = t['Result']==='';
+    const isWin  = !open && (t['Result']==='Target Hit' || ((t['Result']==='Trailing Stop'||t['Result']==='Time Exit') && num(t['P&L %'])>0));
+    const isLoss = !open && !isWin && t['Result']!=='';
+    const rowClass = open ? 'tr-open' : isWin ? 'tr-win' : isLoss ? 'tr-loss' : '';
     const res = open ? '<span class="badge bo">Open</span>'
       : t['Result']==='Target Hit' ? '<span class="badge bw">Win ✅</span>'
       : t['Result']==='Trailing Stop' ? (num(t['P&L %'])>0?'<span class="badge bw">Trail ✅</span>':'<span class="badge bl">Trail 🛑</span>')
@@ -1864,7 +1989,14 @@ function renderTable() {
       : '<span class="badge bx">Loss</span>';
     const pStr = p!==null ? `<span class="${p>=0?'g':'r'}">${fmt(p)}</span>` : '<span style="color:var(--muted)">—</span>';
     const dStr = t['P&L $'] ? `<span class="${t['P&L $'].startsWith('-')?'r':'g'}">${t['P&L $']}</span>` : '<span style="color:var(--muted)">—</span>';
-    tb.innerHTML += `<tr class="fade">
+    const scoreRaw = parseInt(t['Signal Score']) || 0;
+    const scorePips = Array.from({length:10},(_,i)=>{
+      const on = i < scoreRaw;
+      const cls = on ? (scoreRaw>=8 ? 'on-high' : scoreRaw>=6 ? 'on-mid' : 'on-low') : '';
+      return `<span class="score-bar-pip ${cls}"></span>`;
+    }).join('');
+    const scoreEl = `<span title="Score ${scoreRaw}/10" style="font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-right:4px;">${scoreRaw}</span><span class="score-bar">${scorePips}</span>`;
+    rows.push(`<tr class="${rowClass}" style="opacity:0;transform:translateX(-8px);transition:opacity .3s,transform .3s;">
       <td>${t['Date']}</td>
       <td style="font-weight:500">${t['Ticker']}</td>
       <td><span class="badge ${t['Direction']==='Long'?'bl':'bs'}">${t['Direction']}</span></td>
@@ -1878,8 +2010,13 @@ function renderTable() {
       <td style="color:var(--muted)">${t['Exit Time']||'—'}</td>
       <td style="color:var(--muted)">${t['RSI at Entry']}</td>
       <td style="color:var(--muted)">${t['Volume Ratio']}</td>
-      <td>${signalFilterDots(t)}</td>
-    </tr>`;
+      <td>${scoreEl} ${signalFilterDots(t)}</td>
+    </tr>`);
+  });
+  tb.innerHTML = rows.join('');
+  // Sequential row slide-in
+  tb.querySelectorAll('tr').forEach((row, i) => {
+    setTimeout(() => { row.style.opacity='1'; row.style.transform='translateX(0)'; }, 40 + i * 55);
   });
 }
 
@@ -3299,5 +3436,138 @@ function logout() {
   sessionStorage.clear();
   location.reload();
 }
+
+// ── Live clock in agent bar ────────────────────────────────────────────────────
+(function agentClock() {
+  const el = document.getElementById('agent-clock');
+  if (!el) return;
+  function tick() {
+    const now = new Date();
+    const et = now.toLocaleTimeString('en-US', { timeZone:'America/New_York', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: true });
+    el.textContent = et + ' ET';
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+// ── Login screen particle canvas ──────────────────────────────────────────────
+(function loginParticles() {
+  const gate   = document.getElementById('login-gate');
+  const canvas = document.getElementById('login-particle-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, pts = [];
+  function resize() {
+    W = canvas.width  = gate.offsetWidth  || window.innerWidth;
+    H = canvas.height = gate.offsetHeight || window.innerHeight;
+  }
+  function init() {
+    resize();
+    pts = Array.from({length: 55}, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 0.5, o: Math.random() * 0.35 + 0.07
+    }));
+  }
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    pts.forEach((p, i) => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(100,150,255,${p.o})`; ctx.fill();
+      for (let j = i + 1; j < pts.length; j++) {
+        const dx = pts[j].x - p.x, dy = pts[j].y - p.y, d = Math.hypot(dx, dy);
+        if (d < 110) {
+          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.strokeStyle = `rgba(61,111,255,${0.12 * (1 - d / 110)})`; ctx.lineWidth = 0.5; ctx.stroke();
+        }
+      }
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', resize);
+  init(); draw();
+  // Resize when gate becomes visible
+  const obs = new MutationObserver(() => { if (gate.style.display !== 'none') resize(); });
+  obs.observe(gate, { attributes: true, attributeFilter: ['style'] });
+})();
+
+// ── KPI sparklines ────────────────────────────────────────────────────────────
+let sparkCharts = {};
+function renderSparklines(trades) {
+  const closed = trades.filter(t => t['P&L %'] && t['P&L %'] !== '');
+  if (closed.length < 2) return;
+  const last10 = closed.slice(-10);
+  const isDark  = document.body.classList.contains('dark');
+  const gridC   = isDark ? 'rgba(61,111,255,0.06)' : 'rgba(24,71,212,0.05)';
+
+  function sparkCfg(data, color) {
+    return {
+      type: 'line',
+      data: { labels: data.map((_,i) => i), datasets: [{ data, borderColor: color, borderWidth: 1.5, pointRadius: 0, fill: true,
+        backgroundColor: color.replace('rgb','rgba').replace(')',',0.1)'), tension: 0.4 }] },
+      options: { responsive: false, animation: false, plugins: { legend: { display: false }, tooltip: { enabled: false } },
+        scales: { x: { display: false }, y: { display: false, grid: { display: false } } } }
+    };
+  }
+
+  const pnls   = last10.map(t => parseFloat((t['P&L %']||'0').replace('%','').replace('+','')) || 0);
+  const cum    = pnls.reduce((acc, v) => { acc.push((acc[acc.length-1]||0) + v); return acc; }, []);
+  const isPos  = cum[cum.length-1] >= 0;
+  const wrs    = last10.map((_, i, arr) => {
+    const slice = arr.slice(0, i+1);
+    const w = slice.filter(t => t['Result']==='Target Hit' || ((t['Result']==='Trailing Stop'||t['Result']==='Time Exit') && parseFloat((t['P&L %']||'0').replace('%','').replace('+',''))>0)).length;
+    return slice.length ? (w/slice.length*100) : 0;
+  });
+
+  const specs = [
+    { id: 'spark-trades', data: last10.map((_,i) => i+1), color: 'rgb(61,111,255)' },
+    { id: 'spark-wr',     data: wrs,                       color: isPos ? 'rgb(0,217,126)' : 'rgb(255,69,96)' },
+    { id: 'spark-pnl',   data: cum,                        color: isPos ? 'rgb(0,217,126)' : 'rgb(255,69,96)' },
+    { id: 'spark-dollar', data: cum,                       color: isPos ? 'rgb(0,217,126)' : 'rgb(255,69,96)' },
+    { id: 'spark-best',  data: pnls.map(v => Math.max(0,v)), color: 'rgb(0,217,126)' },
+    { id: 'spark-worst', data: pnls.map(v => Math.min(0,v)), color: 'rgb(255,69,96)' },
+  ];
+
+  specs.forEach(({ id, data, color }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.width  = el.parentElement.offsetWidth - 32;
+    el.height = 28;
+    if (sparkCharts[id]) { sparkCharts[id].destroy(); }
+    sparkCharts[id] = new Chart(el, sparkCfg(data, color));
+  });
+}
+
+// renderSparklines is called from inside render() below via the existing hook
+
+// ── Mobile swipe for bottom nav active state ──────────────────────────────────
+(function mobileSwipe() {
+  let startY = 0;
+  document.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dy = e.changedTouches[0].clientY - startY;
+    if (Math.abs(dy) < 50) return;
+    // Update active nav item based on scroll position
+    const sections = [
+      { id: 'tb', nav: 0 },
+      { id: 'c1', nav: 1 },
+      { id: 'agent-status-bar', nav: 2 },
+    ];
+    const scrollY = window.scrollY + window.innerHeight / 2;
+    sections.forEach(({ id, nav }) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.6 && rect.bottom > 0) {
+        document.querySelectorAll('.mobile-nav-item').forEach((item, i) => {
+          item.classList.toggle('active', i === nav);
+        });
+      }
+    });
+  }, { passive: true });
+})();
 
 </script>
