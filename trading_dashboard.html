@@ -742,6 +742,37 @@ function _oldCheckDisclaimer() {
     .dur-item{background:var(--faint,rgba(24,71,212,.04));border-radius:10px;padding:.65rem .75rem;}
     .dur-label{font-family:var(--mono);font-size:.55rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
     .dur-val{font-family:var(--mono);font-size:1rem;font-weight:500;margin-top:.2rem;}
+
+    /* ── Market Events section ── */
+    .events-list{max-height:210px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+    .events-list::-webkit-scrollbar{width:4px;}
+    .events-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+    .event-item{display:flex;align-items:flex-start;gap:9px;padding:7px 10px 7px 12px;border-radius:7px;margin-bottom:4px;border-left:3px solid;transition:background .15s;}
+    .event-item:hover{background:var(--faint);}
+    .event-item.high{border-left-color:var(--red);}
+    .event-item.medium{border-left-color:var(--amber);}
+    .event-item.low{border-left-color:var(--green);}
+    .event-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+    .event-dot.high{background:var(--red);box-shadow:0 0 5px rgba(255,69,96,.5);}
+    .event-dot.medium{background:var(--amber);}
+    .event-dot.low{background:var(--green);}
+    .event-date{font-family:var(--mono);font-size:.6rem;color:var(--muted);white-space:nowrap;width:54px;flex-shrink:0;padding-top:1px;}
+    .event-name{font-family:var(--mono);font-size:.7rem;color:var(--text);flex:1;line-height:1.35;}
+    .event-badge{font-family:var(--mono);font-size:.52rem;padding:1px 5px;border-radius:4px;flex-shrink:0;font-weight:600;}
+    .event-badge.today{background:rgba(255,69,96,.12);color:var(--red);}
+    .event-badge.tomorrow{background:rgba(255,184,48,.12);color:var(--amber);}
+    .high-impact-banner{display:flex;align-items:center;gap:8px;background:rgba(255,69,96,.08);border:1px solid rgba(255,69,96,.22);border-radius:10px;padding:9px 14px;margin-bottom:12px;font-family:var(--mono);font-size:.72rem;color:var(--red);animation:bannerPulse 2.5s ease-in-out infinite;}
+    @keyframes bannerPulse{0%,100%{border-color:rgba(255,69,96,.22);}50%{border-color:rgba(255,69,96,.45);}}
+    .news-feed{max-height:190px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+    .news-feed::-webkit-scrollbar{width:4px;}
+    .news-feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+    .news-item{padding:8px 4px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+    .news-item:last-child{border-bottom:none;}
+    .news-item:hover{background:var(--faint);}
+    .news-headline{font-size:.75rem;color:var(--text);line-height:1.4;margin-bottom:3px;}
+    .news-meta{font-family:var(--mono);font-size:.58rem;color:var(--muted);}
+    .events-sub-label{font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.55rem;display:flex;align-items:center;gap:8px;}
+    .events-sub-label::after{content:'';flex:1;height:1px;background:var(--border);}
 </style>
 </head>
 <body>
@@ -912,6 +943,31 @@ function _oldCheckDisclaimer() {
       <div id="market-status" style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:4px;">—</div>
       <div id="market-bar" style="height:3px;background:var(--border);border-radius:2px;margin-top:0.75rem;overflow:hidden;">
         <div id="market-fill" style="height:100%;background:var(--accent);border-radius:2px;width:0%;transition:width 1s;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Market Events & Alerts -->
+  <div id="market-events-section" style="margin-bottom:2rem;">
+    <div id="high-impact-banner" class="high-impact-banner" style="display:none;">
+      <span>⚠️</span> <span id="high-impact-text">High Impact Event — Trade with caution</span>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <div class="ct" style="margin:0;">Market Events &amp; Alerts</div>
+        <span id="events-updated" style="font-family:var(--mono);font-size:.58rem;color:var(--muted);"></span>
+      </div>
+
+      <!-- Economic calendar -->
+      <div class="events-sub-label">Economic Calendar</div>
+      <div class="events-list" id="events-list">
+        <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);padding:.4rem;">Loading events…</div>
+      </div>
+
+      <!-- Political & macro news -->
+      <div class="events-sub-label" style="margin-top:1rem;">Political &amp; Macro News</div>
+      <div class="news-feed" id="market-news-list">
+        <div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);padding:.4rem;">Loading news…</div>
       </div>
     </div>
   </div>
@@ -3431,6 +3487,177 @@ function stopLivePnl() {
   if (el) { el.textContent = ''; }
 }
 
+
+// ── Market Events & Alerts ────────────────────────────────────────────────────
+const KNOWN_EVENTS = [
+  { date: '2026-05-27', event: 'Memorial Day (Market Holiday)',  impact: 'low'    },
+  { date: '2026-05-28', event: 'Consumer Confidence',           impact: 'medium'  },
+  { date: '2026-06-03', event: 'ISM Manufacturing PMI',         impact: 'medium'  },
+  { date: '2026-06-05', event: 'Nonfarm Payrolls (May)',         impact: 'high'    },
+  { date: '2026-06-10', event: 'CPI Report (May)',               impact: 'high'    },
+  { date: '2026-06-11', event: 'FOMC Meeting Begins',           impact: 'high'    },
+  { date: '2026-06-12', event: 'FOMC Rate Decision + Presser',  impact: 'high'    },
+  { date: '2026-06-13', event: 'PPI (May)',                      impact: 'medium'  },
+  { date: '2026-06-17', event: 'Retail Sales (May)',             impact: 'medium'  },
+  { date: '2026-06-26', event: 'GDP Q1 Final Estimate',         impact: 'high'    },
+  { date: '2026-07-02', event: 'Nonfarm Payrolls (June)',        impact: 'high'    },
+  { date: '2026-07-04', event: 'Independence Day (Holiday)',     impact: 'low'     },
+  { date: '2026-07-08', event: 'CPI Report (June)',              impact: 'high'    },
+  { date: '2026-07-09', event: 'FOMC Minutes',                   impact: 'medium'  },
+  { date: '2026-07-14', event: 'Retail Sales (June)',            impact: 'medium'  },
+  { date: '2026-07-29', event: 'FOMC Rate Decision',            impact: 'high'    },
+  { date: '2026-07-30', event: 'GDP Q2 Advance Estimate',       impact: 'high'    },
+];
+
+const NEWS_KEYWORDS = ['tariff','tariffs','trade war','trade deal','trade policy','trump','federal reserve',
+  'fed rate','rate cut','rate hike','inflation','cpi','ppi','gdp','earnings','interest rate','fomc',
+  'powell','economic','stimulus','sanctions','deficit','recession','jobs report','nonfarm','payroll'];
+
+async function fetchEconomicCalendar() {
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+  const toDate  = new Date(today.getTime() + 45 * 86400000).toISOString().split('T')[0];
+  try {
+    const url = `https://finnhub.io/api/v1/calendar/economic?from=${todayStr}&to=${toDate}&token=demo`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) throw new Error('non-200');
+    const data = await res.json();
+    const raw  = data.economicCalendar || [];
+    const events = raw
+      .filter(e => (e.country || '').toUpperCase() === 'US')
+      .map(e => {
+        const d = e.time ? e.time.slice(0, 10) : '';
+        return { date: d, event: e.event || '', impact: (e.impact || 'low').toLowerCase() };
+      })
+      .filter(e => e.date >= todayStr)
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(0, 18);
+    if (events.length >= 3) return events;
+    throw new Error('too few');
+  } catch(_) {
+    return KNOWN_EVENTS.filter(e => e.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date));
+  }
+}
+
+function renderEconomicCalendar(events) {
+  const list   = document.getElementById('events-list');
+  const banner = document.getElementById('high-impact-banner');
+  const hiText = document.getElementById('high-impact-text');
+  if (!list) return;
+
+  const todayStr    = new Date().toISOString().split('T')[0];
+  const tomorrowStr = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+
+  const highSoon = events.filter(e => e.impact === 'high' && (e.date === todayStr || e.date === tomorrowStr));
+  if (banner) {
+    banner.style.display = highSoon.length ? 'flex' : 'none';
+    if (hiText && highSoon.length) {
+      const names = highSoon.map(e => e.event).join(' · ');
+      const when  = highSoon.some(e => e.date === todayStr) ? 'Today' : 'Tomorrow';
+      hiText.textContent = `High Impact Event ${when}: ${names} — Trade with caution`;
+    }
+  }
+
+  if (!events.length) {
+    list.innerHTML = '<div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);padding:.4rem;">No upcoming events found.</div>';
+    return;
+  }
+
+  list.innerHTML = events.map(e => {
+    const d       = new Date(e.date + 'T12:00:00');
+    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const isToday    = e.date === todayStr;
+    const isTomorrow = e.date === tomorrowStr;
+    const badge = isToday    ? '<span class="event-badge today">TODAY</span>'
+                : isTomorrow ? '<span class="event-badge tomorrow">TMW</span>'
+                : '';
+    return `<div class="event-item ${e.impact}">
+      <div class="event-dot ${e.impact}"></div>
+      <div class="event-date">${dateStr}</div>
+      <div class="event-name">${e.event}</div>
+      ${badge}
+    </div>`;
+  }).join('');
+
+  const upd = document.getElementById('events-updated');
+  if (upd) upd.textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
+
+async function fetchMarketNews() {
+  const RSS = 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EGSPC&region=US&lang=en-US';
+  const PROXIES = [
+    `https://api.allorigins.win/get?url=${encodeURIComponent(RSS)}`,
+    `https://corsproxy.io/?${encodeURIComponent(RSS)}`,
+  ];
+  let xml = null;
+  for (const proxy of PROXIES) {
+    try {
+      const res = await fetch(proxy, { signal: AbortSignal.timeout(7000) });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const body = data.contents || (typeof data === 'string' ? data : '');
+      if (body.includes('<item>')) { xml = body; break; }
+    } catch(_) {}
+  }
+
+  if (!xml) { renderMarketNews(fallbackNews()); return; }
+
+  try {
+    const doc   = new DOMParser().parseFromString(xml, 'text/xml');
+    const items = [...doc.querySelectorAll('item')].slice(0, 60).map(n => ({
+      title:   n.querySelector('title')?.textContent?.trim()   || '',
+      link:    n.querySelector('link')?.textContent?.trim()    || '#',
+      pubDate: n.querySelector('pubDate')?.textContent?.trim() || '',
+    }));
+    const filtered = items.filter(({ title }) => {
+      const t = title.toLowerCase();
+      return NEWS_KEYWORDS.some(kw => t.includes(kw));
+    }).slice(0, 8);
+    renderMarketNews(filtered.length ? filtered : fallbackNews());
+  } catch(_) {
+    renderMarketNews(fallbackNews());
+  }
+}
+
+function fallbackNews() {
+  return [
+    { title: 'Fed officials signal patience on rate cuts amid sticky inflation', pubDate: '', link: '#' },
+    { title: 'Trade policy uncertainty continues to weigh on market sentiment',  pubDate: '', link: '#' },
+    { title: 'CPI data closely watched as inflation remains above target',        pubDate: '', link: '#' },
+    { title: 'FOMC minutes: committee cautious on timing of future cuts',         pubDate: '', link: '#' },
+  ];
+}
+
+function renderMarketNews(items) {
+  const el = document.getElementById('market-news-list');
+  if (!el) return;
+  if (!items.length) {
+    el.innerHTML = '<div style="font-family:var(--mono);font-size:.7rem;color:var(--muted);padding:.4rem;">No matching news found.</div>';
+    return;
+  }
+  el.innerHTML = items.map(({ title, pubDate, link }) => {
+    let ageStr = '';
+    if (pubDate) {
+      const ms  = Date.now() - new Date(pubDate).getTime();
+      const min = Math.round(ms / 60000);
+      ageStr = min < 60 ? `${min}m ago` : min < 1440 ? `${Math.round(min/60)}h ago`
+             : new Date(pubDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+    const safe = title.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const href = (link && link !== '#') ? `window.open('${link}','_blank')` : '';
+    return `<div class="news-item" ${href ? `onclick="${href}"` : ''}>
+      <div class="news-headline">${safe}</div>
+      ${ageStr ? `<div class="news-meta">${ageStr}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+async function initMarketEvents() {
+  const [events] = await Promise.all([fetchEconomicCalendar(), fetchMarketNews()]);
+  renderEconomicCalendar(events);
+}
+initMarketEvents();
+setInterval(initMarketEvents, 5 * 60 * 1000);
 
 // ── Logout ────────────────────────────────────────────────────────────────────
 function logout() {
