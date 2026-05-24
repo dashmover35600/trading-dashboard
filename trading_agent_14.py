@@ -54,7 +54,7 @@ IMESSAGE_TO       = os.environ.get("TRADING_PHONE", "+1XXXXXXXXXX")
 MARKET_TZ         = pytz.timezone("America/New_York")
 MARKET_OPEN       = datetime.time(9, 30)
 DRIVE_END         = datetime.time(9, 35)   # opening drive window
-CUTOFF            = datetime.time(12, 45)  # hard close — no holding into lunch
+CUTOFF            = datetime.time(12, 0)   # hard close — no new entries after noon
 DEAD_ZONE_START   = datetime.time(11, 30)
 DEAD_ZONE_END     = datetime.time(12, 0)   # shorter dead zone
 SERVER_PORT       = 8765
@@ -1126,7 +1126,7 @@ if __name__ == "__main__":
     print(f"  Sizes       : ${POS_BASE:.0f} / ${POS_MEDIUM:.0f} / ${POS_HIGH:.0f} (score 6/7/9+)")
     print(f"  Target      : {GAIN_TARGET_PCT*100:.1f}% | Stop: {STOP_LOSS_PCT*100:.2f}%")
     print(f"  Trail       : Activates at +{TRAIL_TRIGGER_PCT*100:.1f}%")
-    print(f"  Hard cutoff : 12:45 PM ET")
+    print(f"  Hard cutoff : 12:00 PM ET")
     print(f"  Dashboard   : http://localhost:{SERVER_PORT}")
     print(f"  Trade log   : {LOG_FILE}")
     print("=" * 60)

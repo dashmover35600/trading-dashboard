@@ -100,7 +100,7 @@ TRAIL_STOP_PCT    = 0.003
 BREAKEVEN_TRIGGER = 0.005
 
 TRADE_START = datetime.time(9, 30)
-TRADE_END   = datetime.time(13, 0)
+TRADE_END   = datetime.time(12, 0)
 
 SWEEP_MIN_SCORE  = [3, 4, 5]
 SWEEP_ATR_STOP   = [0.8, 1.0, 1.2]
