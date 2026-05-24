@@ -747,7 +747,7 @@ function _oldCheckDisclaimer() {
     .events-list{max-height:210px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
     .events-list::-webkit-scrollbar{width:4px;}
     .events-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-    .event-item{display:flex;align-items:flex-start;gap:9px;padding:7px 10px 7px 12px;border-radius:7px;margin-bottom:4px;border-left:3px solid;transition:background .15s;}
+    .event-item{display:flex;align-items:flex-start;gap:9px;padding:7px 10px 7px 12px;border-radius:7px;margin-bottom:4px;border-left:3px solid;transition:background .15s;text-decoration:none;color:inherit;cursor:pointer;}
     .event-item:hover{background:var(--faint);}
     .event-item.high{border-left-color:var(--red);}
     .event-item.medium{border-left-color:var(--amber);}
@@ -766,7 +766,7 @@ function _oldCheckDisclaimer() {
     .news-feed{max-height:190px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
     .news-feed::-webkit-scrollbar{width:4px;}
     .news-feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-    .news-item{padding:8px 4px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+    .news-item{display:block;padding:8px 4px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;text-decoration:none;color:inherit;}
     .news-item:last-child{border-bottom:none;}
     .news-item:hover{background:var(--faint);}
     .news-headline{font-size:.75rem;color:var(--text);line-height:1.4;margin-bottom:3px;}
@@ -3571,12 +3571,13 @@ function renderEconomicCalendar(events) {
     const badge = isToday    ? '<span class="event-badge today">TODAY</span>'
                 : isTomorrow ? '<span class="event-badge tomorrow">TMW</span>'
                 : '';
-    return `<div class="event-item ${e.impact}">
+    const calUrl = `https://www.investing.com/economic-calendar/`;
+    return `<a class="event-item ${e.impact}" href="${calUrl}" target="_blank" rel="noopener">
       <div class="event-dot ${e.impact}"></div>
       <div class="event-date">${dateStr}</div>
       <div class="event-name">${e.event}</div>
       ${badge}
-    </div>`;
+    </a>`;
   }).join('');
 
   const upd = document.getElementById('events-updated');
@@ -3644,11 +3645,11 @@ function renderMarketNews(items) {
              : new Date(pubDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
     const safe = title.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const href = (link && link !== '#') ? `window.open('${link}','_blank')` : '';
-    return `<div class="news-item" ${href ? `onclick="${href}"` : ''}>
+    const href = (link && link !== '#') ? link : 'https://finance.yahoo.com/topic/stock-market-news/';
+    return `<a class="news-item" href="${href}" target="_blank" rel="noopener">
       <div class="news-headline">${safe}</div>
       ${ageStr ? `<div class="news-meta">${ageStr}</div>` : ''}
-    </div>`;
+    </a>`;
   }).join('');
 }
 
