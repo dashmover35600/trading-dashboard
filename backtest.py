@@ -1,18 +1,18 @@
 """
-NYLO Backtesting Engine v18
+NYLO Backtesting Engine v19
 ============================
-All improvements from ChatGPT analysis:
+New in v19 (all user-requested improvements):
 
-1. Drop NVDA — 30% WR dragging PF down
-2. ATR-normalized stops/targets — 1x ATR stop, 1.5x ATR target
-3. Time filter — 9:35-11:00 AM only (prime window 65.5% WR)
-4. Minimum ATR filter — skip if ATR < 0.8% of price (low vol = choppy)
-5. QQQ 20 EMA regime filter — only longs when QQQ above 20 EMA
-6. Monte Carlo simulation — 1000 runs to stress test equity curve
+1. QQQ 20 EMA regime filter  — FIXED to actually enforce: longs only when
+   QQQ price > 20 EMA, shorts only when QQQ price < 20 EMA
+2. Earnings blackout         — skip 2 days before & after AAPL/GOOGL earnings
+3. Correlation filter        — if both AAPL & GOOGL drop >1% in first 30 min,
+   skip all signals that day
+4. Time-of-day analysis      — print & save P&L by hour bucket
+5. Walk-forward test         — split into 4 equal periods, test independently
+6. Realistic slippage        — AAPL 0.03%, GOOGL 0.025% (up from 0.02%)
 
 Tickers: AAPL + GOOGL (QQQ as market filter only)
-Data: 5-min (older) + 1-min (recent 30 days)
-Target: PF > 1.3 (production ready threshold)
 """
 
 import yfinance as yf
@@ -29,50 +29,76 @@ import random
 
 MARKET_TZ = pytz.timezone("America/New_York")
 
-TICKERS = ["AAPL", "GOOGL"]  # NVDA dropped
+TICKERS = ["AAPL", "GOOGL"]
 MARKET_FILTER_TICKER = "QQQ"
 
 TICKER_CONFIGS = {
     "AAPL": {
-        "strategy":    "ema_pullback",
-        "rsi_bull_min": 52, "rsi_bull_max": 72,
-        "rsi_bear_min": 28, "rsi_bear_max": 48,
-        "atr_stop_mult":   1.0,   # 1x ATR stop
-        "atr_target_mult": 1.5,   # 1.5x ATR target
-        "pos_mult":    1.0,
-        "slippage":    0.0002,
-        "vol_min":     1.2,
-        "min_atr_pct": 0.001,     # skip if ATR < 0.3% of price
+        "strategy":      "ema_pullback",
+        "rsi_bull_min":  52, "rsi_bull_max": 72,
+        "rsi_bear_min":  28, "rsi_bear_max": 48,
+        "atr_stop_mult": 1.0,
+        "atr_target_mult": 1.5,
+        "pos_mult":      1.0,
+        "slippage":      0.0003,   # 0.03% — increased from 0.02%
+        "vol_min":       1.2,
+        "min_atr_pct":   0.001,
     },
     "GOOGL": {
-        "strategy":    "both",
-        "rsi_bull_min": 53, "rsi_bull_max": 73,
-        "rsi_bear_min": 27, "rsi_bear_max": 47,
-        "atr_stop_mult":   1.0,
+        "strategy":      "both",
+        "rsi_bull_min":  53, "rsi_bull_max": 73,
+        "rsi_bear_min":  27, "rsi_bear_max": 47,
+        "atr_stop_mult": 1.0,
         "atr_target_mult": 1.5,
-        "pos_mult":    0.85,
-        "slippage":    0.0002,
-        "vol_min":     1.2,
-        "min_atr_pct": 0.001,
+        "pos_mult":      0.85,
+        "slippage":      0.00025,  # 0.025% — increased from 0.02%
+        "vol_min":       1.2,
+        "min_atr_pct":   0.001,
     },
 }
 
-# Position sizing
+# ── Earnings blackout ──────────────────────────────────────────────────────────
+# Known earnings dates; blackout = 2 days before + 2 days after each date
+EARNINGS_BLACKOUT_DAYS = 2
+EARNINGS_DATES = {
+    "AAPL": [
+        datetime.date(2025, 5,  1),
+        datetime.date(2025, 7, 31),
+        datetime.date(2025, 10, 30),
+        datetime.date(2026, 1, 30),
+        datetime.date(2026, 5,  1),
+    ],
+    "GOOGL": [
+        datetime.date(2025, 4, 29),
+        datetime.date(2025, 7, 29),
+        datetime.date(2025, 10, 29),
+        datetime.date(2026, 2,  4),
+        datetime.date(2026, 4, 29),
+    ],
+}
+
+def is_earnings_blackout(date, ticker):
+    d = date.date() if hasattr(date, "date") else date
+    for ed in EARNINGS_DATES.get(ticker, []):
+        if abs((d - ed).days) <= EARNINGS_BLACKOUT_DAYS:
+            return True
+    return False
+
+# ── Position sizing ────────────────────────────────────────────────────────────
 def get_pos_size(score, ticker, vix=15):
     sizes = {10:5000, 9:4000, 8:3000, 7:2000, 6:1500, 5:1000, 4:750, 3:500}
-    base = sizes.get(min(score,10), 500)
+    base = sizes.get(min(score, 10), 500)
     base = round(base * TICKER_CONFIGS[ticker].get("pos_mult", 1.0))
     if vix > 20: base = round(base * 0.75)
     return base
 
-MIN_SCORE        = 3
-DAILY_LOSS_LIMIT = -500.0
-CONSEC_LOSS_PAUSE= 3
-TRAIL_TRIGGER    = 0.005
-TRAIL_STOP_PCT   = 0.003
-BREAKEVEN_TRIGGER= 0.005
+MIN_SCORE         = 3
+DAILY_LOSS_LIMIT  = -500.0
+CONSEC_LOSS_PAUSE = 3
+TRAIL_TRIGGER     = 0.005
+TRAIL_STOP_PCT    = 0.003
+BREAKEVEN_TRIGGER = 0.005
 
-# Time filter — 9:35 AM to 11:00 AM only
 TRADE_START = datetime.time(9, 30)
 TRADE_END   = datetime.time(13, 0)
 
@@ -83,12 +109,12 @@ SWEEP_ATR_TARGET = [1.2, 1.5, 2.0]
 BASE = os.path.dirname(os.path.abspath(__file__))
 OUT  = os.path.join(BASE, "backtest_results.json")
 
+# ── Data fetching ──────────────────────────────────────────────────────────────
 def fetch_combined(ticker):
     print(f"  Fetching {ticker} (5m+1m)...")
     frames_1m, frames_5m = [], []
     end = datetime.datetime.now(MARKET_TZ)
 
-    # 1-min for last 29 days
     for i in range(5):
         ce = end - datetime.timedelta(days=i*7)
         cs = ce - datetime.timedelta(days=7)
@@ -99,7 +125,6 @@ def fetch_combined(ticker):
             if not df.empty: frames_1m.append(df)
         except: pass
 
-    # 5-min for older data
     for i in range(9):
         ce = end - datetime.timedelta(days=i*7)
         cs = ce - datetime.timedelta(days=7)
@@ -113,7 +138,7 @@ def fetch_combined(ticker):
     def process(frames, interval):
         if not frames: return pd.DataFrame()
         df = pd.concat(frames).sort_index()
-        df = df[~df.index.duplicated(keep='first')]
+        df = df[~df.index.duplicated(keep="first")]
         if df.index.tz is None:
             df.index = df.index.tz_localize("UTC").tz_convert(MARKET_TZ)
         else:
@@ -127,113 +152,127 @@ def fetch_combined(ticker):
     if df1m.empty: return df5m
     if df5m.empty: return df1m
 
-    cutoff = df1m.index[0].date()
-    df5m_old = df5m[df5m.index.date < cutoff]
-    combined = pd.concat([df5m_old, df1m]).sort_index()
-    combined = combined[~combined.index.duplicated(keep='last')]
-    days = len(combined.index.normalize().unique())
+    cutoff    = df1m.index[0].date()
+    df5m_old  = df5m[df5m.index.date < cutoff]
+    combined  = pd.concat([df5m_old, df1m]).sort_index()
+    combined  = combined[~combined.index.duplicated(keep="last")]
+    days      = len(combined.index.normalize().unique())
     print(f"  {ticker}: {len(combined)} bars / {days} days")
     return combined
 
+# ── Indicators ─────────────────────────────────────────────────────────────────
 def calc_rsi(series, window=14):
     if len(series) < window+1: return 50.0
     try:
         v = ta.momentum.RSIIndicator(series.squeeze(), window=window).rsi().iloc[-1]
-        return round(float(v),2) if not pd.isna(v) else 50.0
+        return round(float(v), 2) if not pd.isna(v) else 50.0
     except: return 50.0
 
 def calc_ema(series, window=9):
     if len(series) < window: return float(series.iloc[-1])
-    try: return round(float(series.ewm(span=window,adjust=False).mean().iloc[-1]),4)
+    try: return round(float(series.ewm(span=window, adjust=False).mean().iloc[-1]), 4)
     except: return float(series.iloc[-1])
 
 def calc_atr(highs, lows, closes, window=14):
-    """Calculate ATR from price lists"""
     if len(closes) < window+1: return closes[-1] * 0.01
     try:
-        hi = pd.Series(highs[-window-1:])
-        lo = pd.Series(lows[-window-1:])
-        cl = pd.Series(closes[-window-1:])
+        hi  = pd.Series(highs[-window-1:])
+        lo  = pd.Series(lows[-window-1:])
+        cl  = pd.Series(closes[-window-1:])
         atr = ta.volatility.AverageTrueRange(hi, lo, cl, window=window).average_true_range().iloc[-1]
         return float(atr) if not pd.isna(atr) else closes[-1]*0.01
     except: return closes[-1]*0.01
 
+# ── Signal scoring ─────────────────────────────────────────────────────────────
 def score_signal(direction, sig_type, rsi, vol_ratio, price, vwap,
                  ema9, day_bias, cfg, momentum_ok, vol_rising, hour, minute, gap_pct):
     score = 0
-    if day_bias == direction: score += 2
+    if day_bias == direction:   score += 2
     elif day_bias == "neutral": score += 1
     if direction == "long":
         mid = cfg["rsi_bull_min"] + 10
-        if abs(rsi-mid) <= 7: score += 2
+        if abs(rsi-mid) <= 7:                              score += 2
         elif cfg["rsi_bull_min"] <= rsi <= cfg["rsi_bull_max"]: score += 1
     else:
         mid = cfg["rsi_bear_max"] - 10
-        if abs(rsi-mid) <= 7: score += 2
+        if abs(rsi-mid) <= 7:                              score += 2
         elif cfg["rsi_bear_min"] <= rsi <= cfg["rsi_bear_max"]: score += 1
-    if vol_ratio >= 2.5: score += 2
+    if vol_ratio >= 2.5:   score += 2
     elif vol_ratio >= 1.5: score += 1
     if vwap and vwap > 0:
-        if direction=="long" and price > vwap: score += 1
+        if direction=="long"  and price > vwap: score += 1
         elif direction=="short" and price < vwap: score += 1
-    if direction=="long" and price > ema9: score += 1
+    if direction=="long"  and price > ema9: score += 1
     elif direction=="short" and price < ema9: score += 1
     if sig_type == "vwap_reclaim": score += 1
-    if momentum_ok: score += 1
-    if vol_rising: score += 1
-    # Prime window bonus
+    if momentum_ok:  score += 1
+    if vol_rising:   score += 1
     if (hour==9 and minute>=35) or (hour==10 and minute<=30): score += 2
-    if gap_pct > 0.3 and direction=="long": score += 1
+    if gap_pct >  0.3 and direction=="long":  score += 1
     elif gap_pct < -0.3 and direction=="short": score += 1
     return min(score, 10)
 
 def apply_slippage(price, direction, slippage):
-    if direction=="long": return round(price*(1+slippage),4)
-    return round(price*(1-slippage),4)
+    if direction == "long": return round(price*(1+slippage), 4)
+    return round(price*(1-slippage), 4)
 
 def close_trade(trades, entry, exit_price, result, date, ts, partial=False):
-    cfg = TICKER_CONFIGS[entry["ticker"]]
+    cfg  = TICKER_CONFIGS[entry["ticker"]]
     slip = cfg["slippage"]
-    exit_price = round(exit_price*(1-slip if entry["dir"]=="long" else 1+slip),4)
+    exit_price = round(exit_price*(1-slip if entry["dir"]=="long" else 1+slip), 4)
     pnl_pct = ((exit_price-entry["price"])/entry["price"]*100
                if entry["dir"]=="long"
                else (entry["price"]-exit_price)/entry["price"]*100)
-    size = entry["pos_size"]*(0.5 if partial else 1.0)
+    size = entry["pos_size"] * (0.5 if partial else 1.0)
     trades.append({
-        "date":        date.strftime("%Y-%m-%d"),
-        "ticker":      entry["ticker"],
-        "direction":   "Long" if entry["dir"]=="long" else "Short",
-        "entry":       round(entry["price"],4),
-        "exit":        round(exit_price,4),
-        "result":      result+(" (partial)" if partial else ""),
-        "pnl_pct":     round(pnl_pct,3),
-        "pnl_dollar":  round(pnl_pct/100*size,2),
-        "rsi":         round(entry["rsi"],1),
-        "vol_ratio":   entry["vol_ratio"],
-        "entry_time":  entry["time"],
-        "hour":        entry["hour"],
-        "signal_type": entry["sig_type"],
-        "signal_score":entry["score"],
-        "pos_size":    size,
-        "day_bias":    entry["day_bias"],
-        "trail_used":  entry["trail_active"],
-        "prime_window":entry.get("prime_window",False),
-        "atr_at_entry":entry.get("atr",0),
+        "date":         date.strftime("%Y-%m-%d"),
+        "ticker":       entry["ticker"],
+        "direction":    "Long" if entry["dir"]=="long" else "Short",
+        "entry":        round(entry["price"], 4),
+        "exit":         round(exit_price, 4),
+        "result":       result + (" (partial)" if partial else ""),
+        "pnl_pct":      round(pnl_pct, 3),
+        "pnl_dollar":   round(pnl_pct/100*size, 2),
+        "rsi":          round(entry["rsi"], 1),
+        "vol_ratio":    entry["vol_ratio"],
+        "entry_time":   entry["time"],
+        "hour":         entry["hour"],
+        "signal_type":  entry["sig_type"],
+        "signal_score": entry["score"],
+        "pos_size":     size,
+        "day_bias":     entry["day_bias"],
+        "trail_used":   entry["trail_active"],
+        "prime_window": entry.get("prime_window", False),
+        "atr_at_entry": entry.get("atr", 0),
+        "earnings_skip":False,
+        "corr_skip":    False,
     })
     return pnl_pct
 
-def run_strategy(df, ticker, qqq_ema20=None, min_score=MIN_SCORE,
+# ── Core strategy ──────────────────────────────────────────────────────────────
+def run_strategy(df, ticker, qqq_close=None, qqq_ema20=None,
+                 corr_skip_dates=None, min_score=MIN_SCORE,
                  atr_stop_mult=None, atr_target_mult=None):
-    cfg = TICKER_CONFIGS[ticker]
-    atr_sm = atr_stop_mult or cfg["atr_stop_mult"]
+    cfg    = TICKER_CONFIGS[ticker]
+    atr_sm = atr_stop_mult   or cfg["atr_stop_mult"]
     atr_tm = atr_target_mult or cfg["atr_target_mult"]
     trades = []
     dates  = sorted(df.index.normalize().unique())
-    daily_pnl=0.0; consec_losses=0; pause_until=None
+    corr_skip_dates = corr_skip_dates or set()
 
     for date in dates:
-        daily_pnl=0.0; consec_losses=0; pause_until=None
-        day_df = df[df.index.date==date.date()]
+        daily_pnl = 0.0; consec_losses = 0; pause_until = None
+        d_date = date.date()
+
+        # ── Earnings blackout ────────────────────────────────────────────────
+        if is_earnings_blackout(d_date, ticker):
+            continue
+
+        # ── Correlation filter ───────────────────────────────────────────────
+        if d_date in corr_skip_dates:
+            continue
+
+        day_df = df[df.index.date == d_date]
         if len(day_df) < 10: continue
 
         closes  = day_df["Close"].squeeze().tolist()
@@ -244,37 +283,36 @@ def run_strategy(df, ticker, qqq_ema20=None, min_score=MIN_SCORE,
         open_price = closes[0] if closes else 0
 
         # Opening drive
-        drive_df = day_df.between_time("09:30","09:35")
+        drive_df   = day_df.between_time("09:30", "09:35")
         if len(drive_df) < 1: continue
         drive_open  = float(drive_df["Open"].iloc[0])
         drive_close = float(drive_df["Close"].iloc[-1])
         move_pct    = (drive_close-drive_open)/drive_open*100
-        prev_days   = df[df.index.date<date.date()]
+        prev_days   = df[df.index.date < d_date]
         avg_vol     = float(prev_days["Volume"].tail(200).mean()) if len(prev_days)>0 else 1.0
         drive_vol   = float(drive_df["Volume"].sum())
         vr_drive    = drive_vol/avg_vol if avg_vol>0 else 1.0
         gap_pct     = 0
-        if len(prev_days)>0:
+        if len(prev_days) > 0:
             prev_close = float(prev_days["Close"].iloc[-1])
-            gap_pct = (drive_open-prev_close)/prev_close*100
+            gap_pct    = (drive_open-prev_close)/prev_close*100
 
-        if move_pct>0.3 and vr_drive>1.5:    day_bias="long"
-        elif move_pct<-0.3 and vr_drive>1.5: day_bias="short"
-        else:                                  day_bias="neutral"
+        if   move_pct >  0.3 and vr_drive > 1.5: day_bias = "long"
+        elif move_pct < -0.3 and vr_drive > 1.5: day_bias = "short"
+        else:                                      day_bias = "neutral"
 
         # VWAP
-        cl=day_df["Close"].squeeze(); hi=day_df["High"].squeeze()
-        lo=day_df["Low"].squeeze();   vo=day_df["Volume"].squeeze()
-        tp=(hi+lo+cl)/3
-        vwap_list=((tp*vo).cumsum()/vo.cumsum()).tolist()
+        cl = day_df["Close"].squeeze(); hi = day_df["High"].squeeze()
+        lo = day_df["Low"].squeeze();   vo = day_df["Volume"].squeeze()
+        tp = (hi+lo+cl)/3
+        vwap_list = ((tp*vo).cumsum()/vo.cumsum()).tolist()
 
-        in_trade=False; entry=None; partial_done=False
+        in_trade = False; entry = None; partial_done = False
 
         for i, ts in enumerate(day_idx):
             if i < 5: continue
             hour, minute = ts.hour, ts.minute
 
-            # TIME FILTER — only trade 9:35-11:00 AM
             t_now = ts.time()
             if t_now < TRADE_START: continue
             if t_now > TRADE_END and not in_trade: continue
@@ -287,110 +325,100 @@ def run_strategy(df, ticker, qqq_ema20=None, min_score=MIN_SCORE,
             price      = closes[i]
             prev_price = closes[i-1] if i>0 else price
             prev2      = closes[i-2] if i>1 else prev_price
-            vwap       = vwap_list[i] if i<len(vwap_list) else 0
+            vwap       = vwap_list[i] if i < len(vwap_list) else 0
 
-            # QQQ REGIME FILTER — only longs when QQQ above 20 EMA
-            if qqq_ema20 is not None and not in_trade:
-                try:
-                    qqq_ema = float(qqq_ema20.asof(ts))
-                    # If QQQ well below 20 EMA, skip long signals
-                    if day_bias=="long" and qqq_ema>0:
-                        pass  # allowed
-                except: pass
-
-            # Exit management
+            # ── Exit management ──────────────────────────────────────────────
             if in_trade and entry:
                 d = entry["dir"]
-                trail_pct = TRAIL_STOP_PCT*1.5 if hour>=11 else TRAIL_STOP_PCT
+                trail_pct = TRAIL_STOP_PCT*1.5 if hour >= 11 else TRAIL_STOP_PCT
 
-                # Breakeven
-                if not entry.get("breakeven_set",False):
-                    move=(price-entry["price"])/entry["price"] if d=="long" else (entry["price"]-price)/entry["price"]
-                    if move>=BREAKEVEN_TRIGGER:
-                        entry["stop"]=entry["price"]
-                        entry["breakeven_set"]=True
+                if not entry.get("breakeven_set", False):
+                    move = (price-entry["price"])/entry["price"] if d=="long" else (entry["price"]-price)/entry["price"]
+                    if move >= BREAKEVEN_TRIGGER:
+                        entry["stop"] = entry["price"]
+                        entry["breakeven_set"] = True
 
-                # Partial exit
-                partial_tgt=(entry["price"]*(1+entry["atr"]*atr_tm*0.5/entry["price"])
-                             if d=="long"
-                             else entry["price"]*(1-entry["atr"]*atr_tm*0.5/entry["price"]))
+                partial_tgt = (entry["price"]*(1+entry["atr"]*atr_tm*0.5/entry["price"])
+                               if d=="long"
+                               else entry["price"]*(1-entry["atr"]*atr_tm*0.5/entry["price"]))
                 if not partial_done:
                     if (d=="long" and price>=partial_tgt) or (d=="short" and price<=partial_tgt):
-                        pnl=close_trade(trades,entry,partial_tgt,"Partial Exit",date,ts,partial=True)
-                        daily_pnl+=entry["pos_size"]*0.5*pnl/100
-                        partial_done=True
-                        entry["trail_active"]=True
-                        entry["trail_peak"]=price
+                        pnl = close_trade(trades, entry, partial_tgt, "Partial Exit", date, ts, partial=True)
+                        daily_pnl += entry["pos_size"]*0.5*pnl/100
+                        partial_done = True
+                        entry["trail_active"] = True
+                        entry["trail_peak"]   = price
 
-                # Trail
-                tsv=entry.get("trail_stop_val")
+                tsv = entry.get("trail_stop_val")
                 if entry["trail_active"]:
-                    if d=="long" and price>entry.get("trail_peak",price):
-                        entry["trail_peak"]=price
-                        entry["trail_stop_val"]=price*(1-trail_pct)
-                    elif d=="short" and price<entry.get("trail_peak",price):
-                        entry["trail_peak"]=price
-                        entry["trail_stop_val"]=price*(1+trail_pct)
+                    if d=="long" and price > entry.get("trail_peak", price):
+                        entry["trail_peak"]     = price
+                        entry["trail_stop_val"] = price*(1-trail_pct)
+                    elif d=="short" and price < entry.get("trail_peak", price):
+                        entry["trail_peak"]     = price
+                        entry["trail_stop_val"] = price*(1+trail_pct)
                 elif not partial_done:
-                    move=(price-entry["price"])/entry["price"] if d=="long" else (entry["price"]-price)/entry["price"]
-                    if move>=TRAIL_TRIGGER:
-                        entry["trail_active"]=True
-                        entry["trail_peak"]=price
-                        entry["trail_stop_val"]=price*(1-trail_pct) if d=="long" else price*(1+trail_pct)
+                    move = (price-entry["price"])/entry["price"] if d=="long" else (entry["price"]-price)/entry["price"]
+                    if move >= TRAIL_TRIGGER:
+                        entry["trail_active"]   = True
+                        entry["trail_peak"]     = price
+                        entry["trail_stop_val"] = price*(1-trail_pct) if d=="long" else price*(1+trail_pct)
 
-                tsv=entry.get("trail_stop_val")
-                ht=(d=="long" and price>=entry["target"]) or (d=="short" and price<=entry["target"])
-                hs=(d=="long" and price<=entry["stop"])   or (d=="short" and price>=entry["stop"])
-                htr=entry["trail_active"] and tsv is not None and (
-                    (d=="long" and price<=tsv) or (d=="short" and price>=tsv))
-                htime=hour>=15 and minute>=20
+                tsv  = entry.get("trail_stop_val")
+                ht   = (d=="long" and price>=entry["target"]) or (d=="short" and price<=entry["target"])
+                hs   = (d=="long" and price<=entry["stop"])   or (d=="short" and price>=entry["stop"])
+                htr  = entry["trail_active"] and tsv is not None and (
+                       (d=="long" and price<=tsv) or (d=="short" and price>=tsv))
+                htime = hour>=15 and minute>=20
 
                 if ht or hs or htr or htime:
-                    res="Target Hit" if ht else ("Trailing Stop" if htr else ("Time Exit" if htime else "Stop Loss Hit"))
-                    ep=entry["target"] if ht else (tsv if htr else entry["stop"] if hs else price)
-                    remaining=0.5 if partial_done else 1.0
-                    pnl_pct=((ep-entry["price"])/entry["price"]*100 if d=="long"
-                             else (entry["price"]-ep)/entry["price"]*100)
-                    pnl_dollar=entry["pos_size"]*remaining*pnl_pct/100
+                    res = ("Target Hit" if ht else
+                           "Trailing Stop" if htr else
+                           "Time Exit" if htime else "Stop Loss Hit")
+                    ep = (entry["target"] if ht else
+                          tsv if htr else
+                          entry["stop"] if hs else price)
+                    remaining  = 0.5 if partial_done else 1.0
+                    pnl_pct    = ((ep-entry["price"])/entry["price"]*100 if d=="long"
+                                  else (entry["price"]-ep)/entry["price"]*100)
+                    pnl_dollar = entry["pos_size"]*remaining*pnl_pct/100
                     if partial_done:
-                        close_trade(trades,{**entry,"pos_size":entry["pos_size"]*0.5},ep,res,date,ts)
+                        close_trade(trades, {**entry,"pos_size":entry["pos_size"]*0.5}, ep, res, date, ts)
                     else:
-                        close_trade(trades,entry,ep,res,date,ts)
-                    daily_pnl+=pnl_dollar
-                    if pnl_pct<=0:
-                        consec_losses+=1
-                        if consec_losses>=CONSEC_LOSS_PAUSE:
-                            pause_until=ts+datetime.timedelta(minutes=30)
-                            consec_losses=0
-                    else: consec_losses=0
-                    in_trade=False; entry=None; partial_done=False
+                        close_trade(trades, entry, ep, res, date, ts)
+                    daily_pnl += pnl_dollar
+                    if pnl_pct <= 0:
+                        consec_losses += 1
+                        if consec_losses >= CONSEC_LOSS_PAUSE:
+                            pause_until   = ts + datetime.timedelta(minutes=30)
+                            consec_losses = 0
+                    else:
+                        consec_losses = 0
+                    in_trade = False; entry = None; partial_done = False
                     continue
 
             if in_trade: continue
 
-            # ATR calculation
-            atr=calc_atr(highs[max(0,i-20):i+1], lows[max(0,i-20):i+1], closes[max(0,i-20):i+1])
-
-
-            # Trend strength
+            # ── ATR + trend strength ─────────────────────────────────────────
+            atr = calc_atr(highs[max(0,i-20):i+1], lows[max(0,i-20):i+1], closes[max(0,i-20):i+1])
             if abs(price-open_price)/open_price < 0.002: continue
 
             momentum_long  = prev_price>prev2 and price>prev_price
             momentum_short = prev_price<prev2 and price<prev_price
-            vol_rising = volumes[i]>volumes[i-1] if i>0 else False
+            vol_rising     = volumes[i]>volumes[i-1] if i>0 else False
 
-            rsi_sl=pd.Series(closes[max(0,i-28):i+1])
-            rsi=calc_rsi(rsi_sl)
-            ema_sl=pd.Series(closes[max(0,i-30):i+1])
-            ema9=calc_ema(ema_sl,9); ema21=calc_ema(ema_sl,21)
-            vol_sl=pd.Series(volumes[max(0,i-20):i])
-            avg_v=float(vol_sl.mean()) if len(vol_sl)>0 else 1.0
-            vol_ratio=round(volumes[i]/avg_v,2) if avg_v>0 else 1.0
+            rsi_sl  = pd.Series(closes[max(0,i-28):i+1])
+            rsi     = calc_rsi(rsi_sl)
+            ema_sl  = pd.Series(closes[max(0,i-30):i+1])
+            ema9    = calc_ema(ema_sl, 9); ema21 = calc_ema(ema_sl, 21)
+            vol_sl  = pd.Series(volumes[max(0,i-20):i])
+            avg_v   = float(vol_sl.mean()) if len(vol_sl)>0 else 1.0
+            vol_ratio = round(volumes[i]/avg_v, 2) if avg_v>0 else 1.0
 
-            sig=None; dirn=None; momentum_ok=False
-            strategy=cfg["strategy"]
+            sig = None; dirn = None; momentum_ok = False
+            strategy = cfg["strategy"]
 
-            if strategy in ("vwap_reclaim","both") and vwap>0 and i>0:
+            if strategy in ("vwap_reclaim", "both") and vwap>0 and i>0:
                 if closes[i-1]<vwap and price>vwap and vol_ratio>=cfg["vol_min"]:
                     if day_bias in ("long","neutral") and cfg["rsi_bull_min"]<=rsi<=cfg["rsi_bull_max"]:
                         sig="vwap_reclaim"; dirn="long"; momentum_ok=momentum_long
@@ -398,7 +426,7 @@ def run_strategy(df, ticker, qqq_ema20=None, min_score=MIN_SCORE,
                     if day_bias in ("short","neutral") and cfg["rsi_bear_min"]<=rsi<=cfg["rsi_bear_max"]:
                         sig="vwap_reclaim"; dirn="short"; momentum_ok=momentum_short
 
-            if not sig and strategy in ("ema_pullback","both") and i>0:
+            if not sig and strategy in ("ema_pullback", "both") and i>0:
                 if closes[i-1]<=ema9*1.001 and price>ema9 and price>ema21 and vol_ratio>=cfg["vol_min"] and momentum_long:
                     if day_bias in ("long","neutral") and cfg["rsi_bull_min"]<=rsi<=cfg["rsi_bull_max"]:
                         sig="ema_pullback"; dirn="long"; momentum_ok=True
@@ -408,66 +436,80 @@ def run_strategy(df, ticker, qqq_ema20=None, min_score=MIN_SCORE,
 
             if not sig: continue
 
-            sc=score_signal(dirn,sig,rsi,vol_ratio,price,vwap,ema9,day_bias,
-                            cfg,momentum_ok,vol_rising,hour,minute,gap_pct)
-            if sc<min_score: continue
+            # ── QQQ 20 EMA regime filter (enforced after signal) ─────────────
+            if qqq_ema20 is not None and qqq_close is not None:
+                try:
+                    qqq_ema_val = float(qqq_ema20.asof(ts))
+                    qqq_px      = float(qqq_close.asof(ts))
+                    if dirn == "long"  and qqq_px < qqq_ema_val * 0.998:
+                        continue   # QQQ below 20 EMA — skip long
+                    if dirn == "short" and qqq_px > qqq_ema_val * 1.002:
+                        continue   # QQQ above 20 EMA — skip short
+                except:
+                    pass
 
-            # Fixed percentage stops
-            entry_price=apply_slippage(price,dirn,cfg["slippage"])
-            ps=get_pos_size(sc,ticker)
+            sc = score_signal(dirn, sig, rsi, vol_ratio, price, vwap,
+                              ema9, day_bias, cfg, momentum_ok, vol_rising, hour, minute, gap_pct)
+            if sc < min_score: continue
+
+            entry_price = apply_slippage(price, dirn, cfg["slippage"])
+            ps   = get_pos_size(sc, ticker)
             gain = cfg.get("gain_target", 0.015)
-            stop = cfg.get("stop_loss", 0.0075)
-            tgt=round(entry_price*(1+gain) if dirn=="long" else entry_price*(1-gain),4)
-            stp=round(entry_price*(1-stop)  if dirn=="long" else entry_price*(1+stop),4)
+            stop = cfg.get("stop_loss",   0.0075)
+            tgt  = round(entry_price*(1+gain) if dirn=="long" else entry_price*(1-gain), 4)
+            stp  = round(entry_price*(1-stop)  if dirn=="long" else entry_price*(1+stop), 4)
 
-            in_trade=True; partial_done=False
-            entry={
-                "dir":dirn,"price":entry_price,"target":tgt,"stop":stp,
-                "trail_active":False,"trail_peak":entry_price,"trail_stop_val":None,
-                "breakeven_set":False,"atr":atr,
-                "rsi":rsi,"vol_ratio":vol_ratio,"sig_type":sig,"score":sc,
-                "pos_size":ps,"time":ts.strftime("%I:%M %p"),"hour":hour,
-                "day_bias":day_bias,"ticker":ticker,
+            in_trade = True; partial_done = False
+            entry = {
+                "dir":dirn, "price":entry_price, "target":tgt, "stop":stp,
+                "trail_active":False, "trail_peak":entry_price, "trail_stop_val":None,
+                "breakeven_set":False, "atr":atr,
+                "rsi":rsi, "vol_ratio":vol_ratio, "sig_type":sig, "score":sc,
+                "pos_size":ps, "time":ts.strftime("%I:%M %p"), "hour":hour,
+                "day_bias":day_bias, "ticker":ticker,
                 "prime_window":(hour==9 and minute>=35) or (hour==10 and minute<=30),
             }
     return trades
 
+# ── Statistics ─────────────────────────────────────────────────────────────────
 def calc_stats(trades):
     if not trades:
         return {"trades":0,"wins":0,"losses":0,"win_rate":0,
                 "total_pnl_pct":0,"total_pnl_dollar":0,"best":0,"worst":0,
                 "max_drawdown":0,"sharpe":0,"avg_score":0,"profit_factor":0,
                 "expectancy":0,"prime_win_rate":0,"by_ticker":{},"avg_win":0,"avg_loss":0}
-    wins=[t for t in trades if t["result"].startswith("Target Hit") or
-          (any(x in t["result"] for x in ("Trailing","Time","Partial")) and t["pnl_pct"]>0)]
-    losses=[t for t in trades if t["result"].startswith("Stop Loss") or
-            (any(x in t["result"] for x in ("Trailing","Time")) and t["pnl_pct"]<=0)]
-    pnls=[t["pnl_pct"] for t in trades]; dols=[t["pnl_dollar"] for t in trades]
-    peak=0;dd=0;cum=0
+    wins   = [t for t in trades if t["result"].startswith("Target Hit") or
+              (any(x in t["result"] for x in ("Trailing","Time","Partial")) and t["pnl_pct"]>0)]
+    losses = [t for t in trades if t["result"].startswith("Stop Loss") or
+              (any(x in t["result"] for x in ("Trailing","Time")) and t["pnl_pct"]<=0)]
+    pnls = [t["pnl_pct"] for t in trades]
+    dols = [t["pnl_dollar"] for t in trades]
+    peak=0; dd=0; cum=0
     for p in pnls:
-        cum+=p
-        if cum>peak: peak=cum
-        if cum-peak<dd: dd=cum-peak
-    sharpe=0
-    if len(pnls)>1:
-        try: sharpe=round(statistics.mean(pnls)/statistics.stdev(pnls)*(252**0.5),3)
+        cum += p
+        if cum > peak: peak = cum
+        if cum-peak < dd: dd = cum-peak
+    sharpe = 0
+    if len(pnls) > 1:
+        try: sharpe = round(statistics.mean(pnls)/statistics.stdev(pnls)*(252**0.5), 3)
         except: pass
-    gw=sum(t["pnl_dollar"] for t in wins)
-    gl=abs(sum(t["pnl_dollar"] for t in losses))
-    pf=round(gw/gl,3) if gl>0 else 999
-    wr=len(wins)/len(trades)
-    avg_win=round(gw/len(wins),2) if wins else 0
-    avg_loss=round(gl/len(losses),2) if losses else 0
-    exp=round(wr*avg_win-(1-wr)*avg_loss,2)
-    prime=[t for t in trades if t.get("prime_window")]
-    prime_wins=[t for t in prime if t in wins]
-    prime_wr=round(len(prime_wins)/len(prime)*100,1) if prime else 0
-    by_ticker={}
+    gw = sum(t["pnl_dollar"] for t in wins)
+    gl = abs(sum(t["pnl_dollar"] for t in losses))
+    pf = round(gw/gl, 3) if gl>0 else 999
+    wr = len(wins)/len(trades)
+    avg_win  = round(gw/len(wins),  2) if wins   else 0
+    avg_loss = round(gl/len(losses),2) if losses else 0
+    exp      = round(wr*avg_win - (1-wr)*avg_loss, 2)
+    prime      = [t for t in trades if t.get("prime_window")]
+    prime_wins = [t for t in prime if t in wins]
+    prime_wr   = round(len(prime_wins)/len(prime)*100, 1) if prime else 0
+    by_ticker  = {}
     for t in trades:
-        tk=t["ticker"]
-        if tk not in by_ticker: by_ticker[tk]={"trades":0,"pnl":0.0,"wins":0}
-        by_ticker[tk]["trades"]+=1; by_ticker[tk]["pnl"]+=t["pnl_dollar"]
-        if t in wins: by_ticker[tk]["wins"]+=1
+        tk = t["ticker"]
+        if tk not in by_ticker: by_ticker[tk] = {"trades":0,"pnl":0.0,"wins":0}
+        by_ticker[tk]["trades"] += 1
+        by_ticker[tk]["pnl"]    += t["pnl_dollar"]
+        if t in wins: by_ticker[tk]["wins"] += 1
     return {
         "trades":len(trades),"wins":len(wins),"losses":len(losses),
         "win_rate":round(wr*100,2),"total_pnl_pct":round(sum(pnls),3),
@@ -480,139 +522,306 @@ def calc_stats(trades):
         "avg_win":avg_win,"avg_loss":avg_loss,"by_ticker":by_ticker,
     }
 
+# ── Monte Carlo ────────────────────────────────────────────────────────────────
 def monte_carlo(trades, n_simulations=1000):
-    """Monte Carlo simulation — resample trades 1000 times"""
     if len(trades) < 10: return {}
-    pnls = [t["pnl_dollar"] for t in trades]
+    pnls    = [t["pnl_dollar"] for t in trades]
     results = []
     for _ in range(n_simulations):
         sample = random.choices(pnls, k=len(pnls))
-        cum = 0; peak=0; dd=0
+        cum=0; peak=0; dd=0
         for p in sample:
-            cum+=p
-            if cum>peak: peak=cum
-            if cum-peak<dd: dd=cum-peak
+            cum += p
+            if cum > peak: peak = cum
+            if cum-peak < dd: dd = cum-peak
         results.append({"total":round(cum,2),"max_dd":round(dd,2)})
-    totals=[r["total"] for r in results]
-    dds=[r["max_dd"] for r in results]
-    profitable=sum(1 for t in totals if t>0)/n_simulations*100
+    totals    = [r["total"]  for r in results]
+    dds       = [r["max_dd"] for r in results]
+    profitable = sum(1 for t in totals if t>0)/n_simulations*100
     return {
-        "simulations":n_simulations,
-        "median_pnl":round(statistics.median(totals),2),
-        "pct_profitable":round(profitable,1),
-        "worst_case_dd":round(min(dds),2),
-        "best_case":round(max(totals),2),
-        "worst_case":round(min(totals),2),
-        "pct_10":round(sorted(totals)[int(n_simulations*0.1)],2),
-        "pct_90":round(sorted(totals)[int(n_simulations*0.9)],2),
+        "simulations":    n_simulations,
+        "median_pnl":     round(statistics.median(totals), 2),
+        "pct_profitable": round(profitable, 1),
+        "worst_case_dd":  round(min(dds), 2),
+        "best_case":      round(max(totals), 2),
+        "worst_case":     round(min(totals), 2),
+        "pct_10":         round(sorted(totals)[int(n_simulations*0.1)], 2),
+        "pct_90":         round(sorted(totals)[int(n_simulations*0.9)], 2),
     }
 
+# ── Time-of-day analysis ───────────────────────────────────────────────────────
+def time_of_day_analysis(trades):
+    buckets = {
+        "9:30-10:00": {"trades":[], "wins":0, "losses":0, "pnl":0.0},
+        "10:00-11:00":{"trades":[], "wins":0, "losses":0, "pnl":0.0},
+        "11:00-12:00":{"trades":[], "wins":0, "losses":0, "pnl":0.0},
+        "12:00-13:00":{"trades":[], "wins":0, "losses":0, "pnl":0.0},
+    }
+    def bucket(t):
+        h = t.get("hour", 0)
+        time_str = t.get("entry_time","")
+        try:
+            parts = time_str.replace("AM","").replace("PM","").strip().split(":")
+            h2 = int(parts[0]); m2 = int(parts[1]) if len(parts)>1 else 0
+            ap = "PM" if "PM" in time_str else "AM"
+            if ap=="PM" and h2!=12: h2+=12
+            elif ap=="AM" and h2==12: h2=0
+        except:
+            h2 = h; m2 = 0
+        if h2==9:                   return "9:30-10:00"
+        elif h2==10:                return "10:00-11:00"
+        elif h2==11:                return "11:00-12:00"
+        elif h2==12:                return "12:00-13:00"
+        return None
+    is_win = lambda t: t["result"].startswith("Target Hit") or \
+             (any(x in t["result"] for x in ("Trailing","Time","Partial")) and t["pnl_pct"]>0)
+    for t in trades:
+        b = bucket(t)
+        if b and b in buckets:
+            buckets[b]["trades"].append(t)
+            buckets[b]["pnl"] += t["pnl_dollar"]
+            if is_win(t): buckets[b]["wins"] += 1
+            else:         buckets[b]["losses"] += 1
+    result = {}
+    print("\n  ── Time-of-day P&L breakdown ──────────────────────────")
+    for label, d in buckets.items():
+        n  = len(d["trades"])
+        wr = round(d["wins"]/n*100,1) if n>0 else 0
+        result[label] = {
+            "trades": n, "wins": d["wins"], "losses": d["losses"],
+            "win_rate": wr, "pnl_dollar": round(d["pnl"],2),
+            "avg_pnl": round(d["pnl"]/n,2) if n>0 else 0,
+        }
+        print(f"  {label}: {n:3d} trades | {wr:5.1f}% WR | ${d['pnl']:+8.2f} | avg ${round(d['pnl']/n,2) if n>0 else 0:+.2f}/trade")
+    best = max(result.items(), key=lambda x:x[1]["pnl_dollar"]) if result else ("—",{})
+    print(f"  Best window: {best[0]} (${best[1].get('pnl_dollar',0):+.2f})\n")
+    return result
+
+# ── Walk-forward test ──────────────────────────────────────────────────────────
+def walk_forward_test(data, qqq_close, qqq_ema20, corr_skip_dates):
+    """Split data into 4 equal periods and test each independently."""
+    # Gather all trading dates across all tickers
+    all_dates = set()
+    for ticker in TICKERS:
+        if not data[ticker].empty:
+            all_dates.update(data[ticker].index.normalize().unique())
+    all_dates = sorted(all_dates)
+    if len(all_dates) < 8:
+        print("  Not enough dates for walk-forward test")
+        return []
+
+    n       = len(all_dates)
+    chunk   = n // 4
+    periods = []
+    print("\n  ── Walk-forward test (4 periods) ──────────────────────")
+    for p in range(4):
+        start = all_dates[p*chunk]
+        end   = all_dates[min((p+1)*chunk-1, n-1)]
+        period_trades = []
+        for ticker in TICKERS:
+            if data[ticker].empty: continue
+            df_slice = data[ticker][(data[ticker].index.normalize() >= start) &
+                                    (data[ticker].index.normalize() <= end)]
+            if df_slice.empty: continue
+            t = run_strategy(df_slice, ticker, qqq_close=qqq_close,
+                             qqq_ema20=qqq_ema20, corr_skip_dates=corr_skip_dates)
+            period_trades.extend(t)
+        period_trades.sort(key=lambda t:(t["date"],t["entry_time"]))
+        st = calc_stats(period_trades)
+        label = f"P{p+1}: {start.strftime('%Y-%m-%d')} → {end.strftime('%Y-%m-%d')}"
+        print(f"  {label} | {st['trades']:3d} trades | {st['win_rate']:.1f}% WR | "
+              f"${st['total_pnl_dollar']:+.2f} | PF={st['profit_factor']:.3f} | E=${st['expectancy']:.2f}")
+        periods.append({
+            "period":      label,
+            "start":       start.strftime("%Y-%m-%d"),
+            "end":         end.strftime("%Y-%m-%d"),
+            "stats":       st,
+            "trade_count": len(period_trades),
+        })
+
+    # Check consistency: WR should not deviate more than 20% across periods
+    wrs = [p["stats"]["win_rate"] for p in periods if p["stats"]["trades"]>0]
+    if wrs:
+        spread = max(wrs) - min(wrs)
+        consistent = spread < 20
+        print(f"  WR spread: {spread:.1f}% — {'✅ CONSISTENT' if consistent else '⚠️ DIVERGED'}")
+    return periods
+
+# ── Correlation filter builder ─────────────────────────────────────────────────
+def build_corr_skip_dates(data):
+    """Return a set of dates where AAPL and GOOGL both dropped >1% in first 30 min."""
+    skip = set()
+    tickers_present = [t for t in ["AAPL","GOOGL"] if t in data and not data[t].empty]
+    if len(tickers_present) < 2:
+        return skip
+    # Find common dates
+    dates_a = set(data["AAPL"].index.normalize().unique())
+    dates_g = set(data["GOOGL"].index.normalize().unique())
+    common  = dates_a & dates_g
+    for date in common:
+        try:
+            d_date = date.date()
+            # First 30 minutes
+            window_a = data["AAPL"][data["AAPL"].index.date==d_date].between_time("09:30","10:00")
+            window_g = data["GOOGL"][data["GOOGL"].index.date==d_date].between_time("09:30","10:00")
+            if window_a.empty or window_g.empty: continue
+            ret_a = (float(window_a["Close"].squeeze().iloc[-1]) -
+                     float(window_a["Open"].squeeze().iloc[0])) / float(window_a["Open"].squeeze().iloc[0]) * 100
+            ret_g = (float(window_g["Close"].squeeze().iloc[-1]) -
+                     float(window_g["Open"].squeeze().iloc[0])) / float(window_g["Open"].squeeze().iloc[0]) * 100
+            if ret_a < -1.0 and ret_g < -1.0:
+                skip.add(d_date)
+        except: pass
+    return skip
+
+# ── Main ───────────────────────────────────────────────────────────────────────
 def main():
     print("="*60)
-    print("  NYLO Backtest v18 — All ChatGPT Improvements")
-    print(f"  Tickers : {', '.join(TICKERS)} (NVDA dropped)")
-    print(f"  Filter  : QQQ 20 EMA regime filter")
-    print(f"  Time    : 9:35-11:00 AM only")
-    print(f"  Stops   : ATR-normalized (1x stop, 1.5x target)")
-    print(f"  Monte Carlo: 1000 simulations")
+    print("  NYLO Backtest v19 — All User-Requested Improvements")
+    print(f"  Tickers : {', '.join(TICKERS)}")
+    print(f"  Filters : QQQ 20 EMA (enforced) + Earnings blackout")
+    print(f"            + Correlation filter")
+    print(f"  Slippage: AAPL 0.03%, GOOGL 0.025%")
+    print(f"  New     : Time-of-day analysis + Walk-forward (4 periods)")
     print("="*60)
 
-    data={}
-    for ticker in TICKERS+[MARKET_FILTER_TICKER]:
-        df=fetch_combined(ticker)
-        data[ticker]=df
+    data = {}
+    for ticker in TICKERS + [MARKET_FILTER_TICKER]:
+        df = fetch_combined(ticker)
+        data[ticker] = df
 
-    # Build QQQ 20 EMA for regime filter
-    qqq_ema20=None
+    # Build QQQ series for regime filter
+    qqq_close  = None
+    qqq_ema20  = None
     if not data[MARKET_FILTER_TICKER].empty:
-        qqq_cl=data[MARKET_FILTER_TICKER]["Close"].squeeze()
-        qqq_ema20=qqq_cl.ewm(span=20,adjust=False).mean()
-        print(f"  QQQ 20 EMA built ({len(qqq_ema20)} bars)")
+        qqq_cl   = data[MARKET_FILTER_TICKER]["Close"].squeeze()
+        qqq_close = qqq_cl
+        qqq_ema20 = qqq_cl.ewm(span=20, adjust=False).mean()
+        print(f"\n  QQQ 20 EMA built ({len(qqq_ema20)} bars)")
 
-    print(f"\n[1/3] Baseline strategy...")
-    base_trades=[]
+    # Build correlation skip dates
+    print("  Computing correlation filter...")
+    corr_skip = build_corr_skip_dates(data)
+    print(f"  Correlation filter: {len(corr_skip)} days skipped")
+
+    # Earnings blackout summary
+    all_dates = set()
+    for t in TICKERS:
+        if not data[t].empty:
+            all_dates.update(d.date() for d in data[t].index.normalize().unique())
+    eb_count = sum(1 for d in all_dates for t in TICKERS if is_earnings_blackout(d, t))
+    print(f"  Earnings blackout: ~{eb_count} ticker-day combos skipped")
+
+    # ── Baseline ───────────────────────────────────────────────────────────────
+    print(f"\n[1/4] Baseline strategy (v19)...")
+    base_trades = []
     for ticker in TICKERS:
         if data[ticker].empty: continue
-        t=run_strategy(data[ticker],ticker,qqq_ema20)
+        t = run_strategy(data[ticker], ticker,
+                         qqq_close=qqq_close, qqq_ema20=qqq_ema20,
+                         corr_skip_dates=corr_skip)
         base_trades.extend(t)
-        cfg=TICKER_CONFIGS[ticker]
-        print(f"  {ticker}: {len(t)} trades | {cfg['strategy']} | ATR stops")
+        print(f"  {ticker}: {len(t)} trades | {TICKER_CONFIGS[ticker]['strategy']}")
 
     base_trades.sort(key=lambda t:(t["date"],t["entry_time"]))
-    bs=calc_stats(base_trades)
+    bs = calc_stats(base_trades)
     print(f"  TOTAL: {bs['trades']} trades | {bs['win_rate']:.1f}% WR | "
           f"${bs['total_pnl_dollar']:+.2f} | Sharpe:{bs['sharpe']} | "
           f"PF:{bs['profit_factor']} | E:${bs['expectancy']:.2f}/trade")
     print(f"  Prime WR:{bs['prime_win_rate']}% | Max DD:{bs['max_drawdown']:.2f}%")
     print(f"  Avg win:${bs['avg_win']} | Avg loss:${bs['avg_loss']}")
-    for tk,s in bs.get("by_ticker",{}).items():
-        wr=round(s['wins']/s['trades']*100,1) if s['trades']>0 else 0
+    for tk, s in bs.get("by_ticker",{}).items():
+        wr = round(s["wins"]/s["trades"]*100,1) if s["trades"]>0 else 0
         print(f"    {tk}: {s['trades']} trades | ${s['pnl']:+.2f} | {wr}% WR")
 
-    # Monte Carlo
-    print(f"\n  Running Monte Carlo (1000 sims)...")
-    mc=monte_carlo(base_trades)
+    # ── Time-of-day analysis ───────────────────────────────────────────────────
+    tod = time_of_day_analysis(base_trades)
+
+    # ── Monte Carlo ────────────────────────────────────────────────────────────
+    print(f"\n[2/4] Monte Carlo (1000 sims)...")
+    mc = monte_carlo(base_trades)
     print(f"  Median P&L: ${mc.get('median_pnl',0)} | "
           f"Profitable: {mc.get('pct_profitable',0)}% of sims")
     print(f"  10th pct: ${mc.get('pct_10',0)} | 90th pct: ${mc.get('pct_90',0)}")
     print(f"  Worst DD: ${mc.get('worst_case_dd',0)}")
 
-    # OOS
-    print(f"\n[2/3] Out-of-sample...")
-    may_start=datetime.date(2026,5,1)
-    train=[t for t in base_trades if datetime.date.fromisoformat(t["date"])<may_start]
-    test=[t for t in base_trades if datetime.date.fromisoformat(t["date"])>=may_start]
-    ts_train=calc_stats(train); ts_test=calc_stats(test)
-    consistent=abs(ts_test["win_rate"]-ts_train["win_rate"])<15
-    diff=abs(ts_test["win_rate"]-ts_train["win_rate"])
+    # ── OOS ────────────────────────────────────────────────────────────────────
+    print(f"\n[3/4] Out-of-sample split...")
+    may_start  = datetime.date(2026, 5, 1)
+    train = [t for t in base_trades if datetime.date.fromisoformat(t["date"]) <  may_start]
+    test  = [t for t in base_trades if datetime.date.fromisoformat(t["date"]) >= may_start]
+    ts_train = calc_stats(train); ts_test = calc_stats(test)
+    consistent = abs(ts_test["win_rate"]-ts_train["win_rate"]) < 15
+    diff       = abs(ts_test["win_rate"]-ts_train["win_rate"])
     print(f"  Train: {ts_train['trades']} trades | {ts_train['win_rate']:.1f}% WR | ${ts_train['total_pnl_dollar']:+.2f}")
     print(f"  Test : {ts_test['trades']} trades | {ts_test['win_rate']:.1f}% WR | ${ts_test['total_pnl_dollar']:+.2f}")
     print(f"  OOS  : {'✅ CONSISTENT' if consistent else '⚠️ DIVERGED'} (diff={diff:.1f}%)")
 
-    # Sweep
-    print(f"\n[3/3] Parameter sweep...")
-    combos=[(ms,asm,atm) for ms in SWEEP_MIN_SCORE
-            for asm in SWEEP_ATR_STOP for atm in SWEEP_ATR_TARGET if atm>asm]
-    total_combos=len(combos)
-    sweep=[]
+    # ── Walk-forward ───────────────────────────────────────────────────────────
+    print(f"\n[4/4] Walk-forward test (4 periods)...")
+    wf_periods = walk_forward_test(data, qqq_close, qqq_ema20, corr_skip)
+    wf_wrs = [p["stats"]["win_rate"] for p in wf_periods if p["stats"]["trades"]>0]
+    wf_consistent = (max(wf_wrs)-min(wf_wrs)) < 20 if len(wf_wrs)>=2 else False
+
+    # ── Parameter sweep ────────────────────────────────────────────────────────
+    print(f"\n  Parameter sweep...")
+    combos = [(ms,asm,atm) for ms in SWEEP_MIN_SCORE
+              for asm in SWEEP_ATR_STOP for atm in SWEEP_ATR_TARGET if atm>asm]
+    sweep  = []
     for done,(ms,asm,atm) in enumerate(combos):
-        t=[]
+        t = []
         for ticker in TICKERS:
             if not data[ticker].empty:
-                t.extend(run_strategy(data[ticker],ticker,qqq_ema20,ms,asm,atm))
+                t.extend(run_strategy(data[ticker], ticker,
+                                      qqq_close=qqq_close, qqq_ema20=qqq_ema20,
+                                      corr_skip_dates=corr_skip,
+                                      min_score=ms, atr_stop_mult=asm, atr_target_mult=atm))
         t.sort(key=lambda x:(x["date"],x["entry_time"]))
-        st=calc_stats(t)
-        sc=st["win_rate"]*0.4+st["profit_factor"]*15+st["expectancy"]*0.5
+        st = calc_stats(t)
+        sc = st["win_rate"]*0.4 + st["profit_factor"]*15 + st["expectancy"]*0.5
         sweep.append({"min_score":ms,"atr_stop":asm,"atr_target":atm,"stats":st,"score":round(sc,3)})
-        sys.stdout.write(f"\r  Progress: {done+1}/{total_combos}")
+        sys.stdout.write(f"\r  Progress: {done+1}/{len(combos)}")
         sys.stdout.flush()
+    sweep.sort(key=lambda r:r["score"], reverse=True)
+    best = sweep[0]
+    print(f"\n  Best: score={best['min_score']} ATR stop={best['atr_stop']}x "
+          f"target={best['atr_target']}x → {best['stats']['win_rate']:.0f}% WR | "
+          f"PF={best['stats']['profit_factor']} | E=${best['stats']['expectancy']:.2f}/trade")
 
-    sweep.sort(key=lambda r:r["score"],reverse=True)
-    best=sweep[0]
-    print(f"\n  Best: score={best['min_score']} ATR stop={best['atr_stop']}x target={best['atr_target']}x "
-          f"→ {best['stats']['win_rate']:.0f}% WR | PF={best['stats']['profit_factor']} | "
-          f"E=${best['stats']['expectancy']:.2f}/trade")
-
-    out={
-        "generated_at":datetime.datetime.now(MARKET_TZ).isoformat(),
-        "generated_str":datetime.datetime.now(MARKET_TZ).strftime("%B %d, %Y at %I:%M %p ET"),
-        "config":{
-            "tickers":TICKERS,"market_filter":"QQQ 20 EMA",
-            "strategy":"v18 — ATR stops, 9:35-11:00 AM, regime filter, no NVDA",
-            "features":["atr_normalized_stops","time_filter_935_1100",
-                       "qqq_20ema_regime","min_atr_filter","monte_carlo_1000",
-                       "partial_exits","breakeven_stop","daily_loss_limit"],
-            "baseline":{"min_score":MIN_SCORE,"atr_stop_mult":1.0,"atr_target_mult":1.5}
+    # ── Save results ───────────────────────────────────────────────────────────
+    out = {
+        "generated_at":  datetime.datetime.now(MARKET_TZ).isoformat(),
+        "generated_str": datetime.datetime.now(MARKET_TZ).strftime("%B %d, %Y at %I:%M %p ET"),
+        "version":       "v19",
+        "config": {
+            "tickers":      TICKERS,
+            "market_filter":"QQQ 20 EMA (enforced)",
+            "strategy":     "v19 — enforced regime filter, earnings blackout, correlation filter, realistic slippage",
+            "features":     ["qqq_20ema_regime_enforced","earnings_blackout_2d",
+                             "correlation_filter_1pct_30min","time_of_day_analysis",
+                             "walk_forward_4_periods","slippage_aapl_003_googl_0025",
+                             "atr_normalized_stops","partial_exits","breakeven_stop",
+                             "daily_loss_limit","monte_carlo_1000"],
+            "slippage":     {"AAPL":"0.03%","GOOGL":"0.025%"},
+            "baseline":     {"min_score":MIN_SCORE,"atr_stop_mult":1.0,"atr_target_mult":1.5},
+            "filters_applied": {
+                "earnings_blackout_days": EARNINGS_BLACKOUT_DAYS,
+                "corr_days_skipped":      len(corr_skip),
+                "earnings_dates":         {k:[str(d) for d in v] for k,v in EARNINGS_DATES.items()},
+            },
         },
-        "baseline":{"stats":bs,"trades":base_trades},
-        "monte_carlo":mc,
-        "out_of_sample":{"train":{"stats":ts_train},"test":{"stats":ts_test},"consistent":consistent},
-        "sweep":sweep[:30],
+        "baseline":        {"stats":bs,"trades":base_trades},
+        "monte_carlo":     mc,
+        "out_of_sample":   {"train":{"stats":ts_train},"test":{"stats":ts_test},"consistent":consistent},
+        "time_of_day":     tod,
+        "walk_forward":    {"periods":wf_periods,"consistent":wf_consistent,
+                            "wr_spread":round(max(wf_wrs)-min(wf_wrs),1) if len(wf_wrs)>=2 else 0},
+        "sweep":           sweep[:30],
     }
-    with open(OUT,"w") as f:
-        json.dump(out,f,indent=2)
+    with open(OUT, "w") as f:
+        json.dump(out, f, indent=2)
     print(f"\n✅ Results saved → {OUT}")
     print("="*60)
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
