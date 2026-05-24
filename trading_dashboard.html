@@ -746,8 +746,8 @@ function _oldCheckDisclaimer() {
 </head>
 <body>
 
-<!-- Particle canvas -->
-<canvas id="particle-canvas"></canvas>
+<!-- Particle canvas — hidden until after login -->
+<canvas id="particle-canvas" style="display:none;"></canvas>
 
 <!-- Toast container -->
 <div id="toast-container"></div>
@@ -1342,6 +1342,7 @@ function enterDashboard(member) {
     const mc = document.getElementById('main-content');
     mc.style.display = 'block';
     requestAnimationFrame(() => requestAnimationFrame(() => mc.classList.add('unlocked')));
+    initParticles(); // start background particles only after login
     tryAutoLoad();
   }, 600);
   document.getElementById('current-user').textContent = member.display || member.username;
@@ -1376,9 +1377,14 @@ document.getElementById('login-username').addEventListener('keydown', e => { if(
 document.getElementById('login-password').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
 // ── Particles ─────────────────────────────────────────────────────────────────
-(function initParticles() {
+// Particle canvas — started only after login so it never shows during splash/login
+let _particleStarted = false;
+function initParticles() {
+  if (_particleStarted) return;
+  _particleStarted = true;
   const canvas = document.getElementById('particle-canvas');
-  const ctx    = canvas.getContext('2d');
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
   let W, H, particles = [];
 
   function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
@@ -1402,7 +1408,6 @@ document.getElementById('login-password').addEventListener('keydown', e => { if(
       if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
       ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
       ctx.fillStyle = `rgba(${color},0.4)`; ctx.fill();
-      // Connect nearby particles
       for (let j = i+1; j < particles.length; j++) {
         const dx = particles[j].x-p.x, dy = particles[j].y-p.y;
         const dist = Math.sqrt(dx*dx+dy*dy);
@@ -1415,7 +1420,7 @@ document.getElementById('login-password').addEventListener('keydown', e => { if(
     requestAnimationFrame(draw);
   }
   draw();
-})();
+}
 
 // ── Toast notifications ───────────────────────────────────────────────────────
 function showToast(icon, message, duration=3500) {
