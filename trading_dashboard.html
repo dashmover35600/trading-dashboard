@@ -22,7 +22,6 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%230a1a5c'/%3E%3Cstop offset='100%25' stop-color='%231847d4'/%3E%3C/linearGradient%3E%3ClinearGradient id='tx' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='100%25' stop-color='%23c8d8ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='80' fill='url(%23bg)'/%3E%3Ctext x='258' y='295' font-family='Georgia,serif' font-size='168' font-weight='700' fill='url(%23tx)' text-anchor='middle' letter-spacing='-2'%3ENYLO%3C/text%3E%3Crect x='100' y='316' width='312' height='3' rx='1.5' fill='rgba(255,255,255,0.9)'/%3E%3Ctext x='256' y='356' font-family='Georgia,serif' font-size='28' font-weight='700' fill='rgba(255,255,255,0.85)' text-anchor='middle' letter-spacing='6'%3EPRECISION TRADING%3C/text%3E%3C/svg%3E">
 
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/@solana/web3.js@1/lib/index.iife.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js">
 function checkDisclaimer() {
   if (localStorage.getItem('nylo-disclaimer-accepted')) return;
@@ -610,18 +609,6 @@ function _oldCheckDisclaimer() {
     .shc-btn{width:100%;padding:.65rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;transition:background .2s;}
     .shc-btn:hover{background:var(--accent2,#3d6fff);}
     .shc-strategy{font-family:var(--mono);font-size:.6rem;color:var(--accent);background:rgba(24,71,212,.08);padding:3px 8px;border-radius:6px;display:inline-block;margin-bottom:.75rem;}
-    /* Phantom wallet */
-    .phantom-btn{display:inline-flex;align-items:center;gap:.45rem;padding:.45rem 1rem;background:linear-gradient(135deg,#9945FF,#14F195);color:#fff;border:none;border-radius:20px;font-family:var(--mono);font-size:.65rem;letter-spacing:.04em;cursor:pointer;transition:opacity .2s;white-space:nowrap;font-weight:500;}
-    .phantom-btn:hover{opacity:.85;}
-    .phantom-btn:disabled{opacity:.5;cursor:not-allowed;}
-    .phantom-btn.connected{background:linear-gradient(135deg,#7c3ae8,#0fd47e);}
-    #phantom-balances .wallet-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;padding:.75rem 1rem;background:rgba(153,69,255,.07);border:1px solid rgba(153,69,255,.18);border-radius:12px;margin-top:.6rem;}
-    .wallet-asset-name{font-family:var(--mono);font-size:.55rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.2rem;}
-    .wallet-asset-bal{font-family:var(--mono);font-size:.9rem;font-weight:500;color:var(--text);}
-    .wallet-asset-usd{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.1rem;}
-    .wallet-total{text-align:right;}
-    .wallet-addr{font-family:var(--mono);font-size:.55rem;color:var(--muted);margin-top:.5rem;letter-spacing:.04em;}
-    .phantom-refreshing{opacity:.6;}
 </style>
 </head>
 <body>
@@ -806,42 +793,6 @@ function _oldCheckDisclaimer() {
       </div>
     </div>
     <div id="cat-updated" style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);text-align:right;margin-top:0.4rem;"></div>
-
-    <!-- Phantom wallet connect -->
-    <div id="phantom-section" style="margin-top:.75rem;">
-      <div class="card" style="padding:1rem 1.25rem;">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;">
-          <div>
-            <div style="font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;">Phantom Wallet</div>
-            <div id="phantom-status" style="font-family:var(--mono);font-size:.7rem;color:var(--muted);">Not connected</div>
-          </div>
-          <button id="phantom-connect-btn" class="phantom-btn" onclick="connectPhantom()">
-            <svg width="14" height="14" viewBox="0 0 128 128" fill="none" style="flex-shrink:0"><circle cx="64" cy="64" r="64" fill="#9945FF"/><path d="M107 46H83c-10.5 0-19 8.5-19 19v13h43V46z" fill="#14F195"/><path d="M64 46H21v32h43V46z" fill="#fff"/></svg>
-            Connect Phantom
-          </button>
-        </div>
-        <div id="phantom-balances" style="display:none;">
-          <div class="wallet-row">
-            <div>
-              <div class="wallet-asset-name">SOL</div>
-              <div class="wallet-asset-bal" id="phantom-sol-bal">—</div>
-              <div class="wallet-asset-usd" id="phantom-sol-usd">—</div>
-            </div>
-            <div>
-              <div class="wallet-asset-name">🐱 CAT</div>
-              <div class="wallet-asset-bal" id="phantom-cat-bal">—</div>
-              <div class="wallet-asset-usd" id="phantom-cat-usd">—</div>
-            </div>
-            <div class="wallet-total">
-              <div class="wallet-asset-name">Total</div>
-              <div class="wallet-asset-bal" id="phantom-total-usd">—</div>
-              <div class="wallet-asset-usd">USD value</div>
-            </div>
-          </div>
-          <div class="wallet-addr" id="phantom-addr"></div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- Upload / connection zone -->
@@ -2199,104 +2150,6 @@ async function fetchMemeCoin(symbol) {
 
 async function fetchCatPrice() { fetchMemeCoin(activeCoin); }
 
-// ── Phantom Wallet ────────────────────────────────────────────────────────────
-const CAT_MINT = 'F4e7axJDGLk5WpNGEL2ZpxTP9aTaTMLDyGqL2vCmoon';
-let phantomPubkey = null;
-let phantomRefreshTimer = null;
-
-async function connectPhantom() {
-  const provider = window.phantom?.solana ?? window.solana;
-  if (!provider?.isPhantom) {
-    showToast('👻', 'Phantom not found — install it at phantom.app');
-    return;
-  }
-  const btn = document.getElementById('phantom-connect-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span style="font-size:.7rem">⏳</span> Connecting…';
-  try {
-    const resp = await provider.connect();
-    phantomPubkey = resp.publicKey.toString();
-    document.getElementById('phantom-status').textContent = 'Connected ·  auto-refreshes every 30s';
-    document.getElementById('phantom-addr').textContent = phantomPubkey.slice(0,6) + '…' + phantomPubkey.slice(-6);
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 128 128" fill="none" style="flex-shrink:0"><circle cx="64" cy="64" r="64" fill="#9945FF"/><path d="M107 46H83c-10.5 0-19 8.5-19 19v13h43V46z" fill="#14F195"/><path d="M64 46H21v32h43V46z" fill="#fff"/></svg> Refresh';
-    btn.disabled = false;
-    btn.classList.add('connected');
-    btn.onclick = () => refreshPhantomBalances(true);
-    document.getElementById('phantom-balances').style.display = 'block';
-    await refreshPhantomBalances(false);
-    clearInterval(phantomRefreshTimer);
-    phantomRefreshTimer = setInterval(() => refreshPhantomBalances(false), 30000);
-  } catch(e) {
-    showToast('❌', 'Wallet connection cancelled');
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 128 128" fill="none" style="flex-shrink:0"><circle cx="64" cy="64" r="64" fill="#9945FF"/><path d="M107 46H83c-10.5 0-19 8.5-19 19v13h43V46z" fill="#14F195"/><path d="M64 46H21v32h43V46z" fill="#fff"/></svg> Connect Phantom';
-    btn.disabled = false;
-  }
-}
-
-async function refreshPhantomBalances(showFeedback = true) {
-  if (!phantomPubkey) return;
-  if (showFeedback) {
-    document.getElementById('phantom-connect-btn').classList.add('phantom-refreshing');
-  }
-  try {
-    const web3 = window.solanaWeb3;
-    if (!web3) { console.error('[NYLO] solanaWeb3 not loaded'); return; }
-    const connection = new web3.Connection('https://api.mainnet-beta.solana.com', 'confirmed');
-    const pubkey = new web3.PublicKey(phantomPubkey);
-    const mintKey = new web3.PublicKey(CAT_MINT);
-
-    const [lamports, tokenAccts, prices] = await Promise.all([
-      connection.getBalance(pubkey),
-      connection.getParsedTokenAccountsByOwner(pubkey, { mint: mintKey }),
-      fetchWalletPrices()
-    ]);
-
-    const sol = lamports / web3.LAMPORTS_PER_SOL;
-    let catAmt = 0;
-    if (tokenAccts.value.length > 0) {
-      catAmt = tokenAccts.value[0].account.data.parsed.info.tokenAmount.uiAmount || 0;
-    }
-
-    const solUsd   = sol * (prices.sol || 0);
-    const catUsd   = catAmt * (prices.cat || 0);
-    const totalUsd = solUsd + catUsd;
-
-    document.getElementById('phantom-sol-bal').textContent = sol.toFixed(4) + ' SOL';
-    document.getElementById('phantom-sol-usd').textContent = solUsd > 0 ? '$' + solUsd.toFixed(2) : '—';
-
-    const catDisplay = catAmt >= 1e6
-      ? (catAmt / 1e6).toFixed(2) + 'M'
-      : catAmt >= 1e3
-        ? (catAmt / 1e3).toFixed(2) + 'K'
-        : catAmt.toFixed(2);
-    document.getElementById('phantom-cat-bal').textContent = catDisplay;
-    document.getElementById('phantom-cat-usd').textContent = catUsd > 0 ? '$' + catUsd.toFixed(4) : catAmt === 0 ? 'No tokens' : '—';
-
-    document.getElementById('phantom-total-usd').textContent = totalUsd > 0 ? '$' + totalUsd.toFixed(2) : '—';
-
-    const now = new Date().toLocaleTimeString();
-    document.getElementById('cat-updated').textContent = 'Wallet refreshed · ' + now;
-    if (showFeedback) showToast('👻', 'Wallet refreshed');
-  } catch(e) {
-    console.error('[NYLO] Wallet refresh error:', e);
-    if (showFeedback) showToast('❌', 'Refresh failed — check console');
-  } finally {
-    document.getElementById('phantom-connect-btn').classList.remove('phantom-refreshing');
-  }
-}
-
-async function fetchWalletPrices() {
-  try {
-    const res = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=solana,cat-in-a-dogs-world&vs_currencies=usd',
-      { headers: { 'Accept': 'application/json' } }
-    );
-    const d = await res.json();
-    return { sol: d.solana?.usd || 0, cat: d['cat-in-a-dogs-world']?.usd || 0 };
-  } catch(e) {
-    return { sol: 0, cat: 0 };
-  }
-}
 
 function renderNews() {
   const grid     = document.getElementById('news-grid');
