@@ -784,7 +784,7 @@ function _oldCheckDisclaimer() {
   <div style="margin-bottom:2rem;">
     <div style="font-family:var(--mono);font-size:0.68rem;color:var(--accent);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:0.5rem;">NYLO — Precision Trading</div>
     <h1 style="font-family:var(--serif);font-size:2.4rem;font-weight:400;letter-spacing:-0.02em;line-height:1.1;margin-bottom:0.5rem;">Smarter signals. <em style="font-style:italic;color:var(--accent)">Better trades.</em></h1>
-    <p style="font-size:0.85rem;color:var(--muted);max-width:560px;line-height:1.7;">NYLO is an AI-powered trading signal dashboard watching AAPL and GOOGL every 60 seconds during market hours. The v18 strategy applies 9 confirmation filters — Opening Drive bias, VWAP Reclaim, EMA Pullback, RSI, volume direction, momentum, prime window, gap alignment, and signal scoring — achieving 80% win rate with Sharpe 3.19, profit factor 1.254, and $0.63/trade expectancy. Partial exits, breakeven stops, and daily loss limits protect capital automatically.</p>
+    <p style="font-size:0.85rem;color:var(--muted);max-width:560px;line-height:1.7;">NYLO is an AI-powered trading signal dashboard watching AAPL and GOOGL every 60 seconds during market hours. The v19 strategy applies 9 confirmation filters — Opening Drive bias, VWAP Reclaim, EMA Pullback, RSI, volume direction, momentum, prime window, gap alignment, and signal scoring — achieving 82% win rate with Sharpe 4.53, profit factor 1.664, and $1.43/trade expectancy. Partial exits, breakeven stops, and daily loss limits protect capital automatically.</p>
   </div>
 
   <!-- Market mood + hours moved to top -->
@@ -3024,7 +3024,7 @@ const STOCK_CONFIGS = {
     slippage: "0.02%",
     why: "<strong>AAPL was the highest earning ticker</strong> in our backtest with <strong>57.1-58.1% win rate and +$112-120 profit</strong>. AAPL moves slowly and consistently — EMA pullbacks are extremely clean. Smaller gain target (1%) works better because AAPL rarely makes 1.5% clean moves intraday. Full position size because it's the most consistent.",
     color: "#888",
-    stats: { wr: "80.4%", pnl: "+$64", trades: "56", pf: "1.254" }
+    stats: { wr: "83.8%", pnl: "+$67", trades: "37", pf: "1.664" }
   },
   GOOGL: {
     name: "Alphabet Inc.",
@@ -3036,7 +3036,7 @@ const STOCK_CONFIGS = {
     slippage: "0.02%",
     why: "<strong>GOOGL showed strong growth</strong> jumping from +$38 to +$92 between backtests. GOOGL trends more cleanly than NVDA with lower volatility. Using both VWAP Reclaim and EMA Pullback signals maximizes opportunities. 85% position size balances opportunity with volatility.",
     color: "#4285f4",
-    stats: { wr: "79.0%", pnl: "+$10", trades: "62", pf: "1.254" }
+    stats: { wr: "81.1%", pnl: "+$38", trades: "37", pf: "1.664" }
   },
   QQQ: {
     name: "Invesco QQQ Trust",
