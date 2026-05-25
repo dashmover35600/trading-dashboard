@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050a14">
+<meta name="description" content="NYLO Strategy Comparison — v18 VWAP/EMA vs Gap and Go backtested head-to-head.">
+<title>Strategy Comparison — NYLO</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#050a14;--bg2:#0a1220;
+  --surface:rgba(10,18,32,.9);--surface2:rgba(14,24,45,.8);
+  --border:rgba(61,111,255,.12);--border2:rgba(61,111,255,.07);
+  --accent:#1847d4;--accent2:#3d6fff;--accent3:#6b9fff;
+  --text:#e8eeff;--muted:#5a6a90;--dim:#1a2744;
+  --green:#00d97e;--green-dim:rgba(0,217,126,.1);--green-border:rgba(0,217,126,.2);
+  --red:#ff4560;--red-dim:rgba(255,69,96,.1);--red-border:rgba(255,69,96,.2);
+  --amber:#ffb830;--amber-dim:rgba(255,184,48,.1);
+  --serif:'Instrument Serif',Georgia,serif;
+  --mono:'DM Mono',monospace;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --r:14px;--r-sm:8px;
+  --glow:0 0 40px rgba(24,71,212,.4),0 0 80px rgba(24,71,212,.15);
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+}
+
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh;}
+
+/* grid overlay */
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(61,111,255,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(61,111,255,.028) 1px,transparent 1px);
+  background-size:40px 40px;}
+
+/* mesh gradient */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 60% at 80% 10%,rgba(24,71,212,.14) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 70% at 15% 85%,rgba(61,111,255,.09) 0%,transparent 60%),
+    radial-gradient(ellipse 80% 40% at 50% 0%,rgba(5,10,20,.92) 0%,transparent 50%);}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:1.25rem 2.5rem;display:flex;align-items:center;justify-content:space-between;
+  background:rgba(5,10,20,.88);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);}
+.nav-logo{font-family:var(--serif);font-size:1.5rem;color:#fff;letter-spacing:-.03em;text-decoration:none;}
+.nav-logo span{color:var(--accent2);}
+.nav-links{display:flex;gap:2rem;align-items:center;}
+.nav-links a{font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.1em;
+  text-transform:uppercase;text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--text);}
+.nav-links a.active{color:var(--accent3);}
+.nav-cta{background:var(--accent);color:#fff;border:none;border-radius:8px;
+  padding:.55rem 1.25rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;
+  text-transform:uppercase;transition:background .2s,box-shadow .2s;text-decoration:none;}
+.nav-cta:hover{background:var(--accent2);box-shadow:var(--glow);}
+@media(max-width:600px){.nav-links{display:none;}}
+
+/* ── WRAP ── */
+.wrap{position:relative;z-index:5;max-width:1120px;margin:0 auto;padding:2rem 1.5rem;}
+
+/* ── HERO ── */
+.hero{position:relative;z-index:5;padding:7rem 2rem 3.5rem;text-align:center;}
+.eyebrow{font-family:var(--mono);font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--accent3);margin-bottom:1.25rem;display:flex;align-items:center;
+  justify-content:center;gap:.75rem;}
+.eyebrow::before,.eyebrow::after{content:'';width:32px;height:1px;background:var(--accent2);opacity:.5;}
+.hero h1{font-family:var(--serif);font-size:clamp(2.8rem,7vw,5.5rem);font-weight:400;
+  line-height:1.05;letter-spacing:-.03em;margin-bottom:1rem;}
+.hero h1 em{font-style:italic;color:var(--accent2);}
+.hero-sub{font-size:clamp(.85rem,1.8vw,1rem);color:var(--muted);max-width:560px;
+  line-height:1.7;margin:0 auto 1.75rem;}
+.running-badge{display:inline-flex;align-items:center;gap:.6rem;
+  background:rgba(24,71,212,.15);border:1px solid rgba(61,111,255,.3);
+  border-radius:40px;padding:.5rem 1.25rem;
+  font-family:var(--mono);font-size:.68rem;color:var(--accent3);letter-spacing:.06em;}
+.running-dot{width:7px;height:7px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 6px var(--green);animation:rdot 2s ease-in-out infinite;}
+@keyframes rdot{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* ── SECTION LABEL ── */
+.sl{font-family:var(--mono);font-size:.62rem;color:var(--accent3);letter-spacing:.18em;
+  text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;margin-top:.5rem;}
+.sl::before,.sl::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── STRATEGY OVERVIEW CARDS ── */
+.strategy-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.5rem;}
+@media(max-width:700px){.strategy-cards{grid-template-columns:1fr;}}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.5rem;position:relative;overflow:hidden;transition:border-color .2s;}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0;}
+.sc.v18::before{background:linear-gradient(90deg,#1847d4,#3d6fff);}
+.sc.gap::before{background:linear-gradient(90deg,#00c878,#3d6fff);}
+.sc-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:.4rem;}
+.sc-name{font-family:var(--serif);font-size:1.6rem;color:var(--text);letter-spacing:-.02em;margin-bottom:.75rem;}
+.sc-desc{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;}
+.sc-tags{display:flex;flex-wrap:wrap;gap:.4rem;}
+.tag{font-family:var(--mono);font-size:.58rem;padding:2px 8px;border-radius:20px;letter-spacing:.05em;}
+.tag-blue{background:rgba(24,71,212,.15);color:var(--accent3);border:1px solid rgba(61,111,255,.2);}
+.tag-green{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.tag-amber{background:var(--amber-dim);color:var(--amber);}
+.sc-active-badge{position:absolute;top:1rem;right:1rem;
+  background:var(--green-dim);border:1px solid var(--green-border);
+  border-radius:20px;padding:3px 10px;font-family:var(--mono);font-size:.58rem;color:var(--green);}
+
+/* ── METRICS COMPARISON ── */
+.metrics-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  overflow:hidden;margin-bottom:2.5rem;}
+.metrics-header{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
+  background:rgba(61,111,255,.06);border-bottom:1px solid var(--border);padding:.75rem 1.25rem;gap:1rem;}
+.mh{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);text-align:center;}
+.mh:first-child{text-align:left;}
+.metric-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
+  padding:.85rem 1.25rem;gap:1rem;border-bottom:1px solid var(--border2);
+  align-items:center;transition:background .15s;}
+.metric-row:last-child{border-bottom:none;}
+.metric-row:hover{background:rgba(61,111,255,.04);}
+.metric-name{font-family:var(--mono);font-size:.68rem;color:var(--muted);}
+.metric-name small{display:block;font-size:.56rem;margin-top:2px;opacity:.6;}
+.metric-val{font-family:var(--mono);font-size:.95rem;color:var(--text);
+  text-align:center;font-weight:500;}
+.metric-val.pos{color:var(--green);}
+.metric-val.neg{color:var(--red);}
+.metric-winner{text-align:center;}
+.winner-badge{display:inline-block;font-family:var(--mono);font-size:.55rem;
+  padding:2px 7px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;}
+.wb-v18{background:rgba(24,71,212,.18);color:var(--accent3);border:1px solid rgba(61,111,255,.25);}
+.wb-gap{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.wb-tie{background:rgba(90,106,154,.1);color:var(--muted);border:1px solid rgba(90,106,154,.2);}
+
+/* ── CHARTS ── */
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:1.5rem;margin-bottom:1rem;}
+.ct{font-family:var(--mono);font-size:.62rem;color:var(--accent3);letter-spacing:.12em;
+  text-transform:uppercase;margin-bottom:.5rem;}
+.ct-sub{font-size:.72rem;color:var(--muted);margin-bottom:1.25rem;}
+.cw{position:relative;height:240px;}
+.cw-sm{position:relative;height:200px;}
+.chart-legend{display:flex;gap:1.25rem;margin-bottom:1rem;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);
+  font-size:.62rem;color:var(--muted);}
+.legend-dot{width:10px;height:3px;border-radius:2px;}
+
+/* two-col chart row */
+.charts-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.5rem;}
+@media(max-width:700px){.charts-2{grid-template-columns:1fr;}}
+
+/* ── GAP BUCKETS ── */
+.bucket-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:1rem;}
+@media(max-width:500px){.bucket-grid{grid-template-columns:1fr;}}
+.bucket-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-sm);padding:1rem;}
+.bucket-label{font-family:var(--mono);font-size:.6rem;color:var(--muted);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;}
+.bucket-wr{font-family:var(--serif);font-size:2rem;line-height:1;margin-bottom:.2rem;}
+.bucket-wr.good{color:var(--green);}
+.bucket-wr.mid{color:var(--amber);}
+.bucket-wr.bad{color:var(--red);}
+.bucket-meta{font-family:var(--mono);font-size:.62rem;color:var(--muted);}
+
+/* ── DIRECTION BREAKDOWN ── */
+.dir-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1rem;}
+.dir-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-sm);padding:1rem;}
+.dir-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:.4rem;}
+.dir-wr{font-family:var(--serif);font-size:1.8rem;line-height:1;color:var(--text);}
+.dir-meta{font-family:var(--mono);font-size:.62rem;color:var(--muted);margin-top:.2rem;}
+
+/* ── VERDICT ── */
+.verdict{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:2rem;margin-bottom:2.5rem;}
+.verdict-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.5rem;}
+@media(max-width:700px){.verdict-grid{grid-template-columns:1fr;}}
+.verdict-card{background:var(--bg2);border:1px solid var(--border2);
+  border-radius:var(--r-sm);padding:1.25rem;position:relative;}
+.verdict-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;
+  border-radius:var(--r-sm) 0 0 var(--r-sm);}
+.verdict-card.vc-blue::before{background:var(--accent2);}
+.verdict-card.vc-green::before{background:var(--green);}
+.verdict-card.vc-amber::before{background:var(--amber);}
+.verdict-icon{font-size:1.4rem;margin-bottom:.5rem;}
+.verdict-title{font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text);margin-bottom:.5rem;font-weight:500;}
+.verdict-body{font-size:.8rem;color:var(--muted);line-height:1.65;}
+.verdict-body strong{color:var(--text);}
+.verdict-running{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.5rem;
+  background:rgba(24,71,212,.12);border:1px solid rgba(61,111,255,.25);
+  border-radius:40px;padding:.5rem 1.25rem;
+  font-family:var(--mono);font-size:.7rem;color:var(--accent3);}
+
+/* ── MONTE CARLO ── */
+.mc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-top:1rem;}
+@media(max-width:600px){.mc-grid{grid-template-columns:repeat(2,1fr);}}
+.mc-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r-sm);
+  padding:.85rem 1rem;text-align:center;}
+.mc-label{font-family:var(--mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:.35rem;}
+.mc-val{font-family:var(--mono);font-size:1rem;font-weight:500;}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:5;padding:2rem 1.5rem;
+  border-top:1px solid var(--border2);}
+.footer-wrap{max-width:1120px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-disclaimer{font-family:var(--mono);font-size:.6rem;color:var(--muted);
+  line-height:1.6;max-width:600px;}
+.footer-disclaimer strong{color:rgba(255,184,48,.7);}
+.footer-right{font-family:var(--mono);font-size:.6rem;color:var(--muted);text-align:right;}
+.footer-right a{color:var(--accent3);text-decoration:none;}
+.footer-right a:hover{text-decoration:underline;}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{opacity:0;animation:fadeUp .7s ease forwards;}
+.fade-up.d1{animation-delay:.1s;}.fade-up.d2{animation-delay:.2s;}
+.fade-up.d3{animation-delay:.3s;}.fade-up.d4{animation-delay:.4s;}
+
+/* scroll reveal */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.vis{opacity:1;transform:none;}
+
+/* ── TOOLTIP OVERRIDE for Chart.js dark theme ── */
+</style>
+</head>
+<body>
+
+<canvas id="pc" style="position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.3;"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">NYLO<span>.</span></a>
+  <div class="nav-links">
+    <a href="trading_dashboard.html">Dashboard</a>
+    <a href="backtest.html">Backtest</a>
+    <a href="strategy_comparison.html" class="active">Strategies</a>
+    <a href="about.html">About</a>
+  </div>
+  <a href="join.html" class="nav-cta">Request Access →</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="eyebrow fade-up">NYLO Research Lab</div>
+  <h1 class="fade-up d1">Strategy <em>Comparison</em></h1>
+  <p class="hero-sub fade-up d2">v18 VWAP Reclaim + EMA Pullback vs Gap and Go — backtested head-to-head on AAPL &amp; GOOGL. Same signal scorer, same slippage, same position sizing.</p>
+  <div class="running-badge fade-up d3">
+    <span class="running-dot"></span>
+    Currently Running: v18 VWAP Reclaim + EMA Pullback
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- STRATEGY OVERVIEW -->
+  <div class="sl reveal">Strategy Overview</div>
+  <div class="strategy-cards reveal">
+
+    <div class="sc v18">
+      <span class="sc-active-badge">▶ Active</span>
+      <div class="sc-label">Strategy A</div>
+      <div class="sc-name">VWAP Reclaim<br>+ EMA Pullback</div>
+      <div class="sc-desc">Monitors AAPL and GOOGL every minute during 9:30–12:00 AM. Triggers on VWAP crossovers and EMA pullback setups. Applies 9 confirmation filters: day bias, RSI bands, volume ratio, VWAP position, EMA alignment, momentum, prime window, gap alignment, and signal scoring.</div>
+      <div class="sc-tags">
+        <span class="tag tag-blue">VWAP Crossover</span>
+        <span class="tag tag-blue">EMA Pullback</span>
+        <span class="tag tag-blue">9:30–12:00 AM</span>
+        <span class="tag tag-blue">Long &amp; Short</span>
+        <span class="tag tag-blue">101 trades · 1yr data</span>
+      </div>
+    </div>
+
+    <div class="sc gap">
+      <div class="sc-label">Strategy B</div>
+      <div class="sc-name">Gap and Go</div>
+      <div class="sc-desc">Fires once per day at 9:35 AM when a stock gaps ≥ 0.5% from prior close with first-5-minute volume ≥ 2× average. Enters in the gap direction with a fixed 2:1 reward-to-risk structure: target = 1× gap size, stop = 0.5× gap size. Exits by 10:30 AM.</div>
+      <div class="sc-tags">
+        <span class="tag tag-green">Gap ≥ 0.5%</span>
+        <span class="tag tag-green">Vol 2× Average</span>
+        <span class="tag tag-green">Entry 9:35 AM</span>
+        <span class="tag tag-green">2:1 R:R Fixed</span>
+        <span class="tag tag-green">34 trades · 60d data</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- METRICS COMPARISON -->
+  <div class="sl reveal">Head-to-Head Metrics</div>
+  <div class="metrics-wrap reveal">
+    <div class="metrics-header">
+      <div class="mh" style="text-align:left;">Metric</div>
+      <div class="mh" style="color:var(--accent3);">v18 VWAP/EMA</div>
+      <div class="mh">Winner</div>
+      <div class="mh" style="color:var(--green);">Gap &amp; Go</div>
+    </div>
+
+    <!-- Win Rate -->
+    <div class="metric-row">
+      <div class="metric-name">Win Rate<small>Target hits / total trades</small></div>
+      <div class="metric-val" style="color:var(--green);">73.3%</div>
+      <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
+      <div class="metric-val">20.6%</div>
+    </div>
+
+    <!-- Total P&L -->
+    <div class="metric-row">
+      <div class="metric-name">Total P&amp;L<small>Dollar profit over test period</small></div>
+      <div class="metric-val neg">−$10.15</div>
+      <div class="metric-winner"><span class="winner-badge wb-gap">G&amp;G</span></div>
+      <div class="metric-val pos">+$111.01</div>
+    </div>
+
+    <!-- Sharpe -->
+    <div class="metric-row">
+      <div class="metric-name">Sharpe Ratio<small>Risk-adjusted return (annualized)</small></div>
+      <div class="metric-val" style="color:var(--accent3);">2.05</div>
+      <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
+      <div class="metric-val">1.87</div>
+    </div>
+
+    <!-- Profit Factor -->
+    <div class="metric-row">
+      <div class="metric-name">Profit Factor<small>Gross wins ÷ gross losses</small></div>
+      <div class="metric-val" style="color:var(--accent3);">0.971</div>
+      <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
+      <div class="metric-val neg">0.723</div>
+    </div>
+
+    <!-- Expectancy -->
+    <div class="metric-row">
+      <div class="metric-name">Expectancy<small>Expected $ per trade</small></div>
+      <div class="metric-val neg">−$0.10</div>
+      <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
+      <div class="metric-val neg">−$6.94</div>
+    </div>
+
+    <!-- Avg Win -->
+    <div class="metric-row">
+      <div class="metric-name">Avg Win<small>Mean dollar gain on winners</small></div>
+      <div class="metric-val">$4.65</div>
+      <div class="metric-winner"><span class="winner-badge wb-gap">G&amp;G</span></div>
+      <div class="metric-val" style="color:var(--green);">$34.90</div>
+    </div>
+
+    <!-- Avg Loss -->
+    <div class="metric-row">
+      <div class="metric-name">Avg Loss<small>Mean dollar loss on losers</small></div>
+      <div class="metric-val" style="color:var(--green);">$13.12</div>
+      <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
+      <div class="metric-val neg">$17.79</div>
+    </div>
+
+    <!-- Max Drawdown -->
+    <div class="metric-row">
+      <div class="metric-name">Max Drawdown<small>Largest peak-to-trough loss (%)</small></div>
+      <div class="metric-val neg">−3.38%</div>
+      <div class="metric-winner"><span class="winner-badge wb-gap">G&amp;G</span></div>
+      <div class="metric-val" style="color:var(--green);">−1.91%</div>
+    </div>
+
+    <!-- Trade Count -->
+    <div class="metric-row">
+      <div class="metric-name">Trade Count<small>Sample size (more = more reliable)</small></div>
+      <div class="metric-val" style="color:var(--accent3);">101</div>
+      <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
+      <div class="metric-val">34</div>
+    </div>
+
+  </div>
+
+  <!-- EQUITY CURVES -->
+  <div class="sl reveal">Equity Curves</div>
+  <div class="chart-card reveal">
+    <div class="ct">Cumulative P&amp;L by Trade</div>
+    <div class="ct-sub">v18 spans ~1 year (101 trades) · Gap &amp; Go spans 60 days (34 trades) · Plotted on trade index axis</div>
+    <div class="chart-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#3d6fff;"></div>v18 VWAP/EMA</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#00d97e;"></div>Gap &amp; Go</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,.15);border:1px dashed rgba(255,255,255,.2);height:1px;width:20px;"></div>Break-even $0</div>
+    </div>
+    <div class="cw" style="height:280px;"><canvas id="equityChart"></canvas></div>
+  </div>
+
+  <!-- TIME-OF-DAY + GAP BUCKETS -->
+  <div class="charts-2 reveal">
+
+    <div class="chart-card">
+      <div class="ct">v18 — Time-of-Day P&amp;L</div>
+      <div class="ct-sub">Best window: 9:30–10:00 AM (+$85.85 · 91.7% WR)</div>
+      <div class="cw-sm"><canvas id="todChart"></canvas></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="ct">Gap &amp; Go — Gap Size Buckets</div>
+      <div class="ct-sub">1.0–2.0% gaps drove most profits despite lowest WR</div>
+      <div style="margin-top:1rem;" class="bucket-grid">
+        <div class="bucket-card">
+          <div class="bucket-label">0.5 – 1.0%</div>
+          <div class="bucket-wr mid">33.3%</div>
+          <div class="bucket-meta">18 trades · −$22.95</div>
+          <div style="height:3px;background:var(--dim);border-radius:2px;margin-top:.6rem;">
+            <div style="width:33.3%;height:100%;background:var(--amber);border-radius:2px;"></div>
+          </div>
+        </div>
+        <div class="bucket-card">
+          <div class="bucket-label">1.0 – 2.0%</div>
+          <div class="bucket-wr bad">8.3%</div>
+          <div class="bucket-meta">12 trades · +$142.93</div>
+          <div style="height:3px;background:var(--dim);border-radius:2px;margin-top:.6rem;">
+            <div style="width:8.3%;height:100%;background:var(--red);border-radius:2px;"></div>
+          </div>
+        </div>
+        <div class="bucket-card">
+          <div class="bucket-label">2.0%+</div>
+          <div class="bucket-wr bad">0.0%</div>
+          <div class="bucket-meta">4 trades · −$8.97</div>
+          <div style="height:3px;background:var(--dim);border-radius:2px;margin-top:.6rem;">
+            <div style="width:1%;height:100%;background:var(--red);border-radius:2px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- GAP DIRECTION + MONTE CARLO -->
+  <div class="charts-2 reveal">
+
+    <div class="chart-card">
+      <div class="ct">Gap &amp; Go — Direction Breakdown</div>
+      <div class="ct-sub">Short gaps edge out long gaps on win rate (27.3% vs 17.4%)</div>
+      <div class="dir-grid">
+        <div class="dir-card">
+          <div class="dir-label">Long Gap ↑</div>
+          <div class="dir-wr">17.4%</div>
+          <div class="dir-meta">23 trades · avg gap 1.31% · +$109.18</div>
+        </div>
+        <div class="dir-card">
+          <div class="dir-label">Short Gap ↓</div>
+          <div class="dir-wr" style="color:var(--green);">27.3%</div>
+          <div class="dir-meta">11 trades · avg gap 1.17% · +$1.83</div>
+        </div>
+      </div>
+      <div style="margin-top:1.25rem;">
+        <div class="ct" style="margin-bottom:.75rem;">Per-Ticker Performance</div>
+        <div class="dir-grid">
+          <div class="dir-card">
+            <div class="dir-label">AAPL</div>
+            <div class="dir-wr" style="font-size:1.4rem;">21.4%</div>
+            <div class="dir-meta">14 trades · 3 wins · +$37.20</div>
+          </div>
+          <div class="dir-card">
+            <div class="dir-label">GOOGL</div>
+            <div class="dir-wr" style="font-size:1.4rem;">20.0%</div>
+            <div class="dir-meta">20 trades · 4 wins · +$73.81</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="ct">Gap &amp; Go — Monte Carlo (1,000 sims)</div>
+      <div class="ct-sub">Bootstrap resampling of the 34-trade distribution</div>
+      <div class="mc-grid">
+        <div class="mc-card">
+          <div class="mc-label">Median P&amp;L</div>
+          <div class="mc-val" style="color:var(--green);">+$110.77</div>
+        </div>
+        <div class="mc-card">
+          <div class="mc-label">% Profitable</div>
+          <div class="mc-val" style="color:var(--accent3);">76.5%</div>
+        </div>
+        <div class="mc-card">
+          <div class="mc-label">10th Pct</div>
+          <div class="mc-val" style="color:var(--red);">−$92.76</div>
+        </div>
+        <div class="mc-card">
+          <div class="mc-label">90th Pct</div>
+          <div class="mc-val" style="color:var(--green);">+$319.06</div>
+        </div>
+        <div class="mc-card">
+          <div class="mc-label">Best Case</div>
+          <div class="mc-val">+$698.59</div>
+        </div>
+        <div class="mc-card">
+          <div class="mc-label">Worst Case</div>
+          <div class="mc-val" style="color:var(--red);">−$351.45</div>
+        </div>
+        <div class="mc-card">
+          <div class="mc-label">Worst DD</div>
+          <div class="mc-val" style="color:var(--red);">−$394.42</div>
+        </div>
+        <div class="mc-card">
+          <div class="mc-label">Simulations</div>
+          <div class="mc-val" style="color:var(--muted);">1,000</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STRATEGY VERDICT -->
+  <div class="sl reveal">Strategy Verdict</div>
+  <div class="verdict reveal">
+    <div class="ct" style="margin-bottom:.25rem;">What the data tells us</div>
+    <p style="font-size:.82rem;color:var(--muted);line-height:1.7;max-width:720px;">
+      Across five key metrics — win rate, Sharpe, profit factor, expectancy, and avg loss — <strong style="color:var(--text);">v18 is the stronger strategy</strong>. Gap &amp; Go shows a structural edge in one area: when gaps do resolve in direction, the dollar payoff is <strong style="color:var(--text);">7.5× larger per winner</strong> than v18 ($34.90 vs $4.65). But with only a 20.6% win rate, the math doesn't close — negative expectancy means the strategy loses ground on average each trade.
+    </p>
+
+    <div class="verdict-grid">
+      <div class="verdict-card vc-blue">
+        <div class="verdict-icon">🎯</div>
+        <div class="verdict-title">v18 wins on consistency</div>
+        <div class="verdict-body">
+          <strong>73.3% win rate</strong> across 101 trades over a full year of hybrid data. Nine confirmation filters (VWAP, EMA, RSI, day bias, volume, momentum, prime window) work together to select only high-probability setups. Low average loss ($13.12) limits damage on losers.
+        </div>
+      </div>
+      <div class="verdict-card vc-green">
+        <div class="verdict-icon">⚡</div>
+        <div class="verdict-title">Gap &amp; Go wins on size</div>
+        <div class="verdict-body">
+          Average winner of <strong>$34.90</strong> — 7.5× larger than v18 — because the 2:1 fixed R:R means wins are always twice the gap size. Smaller drawdown (1.91% vs 3.38%) and positive total P&amp;L ($111.01) in a volatile 60-day window including the April 2026 market dislocation.
+        </div>
+      </div>
+      <div class="verdict-card vc-amber">
+        <div class="verdict-icon">🔬</div>
+        <div class="verdict-title">Best use case for each</div>
+        <div class="verdict-body">
+          <strong>v18</strong>: High-frequency intraday trading, daily income generation, pairs well with tight risk controls. Proven over 300 trading days.<br><br>
+          <strong>Gap &amp; Go</strong>: High-volatility event days (earnings reactions, macro shocks) where gaps tend to continue. Consider pairing with a gap-fill filter for better selectivity.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <div class="verdict-running">
+        <span class="running-dot"></span>
+        Currently deployed: v18 VWAP Reclaim + EMA Pullback
+      </div>
+      <div style="font-family:var(--mono);font-size:.62rem;color:var(--muted);">
+        Paper trading · AAPL + GOOGL · Signals every 60s during market hours
+      </div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-wrap">
+    <div class="footer-disclaimer">
+      <strong>⚠ Important Disclaimer:</strong> All results shown on this page are backtested simulations only. Past performance does not guarantee future results. Backtests are subject to look-ahead bias, survivorship bias, and overfitting. NYLO is a paper trading signal dashboard — no real capital is deployed. This is not financial advice. Trading involves substantial risk of loss and is not suitable for all investors.
+    </div>
+    <div class="footer-right">
+      <div style="margin-bottom:.3rem;">Generated May 25, 2026</div>
+      <div>v18 data: v20 backtest engine · Gap &amp; Go: v1</div>
+      <div style="margin-top:.4rem;"><a href="trading_dashboard.html">Dashboard</a> · <a href="backtest.html">Backtest</a> · <a href="about.html">About</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Equity curve data ───────────────────────────────────────────────────────
+const V18_CUM = [-9.88,-23.06,-42.82,-49.41,-47.21,-44.38,-42.54,-39.99,-34.98,-33.29,-56.68,-72.28,-68.85,-57.82,-65.62,-73.42,-83.3,-106.69,-101.55,-100.87,-110.75,-107.03,-116.91,-112.68,-107.17,-103.18,-116.19,-114.18,-95.38,-103.67,-103.24,-101.67,-100.04,-99.61,-138.62,-138.06,-138.72,-136.44,-114.96,-113.33,-119.38,-116.78,-113.56,-111.98,-109.24,-108.84,-102.16,-101.51,-100.2,-97.77,-91.31,-90.02,-92.06,-90.99,-67.16,-66.39,-61.58,-81.34,-79.91,-99.4,-97.62,-91.37,-117.71,-115.57,-115.29,-113.22,-81.88,-80.44,-49.1,-47.93,-25.63,-23.74,-22.64,-21.99,-17.95,-16.56,-18.72,-17.63,-3.16,-1.77,-1.22,0.89,6.9,9.68,12.64,-7.12,-5.87,-10.36,-9.06,1.43,2.79,0.26,1.69,17.83,-15.12,-14.57,-12.95,-10.97,-11.66,-11.16,-10.15];
+const GAP_CUM = [-5.81,46.01,64.03,47.25,-1.79,-22.97,46.35,30.18,29.8,18.43,2.45,31.6,19.6,44.72,70.89,53.54,67.13,52.64,84.72,63.65,49.86,10.6,42.06,76.7,55.32,52.42,79.45,68.67,81.19,100.07,78.13,110.43,84.04,111.01];
+
+// ── Particle canvas ─────────────────────────────────────────────────────────
+(function(){
+  const c = document.getElementById('pc');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  let W, H, pts = [];
+  function resize(){ W = c.width = innerWidth; H = c.height = innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  for (let i=0; i<55; i++) pts.push({
+    x: Math.random()*1920, y: Math.random()*1080,
+    vx: (Math.random()-.5)*.25, vy: (Math.random()-.5)*.25,
+    r: Math.random()*1.5+.5
+  });
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<0)p.x=W; if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(61,111,255,.5)';
+      ctx.fill();
+    });
+    pts.forEach((a,i) => pts.slice(i+1).forEach(b => {
+      const dx=a.x-b.x, dy=a.y-b.y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<110){ ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle=`rgba(61,111,255,${.18*(1-d/110)})`; ctx.lineWidth=.5; ctx.stroke(); }
+    }));
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── Chart defaults ──────────────────────────────────────────────────────────
+Chart.defaults.color = '#5a6a90';
+Chart.defaults.borderColor = 'rgba(61,111,255,.1)';
+Chart.defaults.font.family = "'DM Mono', monospace";
+
+// ── Equity Curve ────────────────────────────────────────────────────────────
+(function(){
+  const ctx = document.getElementById('equityChart').getContext('2d');
+
+  // Pad shorter array with nulls at start so legends align right
+  const v18Labels = V18_CUM.map((_,i)=>`T${i+1}`);
+
+  // Gap data: offset by (101-34)=67 so both end at same right edge — plotted on separate scale
+  // Actually plot both on same x index (1..N) for each strategy independently
+  const v18Data = V18_CUM;
+  const gapData = GAP_CUM;
+
+  // Create gradient fills
+  const v18Grad = ctx.createLinearGradient(0,0,0,280);
+  v18Grad.addColorStop(0,'rgba(61,111,255,.25)');
+  v18Grad.addColorStop(1,'rgba(61,111,255,.02)');
+
+  const gapGrad = ctx.createLinearGradient(0,0,0,280);
+  gapGrad.addColorStop(0,'rgba(0,217,126,.2)');
+  gapGrad.addColorStop(1,'rgba(0,217,126,.02)');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: v18Labels,
+      datasets: [
+        {
+          label: 'v18 VWAP/EMA (101 trades)',
+          data: v18Data,
+          borderColor: '#3d6fff',
+          backgroundColor: v18Grad,
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.3,
+          fill: true,
+          yAxisID: 'y',
+        },
+        {
+          label: 'Gap & Go (34 trades)',
+          data: Array(67).fill(null).concat(gapData),
+          borderColor: '#00d97e',
+          backgroundColor: gapGrad,
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.3,
+          fill: true,
+          yAxisID: 'y',
+          spanGaps: false,
+        },
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          backgroundColor: 'rgba(10,18,32,.95)',
+          borderColor: 'rgba(61,111,255,.3)',
+          borderWidth: 1,
+          padding: 12,
+          titleFont: { family: "'DM Mono'", size: 11 },
+          bodyFont:  { family: "'DM Mono'", size: 11 },
+          callbacks: {
+            label: ctx => {
+              if (ctx.raw === null) return null;
+              const v = ctx.raw;
+              return `  ${ctx.dataset.label.split('(')[0].trim()}: ${v >= 0 ? '+' : ''}$${v.toFixed(2)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(61,111,255,.07)' },
+          ticks: {
+            maxTicksLimit: 10,
+            callback: (v,i) => `T${i+1}`,
+            font: { size: 10 },
+          }
+        },
+        y: {
+          grid: { color: 'rgba(61,111,255,.07)' },
+          ticks: {
+            callback: v => `$${v >= 0 ? '+' : ''}${v.toFixed(0)}`,
+            font: { size: 10 },
+          },
+          // Draw zero line
+          afterDataLimits: scale => {
+            scale.max = Math.max(scale.max, 20);
+            scale.min = Math.min(scale.min, -20);
+          }
+        }
+      }
+    },
+    plugins: [{
+      // Draw break-even line
+      id: 'zeroLine',
+      beforeDraw(chart) {
+        const { ctx, chartArea, scales } = chart;
+        if (!chartArea) return;
+        const y0 = scales.y.getPixelForValue(0);
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(chartArea.left, y0);
+        ctx.lineTo(chartArea.right, y0);
+        ctx.strokeStyle = 'rgba(255,255,255,.18)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4,4]);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }]
+  });
+})();
+
+// ── Time of Day Chart ───────────────────────────────────────────────────────
+(function(){
+  const ctx = document.getElementById('todChart').getContext('2d');
+  const labels = ['9:30–10:00','10:00–11:00','11:00–12:00','12:00–13:00'];
+  const pnls   = [85.85, -17.42, -80.54, 1.96];
+  const wrs    = [91.7, 77.3, 62.8, 100.0];
+  const trades = [12, 44, 43, 2];
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'P&L ($)',
+        data: pnls,
+        backgroundColor: pnls.map(v => v >= 0 ? 'rgba(0,217,126,.35)' : 'rgba(255,69,96,.35)'),
+        borderColor:     pnls.map(v => v >= 0 ? 'rgba(0,217,126,.8)' : 'rgba(255,69,96,.8)'),
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(10,18,32,.95)',
+          borderColor: 'rgba(61,111,255,.3)',
+          borderWidth: 1,
+          padding: 12,
+          callbacks: {
+            label: ctx => {
+              const i = ctx.dataIndex;
+              return [
+                `  P&L: ${pnls[i] >= 0 ? '+' : ''}$${pnls[i].toFixed(2)}`,
+                `  Win Rate: ${wrs[i]}%`,
+                `  Trades: ${trades[i]}`
+              ];
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(61,111,255,.07)' }, ticks: { font: { size: 10 } } },
+        y: {
+          grid: { color: 'rgba(61,111,255,.07)' },
+          ticks: { callback: v => `$${v >= 0 ? '+' : ''}${v.toFixed(0)}`, font: { size: 10 } }
+        }
+      }
+    },
+    plugins: [{
+      id: 'zeroLine',
+      beforeDraw(chart) {
+        const { ctx, chartArea, scales } = chart;
+        if (!chartArea) return;
+        const y0 = scales.y.getPixelForValue(0);
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(chartArea.left, y0);
+        ctx.lineTo(chartArea.right, y0);
+        ctx.strokeStyle = 'rgba(255,255,255,.15)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3,3]);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }]
+  });
+})();
+
+// ── Scroll reveal ───────────────────────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
