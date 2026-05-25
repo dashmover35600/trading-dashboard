@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050a14">
+<meta name="description" content="About NYLO — Precision trading signals built by Giovanni Flores. The story, mission, and technology behind institutional-grade signals for everyone.">
+<title>About — NYLO</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#050a14;
+  --bg2:#0a1220;
+  --surface:rgba(10,18,32,.85);
+  --border:rgba(61,111,255,.12);
+  --accent:#1847d4;
+  --accent2:#3d6fff;
+  --accent3:#6b9fff;
+  --text:#e8eeff;
+  --muted:#5a6a90;
+  --dim:#152035;
+  --green:#00d97e;
+  --red:#ff4560;
+  --amber:#ffb830;
+  --serif:'Instrument Serif',Georgia,serif;
+  --mono:'DM Mono',monospace;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --glow:0 0 40px rgba(24,71,212,.4),0 0 80px rgba(24,71,212,.15);
+}
+
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh;}
+
+/* ── GRID OVERLAY ── */
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(61,111,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(61,111,255,.025) 1px,transparent 1px);
+  background-size:40px 40px;}
+
+/* ── MESH GRADIENT ── */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 60% at 80% 10%,rgba(24,71,212,.15) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 70% at 15% 85%,rgba(61,111,255,.1) 0%,transparent 60%),
+    radial-gradient(ellipse 80% 40% at 50% 0%,rgba(5,10,20,.9) 0%,transparent 50%);}
+
+/* ── CANVAS ── */
+#particle-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.35;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.25rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:rgba(5,10,20,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:var(--serif);font-size:1.5rem;color:#fff;letter-spacing:-.03em;text-decoration:none;}
+.nav-logo span{color:var(--accent2);}
+.nav-links{display:flex;gap:2rem;align-items:center;}
+.nav-links a{font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:color .2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--text);}
+.nav-cta{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.55rem 1.25rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;transition:background .2s,box-shadow .2s;text-decoration:none;}
+.nav-cta:hover{background:var(--accent2);box-shadow:var(--glow);}
+@media(max-width:600px){.nav-links{display:none;}}
+
+/* ── LAYOUT ── */
+main{position:relative;z-index:5;max-width:900px;margin:0 auto;padding:8rem 2rem 6rem;}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+@keyframes logoGlow{from{text-shadow:0 0 20px rgba(61,111,255,.4);}to{text-shadow:0 0 50px rgba(61,111,255,.8),0 0 100px rgba(61,111,255,.3);}}
+
+/* ── HERO ── */
+.about-hero{text-align:center;padding:0 1rem 5rem;border-bottom:1px solid var(--border);margin-bottom:5rem;}
+.about-eyebrow{font-family:var(--mono);font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:var(--accent3);margin-bottom:1.25rem;opacity:0;animation:fadeUp .7s .1s ease forwards;display:flex;align-items:center;justify-content:center;gap:.75rem;}
+.about-eyebrow::before,.about-eyebrow::after{content:'';width:32px;height:1px;background:var(--accent2);opacity:.5;}
+.about-title{font-family:var(--serif);font-size:clamp(3rem,8vw,5.5rem);font-weight:400;line-height:1.05;letter-spacing:-.03em;margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s .25s ease forwards;animation-name:logoGlow,fadeUp;}
+.about-title em{font-style:italic;color:var(--accent2);}
+.about-mission{font-family:var(--mono);font-size:clamp(.9rem,2.5vw,1.15rem);color:var(--accent3);letter-spacing:.04em;margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s .4s ease forwards;}
+.about-sub{font-size:.95rem;color:var(--muted);max-width:560px;margin:0 auto;line-height:1.75;opacity:0;animation:fadeUp .8s .55s ease forwards;}
+
+/* ── STORY ── */
+.section{margin-bottom:4.5rem;opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
+.section.visible{opacity:1;transform:translateY(0);}
+.section-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent3);margin-bottom:.9rem;display:flex;align-items:center;gap:.65rem;}
+.section-label::after{content:'';flex:1;max-width:40px;height:1px;background:var(--accent2);opacity:.4;}
+.section-title{font-family:var(--serif);font-size:clamp(1.6rem,4vw,2.2rem);font-weight:400;letter-spacing:-.02em;line-height:1.2;margin-bottom:1.25rem;color:var(--text);}
+.section-body{font-size:.95rem;color:var(--muted);line-height:1.8;max-width:680px;}
+.section-body p+p{margin-top:1rem;}
+.section-body strong{color:var(--text);}
+
+/* ── HOW IT WORKS ── */
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-top:1.75rem;}
+.how-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.4rem;transition:border-color .2s,box-shadow .2s;}
+.how-card:hover{border-color:rgba(61,111,255,.3);box-shadow:0 4px 24px rgba(24,71,212,.12);}
+.how-card-num{font-family:var(--mono);font-size:1.4rem;font-weight:500;color:var(--accent2);margin-bottom:.6rem;}
+.how-card-title{font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;color:var(--text);margin-bottom:.5rem;}
+.how-card-desc{font-size:.82rem;color:var(--muted);line-height:1.6;}
+
+/* ── STATS SHOWCASE ── */
+.stats-row{display:flex;gap:1.25rem;flex-wrap:wrap;margin-top:1.75rem;}
+.stat-card{flex:1;min-width:150px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.2rem;text-align:center;transition:border-color .2s,transform .2s,box-shadow .2s;}
+.stat-card:hover{border-color:rgba(61,111,255,.35);transform:translateY(-2px);box-shadow:0 8px 32px rgba(24,71,212,.15);}
+.stat-val{font-family:var(--mono);font-size:2rem;font-weight:500;color:var(--accent2);line-height:1;}
+.stat-val.green{color:var(--green);}
+.stat-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:.5rem;}
+.stat-sub{font-size:.72rem;color:var(--muted);margin-top:.25rem;}
+
+/* ── TECH STACK ── */
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1.75rem;}
+.tech-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.2rem;display:flex;gap:.9rem;align-items:flex-start;transition:border-color .2s;}
+.tech-item:hover{border-color:rgba(61,111,255,.3);}
+.tech-icon{font-size:1.3rem;flex-shrink:0;margin-top:1px;}
+.tech-name{font-family:var(--mono);font-size:.72rem;color:var(--text);margin-bottom:.3rem;}
+.tech-desc{font-size:.78rem;color:var(--muted);line-height:1.5;}
+
+/* ── FOUNDER ── */
+.founder-block{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem 2rem;display:flex;gap:2rem;align-items:flex-start;margin-top:1.75rem;}
+@media(max-width:600px){.founder-block{flex-direction:column;}}
+.founder-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:2rem;color:#fff;flex-shrink:0;box-shadow:0 0 30px rgba(61,111,255,.3);}
+.founder-name{font-family:var(--serif);font-size:1.4rem;color:var(--text);margin-bottom:.2rem;}
+.founder-title{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:var(--accent3);margin-bottom:.9rem;}
+.founder-bio{font-size:.88rem;color:var(--muted);line-height:1.75;}
+.founder-bio p+p{margin-top:.8rem;}
+
+/* ── CTA ── */
+.cta-block{text-align:center;background:linear-gradient(135deg,rgba(24,71,212,.12) 0%,rgba(61,111,255,.06) 100%);border:1px solid rgba(61,111,255,.2);border-radius:20px;padding:3.5rem 2rem;margin-top:1.75rem;}
+.cta-title{font-family:var(--serif);font-size:clamp(1.8rem,5vw,2.8rem);font-weight:400;letter-spacing:-.02em;margin-bottom:.75rem;}
+.cta-sub{font-size:.9rem;color:var(--muted);margin-bottom:2rem;line-height:1.6;}
+.cta-btn{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:1rem 2.5rem;font-family:var(--mono);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:background .2s,box-shadow .2s,transform .1s;box-shadow:0 4px 24px rgba(24,71,212,.4);}
+.cta-btn:hover{background:var(--accent2);box-shadow:var(--glow);transform:translateY(-1px);}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:5;text-align:center;padding:2.5rem 2rem;border-top:1px solid var(--border);margin-top:4rem;}
+.footer-logo{font-family:var(--serif);font-size:1.5rem;color:var(--text);margin-bottom:.75rem;}
+.footer-links{display:flex;gap:2rem;justify-content:center;margin-bottom:1rem;flex-wrap:wrap;}
+.footer-links a{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s;}
+.footer-links a:hover{color:var(--text);}
+.footer-copy{font-family:var(--mono);font-size:.6rem;color:var(--muted);opacity:.6;}
+</style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<nav>
+  <a href="index.html" class="nav-logo">NYL<span>O</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html" class="active">About</a>
+    <a href="backtest.html">Backtest</a>
+    <a href="trading_dashboard.html">Dashboard</a>
+  </div>
+  <a href="join.html" class="nav-cta">Request Access →</a>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <div class="about-hero">
+    <div class="about-eyebrow">Our Story</div>
+    <h1 class="about-title">Built for the <em>edge</em>.</h1>
+    <div class="about-mission">"Precision signals. Real edge. Built for everyone."</div>
+    <p class="about-sub">NYLO brings institutional-quality algorithmic trading intelligence to individual traders — no Bloomberg terminal required.</p>
+  </div>
+
+  <!-- STORY -->
+  <div class="section">
+    <div class="section-label">The Origin</div>
+    <h2 class="section-title">A personal project that grew into a platform.</h2>
+    <div class="section-body">
+      <p>NYLO started as a question: <strong>why do institutional traders consistently outperform, while retail traders struggle with emotion, noise, and timing?</strong> The answer wasn't talent — it was infrastructure. Hedge funds run quantitative models with dozens of filters, precise entry criteria, and real-time risk management. Retail traders run on gut feel and Twitter.</p>
+      <p>Giovanni Flores set out to close that gap. Starting with a simple Python script and a spreadsheet, he reverse-engineered the patterns behind consistent, repeatable edge. After hundreds of backtests, 9 strategy filters, and a walk-forward validation process, NYLO was born — a living algorithmic agent that runs 24/7, watches the market, and surfaces only the highest-probability trades.</p>
+      <p>The result: <strong>82% win rate across 74 trades, a Sharpe ratio of 4.53, and a profit factor of 1.664</strong> — numbers that hold up in out-of-sample testing.</p>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section">
+    <div class="section-label">The Strategy</div>
+    <h2 class="section-title">How NYLO generates signals.</h2>
+    <div class="section-body">
+      <p>Every signal NYLO surfaces passes through a multi-layered filter stack designed to eliminate noise and only surface genuine edge.</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-card-num">01</div>
+        <div class="how-card-title">VWAP Reclaim</div>
+        <div class="how-card-desc">Price reclaims the volume-weighted average with momentum — a key institutional entry signal.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-card-num">02</div>
+        <div class="how-card-title">EMA Pullback</div>
+        <div class="how-card-desc">Trend-following entries at the 8/21 EMA confluence, buying the dip inside the trend.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-card-num">03</div>
+        <div class="how-card-title">Opening Drive</div>
+        <div class="how-card-desc">Captures the high-conviction momentum burst in the first 30 minutes of the session.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-card-num">04</div>
+        <div class="how-card-title">9-Layer Filter Stack</div>
+        <div class="how-card-desc">QQQ regime filter, earnings blackout, correlation check, RSI range, ATR volatility gate, and more.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-card-num">05</div>
+        <div class="how-card-title">AI Scoring</div>
+        <div class="how-card-desc">Each signal scores 1–10. Only scores ≥ 3 pass. Higher scores size up from $500 to $5,000.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-card-num">06</div>
+        <div class="how-card-title">Smart Exits</div>
+        <div class="how-card-desc">Partial exit at +0.75%, breakeven stop at +0.5%, ATR-based hard stop. Risk managed at every step.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="section">
+    <div class="section-label">By the Numbers</div>
+    <h2 class="section-title">The results speak for themselves.</h2>
+    <div class="section-body">
+      <p>Verified across 74 trades and 39 days of live-market data, with out-of-sample walk-forward validation showing improving performance in recent periods.</p>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-val green">82%</div>
+        <div class="stat-label">Win Rate</div>
+        <div class="stat-sub">74 trades · 39 days</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">4.53</div>
+        <div class="stat-label">Sharpe Ratio</div>
+        <div class="stat-sub">Risk-adjusted return</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">1.664</div>
+        <div class="stat-label">Profit Factor</div>
+        <div class="stat-sub">Gross wins / gross losses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val green">$1.43</div>
+        <div class="stat-label">Expectancy / Trade</div>
+        <div class="stat-sub">Expected edge per signal</div>
+      </div>
+    </div>
+    <p style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:1rem;">Past performance does not guarantee future results. For educational purposes only.</p>
+  </div>
+
+  <!-- TECH STACK -->
+  <div class="section">
+    <div class="section-label">The Technology</div>
+    <h2 class="section-title">Institutional infrastructure, democratized.</h2>
+    <div class="section-body">
+      <p>NYLO runs on a purpose-built Python agent that monitors the market in real time, applying every filter and scoring every signal automatically.</p>
+    </div>
+    <div class="tech-grid">
+      <div class="tech-item">
+        <div class="tech-icon">🐍</div>
+        <div>
+          <div class="tech-name">Python Trading Agent</div>
+          <div class="tech-desc">Custom-built v14 agent running locally, monitoring AAPL and GOOGL tick-by-tick with sub-second latency.</div>
+        </div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">📡</div>
+        <div>
+          <div class="tech-name">Real-Time Data</div>
+          <div class="tech-desc">Live 1-minute and 5-minute OHLCV feeds with VWAP, EMA, ATR, RSI computed on every bar.</div>
+        </div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🧮</div>
+        <div>
+          <div class="tech-name">AI Signal Scoring</div>
+          <div class="tech-desc">Multi-factor scoring engine rates each setup 1–10 across momentum, trend, volatility, and regime conditions.</div>
+        </div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">📊</div>
+        <div>
+          <div class="tech-name">Live Dashboard</div>
+          <div class="tech-desc">Bloomberg-style web interface showing real-time trades, agent health, performance charts, and market events.</div>
+        </div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🔐</div>
+        <div>
+          <div class="tech-name">Supabase Auth</div>
+          <div class="tech-desc">Invite-only member access with secure authentication. Only verified members see live signals.</div>
+        </div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">📲</div>
+        <div>
+          <div class="tech-name">Push Alerts</div>
+          <div class="tech-desc">Instant Pushover notifications on every signal — ticker, direction, entry price, score, and reason — the moment it fires.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOUNDER -->
+  <div class="section">
+    <div class="section-label">The Founder</div>
+    <h2 class="section-title">Who built this.</h2>
+    <div class="founder-block">
+      <div class="founder-avatar">G</div>
+      <div>
+        <div class="founder-name">Giovanni Flores</div>
+        <div class="founder-title">Founder · NYLO</div>
+        <div class="founder-bio">
+          <p>Giovanni is a young entrepreneur who got obsessed with understanding how markets actually work — not the narrative, but the math. Starting with basic technical analysis and a lot of backtesting, he developed a systematic approach that filters out emotion and trades only when the data says the edge is real.</p>
+          <p>NYLO is his answer to the question every retail trader asks: <em>"Why does this keep losing when it looks so obvious on the chart?"</em> The answer is filters, discipline, and a process that institutional desks follow but never share. NYLO shares it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="section">
+    <div class="cta-block">
+      <h2 class="cta-title">Ready to trade with <em>edge</em>?</h2>
+      <p class="cta-sub">Request access to NYLO and get institutional-grade signals delivered directly to your phone the moment they fire.</p>
+      <a href="join.html" class="cta-btn">Join NYLO →</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-logo">NYLO</div>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="backtest.html">Backtest</a>
+    <a href="join.html">Request Access</a>
+    <a href="trading_dashboard.html">Sign In</a>
+  </div>
+  <div class="footer-copy">© 2026 NYLO · For educational purposes only · Not financial advice</div>
+</footer>
+
+<script>
+// ── Particle background ──────────────────────────────────────────────────────
+(function(){
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize(){
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function mkParticle(){
+    return {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.4 + .3,
+      vx: (Math.random() - .5) * .25,
+      vy: (Math.random() - .5) * .25,
+      a: Math.random() * .4 + .05,
+    };
+  }
+
+  for(let i = 0; i < 90; i++) particles.push(mkParticle());
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < 0) p.x = W; if(p.x > W) p.x = 0;
+      if(p.y < 0) p.y = H; if(p.y > H) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(61,111,255,${p.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── Scroll reveal ────────────────────────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.section').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
