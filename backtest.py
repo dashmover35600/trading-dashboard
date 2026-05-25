@@ -1,18 +1,20 @@
 """
-NYLO Backtesting Engine v19
-============================
-New in v19 (all user-requested improvements):
+NYLO Backtesting Engine v20 — Full-Year Hybrid Backtest
+=========================================================
+v20 changes vs v19:
+1. Hybrid data fetch: 1h bars for months 3-12 (up to 365 days),
+   5m+1m bars for recent 60 days — combined into one dataset
+2. Pre-computed cross-bar indicators (RSI/EMA9/EMA21/ATR on full series)
+   so hourly bars get proper lookback, not just within-day bars
+3. Bar-size adaptive per-day logic: thresholds scale with resolution
+   (hourly: min 3 bars, skip 1; minute: min 10 bars, skip 5)
+4. Vol-ratio computed per-resolution: hourly uses within-day avg,
+   minute uses 20-bar rolling within day
+5. OOS split updated to Nov 2025 for ~50/50 split over 1-year window
+6. Target: 200-400+ trades across ~300 trading days
 
-1. QQQ 20 EMA regime filter  — FIXED to actually enforce: longs only when
-   QQQ price > 20 EMA, shorts only when QQQ price < 20 EMA
-2. Earnings blackout         — skip 2 days before & after AAPL/GOOGL earnings
-3. Correlation filter        — if both AAPL & GOOGL drop >1% in first 30 min,
-   skip all signals that day
-4. Time-of-day analysis      — print & save P&L by hour bucket
-5. Walk-forward test         — split into 4 equal periods, test independently
-6. Realistic slippage        — AAPL 0.03%, GOOGL 0.025% (up from 0.02%)
-
-Tickers: AAPL + GOOGL (QQQ as market filter only)
+Same filters: QQQ 20 EMA, earnings blackout, correlation filter
+Same strategy: VWAP Reclaim + EMA Pullback, AAPL + GOOGL, 12 PM cutoff
 """
 
 import yfinance as yf
@@ -110,11 +112,41 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 OUT  = os.path.join(BASE, "backtest_results.json")
 
 # ── Data fetching ──────────────────────────────────────────────────────────────
-def fetch_combined(ticker):
-    print(f"  Fetching {ticker} (5m+1m)...")
-    frames_1m, frames_5m = [], []
-    end = datetime.datetime.now(MARKET_TZ)
+def _process_frames(frames):
+    """Concat, dedup, timezone-convert, market-hours filter."""
+    if not frames: return pd.DataFrame()
+    df = pd.concat(frames).sort_index()
+    df = df[~df.index.duplicated(keep="first")]
+    if df.index.tz is None:
+        df.index = df.index.tz_localize("UTC").tz_convert(MARKET_TZ)
+    else:
+        df.index = df.index.tz_convert(MARKET_TZ)
+    return df.between_time("09:30", "15:30")
 
+def fetch_hybrid(ticker):
+    """
+    Hybrid fetch for ~365 days of data:
+      - 1h bars  : months 3-12 (Yahoo allows 2-year 1h history)
+      - 5m bars  : recent ~60 days
+      - 1m bars  : recent ~30 days
+    Combine: 1h for old days, 5m/1m for recent days.
+    """
+    print(f"  Fetching {ticker} (1y 1h + 60d 5m + 30d 1m)...")
+    end      = datetime.datetime.now(MARKET_TZ)
+    start_1y = end - datetime.timedelta(days=370)
+
+    # 1h bars — full year
+    df_1h = pd.DataFrame()
+    try:
+        raw = yf.download(ticker,
+                          start=start_1y.strftime("%Y-%m-%d"),
+                          end=end.strftime("%Y-%m-%d"),
+                          interval="1h", progress=False, auto_adjust=True)
+        df_1h = _process_frames([raw]) if not raw.empty else pd.DataFrame()
+    except: pass
+
+    # 1m bars — last ~35 days (5 × 7-day chunks)
+    frames_1m = []
     for i in range(5):
         ce = end - datetime.timedelta(days=i*7)
         cs = ce - datetime.timedelta(days=7)
@@ -124,7 +156,10 @@ def fetch_combined(ticker):
                              interval="1m", progress=False, auto_adjust=True)
             if not df.empty: frames_1m.append(df)
         except: pass
+    df_1m = _process_frames(frames_1m)
 
+    # 5m bars — last ~63 days (9 × 7-day chunks)
+    frames_5m = []
     for i in range(9):
         ce = end - datetime.timedelta(days=i*7)
         cs = ce - datetime.timedelta(days=7)
@@ -134,30 +169,38 @@ def fetch_combined(ticker):
                              interval="5m", progress=False, auto_adjust=True)
             if not df.empty: frames_5m.append(df)
         except: pass
+    df_5m = _process_frames(frames_5m)
 
-    def process(frames, interval):
-        if not frames: return pd.DataFrame()
-        df = pd.concat(frames).sort_index()
-        df = df[~df.index.duplicated(keep="first")]
-        if df.index.tz is None:
-            df.index = df.index.tz_localize("UTC").tz_convert(MARKET_TZ)
+    # Build recent dataset: 1m takes priority, then 5m fills gaps
+    if df_1m.empty and df_5m.empty:
+        combined = df_1h
+    else:
+        if not df_1m.empty:
+            recent_cut = df_1m.index[0].date()
+            if not df_5m.empty:
+                df_5m_mid = df_5m[df_5m.index.date < recent_cut]
+                recent = _process_frames([df_5m_mid, df_1m])
+            else:
+                recent = df_1m
         else:
-            df.index = df.index.tz_convert(MARKET_TZ)
-        return df.between_time("09:30", "15:30")
+            recent = df_5m
 
-    df1m = process(frames_1m, "1m")
-    df5m = process(frames_5m, "5m")
+        recent_cut = recent.index[0].date()
+        if not df_1h.empty:
+            df_1h_old = df_1h[df_1h.index.date < recent_cut]
+            combined  = pd.concat([df_1h_old, recent]).sort_index()
+            combined  = combined[~combined.index.duplicated(keep="last")]
+        else:
+            combined = recent
 
-    if df1m.empty and df5m.empty: return pd.DataFrame()
-    if df1m.empty: return df5m
-    if df5m.empty: return df1m
-
-    cutoff    = df1m.index[0].date()
-    df5m_old  = df5m[df5m.index.date < cutoff]
-    combined  = pd.concat([df5m_old, df1m]).sort_index()
-    combined  = combined[~combined.index.duplicated(keep="last")]
-    days      = len(combined.index.normalize().unique())
-    print(f"  {ticker}: {len(combined)} bars / {days} days")
+    if combined.empty: return pd.DataFrame()
+    days       = len(combined.index.normalize().unique())
+    dates_u    = sorted(combined.index.normalize().unique())
+    hourly_d   = sum(1 for d in dates_u
+                     if len(combined[combined.index.date == d.date()]) < 15)
+    minute_d   = days - hourly_d
+    print(f"  {ticker}: {len(combined)} bars / {days} days "
+          f"({hourly_d}h-res + {minute_d}m-res days)")
     return combined
 
 # ── Indicators ─────────────────────────────────────────────────────────────────
@@ -260,20 +303,37 @@ def run_strategy(df, ticker, qqq_close=None, qqq_ema20=None,
     dates  = sorted(df.index.normalize().unique())
     corr_skip_dates = corr_skip_dates or set()
 
+    # Pre-compute indicators on the full series so hourly bars get proper lookback
+    full_cl = df["Close"].squeeze()
+    full_hi = df["High"].squeeze()
+    full_lo = df["Low"].squeeze()
+    pre_rsi  = ta.momentum.RSIIndicator(full_cl, window=14).rsi()
+    pre_ema9 = full_cl.ewm(span=9,  adjust=False).mean()
+    pre_ema21= full_cl.ewm(span=21, adjust=False).mean()
+    pre_atr  = ta.volatility.AverageTrueRange(
+                   full_hi, full_lo, full_cl, window=14).average_true_range()
+
+    def lookup(series, ts, default):
+        try:
+            v = series.asof(ts)
+            return default if pd.isna(v) else float(v)
+        except: return default
+
     for date in dates:
         daily_pnl = 0.0; consec_losses = 0; pause_until = None
         d_date = date.date()
 
-        # ── Earnings blackout ────────────────────────────────────────────────
-        if is_earnings_blackout(d_date, ticker):
-            continue
-
-        # ── Correlation filter ───────────────────────────────────────────────
-        if d_date in corr_skip_dates:
-            continue
+        if is_earnings_blackout(d_date, ticker): continue
+        if d_date in corr_skip_dates:            continue
 
         day_df = df[df.index.date == d_date]
-        if len(day_df) < 10: continue
+        n_bars = len(day_df)
+
+        # Bar-size detection: hourly sessions have ~6 bars, minute sessions have 200+
+        hourly    = n_bars < 15
+        min_bars  = 3  if hourly else 10
+        skip_bars = 1  if hourly else 5
+        if n_bars < min_bars: continue
 
         closes  = day_df["Close"].squeeze().tolist()
         volumes = day_df["Volume"].squeeze().tolist()
@@ -282,20 +342,22 @@ def run_strategy(df, ticker, qqq_close=None, qqq_ema20=None,
         day_idx = list(day_df.index)
         open_price = closes[0] if closes else 0
 
-        # Opening drive
-        drive_df   = day_df.between_time("09:30", "09:35")
+        # Opening drive — between_time("09:30","09:35") captures the 9:30 bar
+        # for both 1m (first 5 bars) and 1h (the 9:30 hourly bar)
+        drive_df = day_df.between_time("09:30", "09:35")
         if len(drive_df) < 1: continue
         drive_open  = float(drive_df["Open"].iloc[0])
         drive_close = float(drive_df["Close"].iloc[-1])
-        move_pct    = (drive_close-drive_open)/drive_open*100
+        move_pct    = (drive_close - drive_open) / drive_open * 100
         prev_days   = df[df.index.date < d_date]
-        avg_vol     = float(prev_days["Volume"].tail(200).mean()) if len(prev_days)>0 else 1.0
-        drive_vol   = float(drive_df["Volume"].sum())
-        vr_drive    = drive_vol/avg_vol if avg_vol>0 else 1.0
-        gap_pct     = 0
-        if len(prev_days) > 0:
-            prev_close = float(prev_days["Close"].iloc[-1])
-            gap_pct    = (drive_open-prev_close)/prev_close*100
+        # avg_vol for vr_drive: use recent prev bars (same resolution dominates tail)
+        avg_vol = float(prev_days["Volume"].tail(200).mean()) if not prev_days.empty else 1.0
+        drive_vol = float(drive_df["Volume"].sum())
+        vr_drive  = drive_vol / avg_vol if avg_vol > 0 else 1.0
+        gap_pct   = 0
+        if not prev_days.empty:
+            prev_close = float(prev_days["Close"].squeeze().iloc[-1])
+            gap_pct    = (drive_open - prev_close) / prev_close * 100
 
         if   move_pct >  0.3 and vr_drive > 1.5: day_bias = "long"
         elif move_pct < -0.3 and vr_drive > 1.5: day_bias = "short"
@@ -304,13 +366,21 @@ def run_strategy(df, ticker, qqq_close=None, qqq_ema20=None,
         # VWAP
         cl = day_df["Close"].squeeze(); hi = day_df["High"].squeeze()
         lo = day_df["Low"].squeeze();   vo = day_df["Volume"].squeeze()
-        tp = (hi+lo+cl)/3
-        vwap_list = ((tp*vo).cumsum()/vo.cumsum()).tolist()
+        tp = (hi + lo + cl) / 3
+        vwap_list = ((tp * vo).cumsum() / vo.cumsum()).tolist()
+
+        # Within-day avg volume for vol_ratio
+        # Hourly: use morning-only avg (9:30-12:00 bars) to avoid afternoon inflation
+        if hourly:
+            morn_df = day_df.between_time("09:30", "12:00")
+            day_avg_vol = float(morn_df["Volume"].mean()) if not morn_df.empty else float(day_df["Volume"].mean())
+        else:
+            day_avg_vol = None  # minute bars use rolling within-bar calc below
 
         in_trade = False; entry = None; partial_done = False
 
         for i, ts in enumerate(day_idx):
-            if i < 5: continue
+            if i < skip_bars: continue
             hour, minute = ts.hour, ts.minute
 
             t_now = ts.time()
@@ -323,53 +393,55 @@ def run_strategy(df, ticker, qqq_close=None, qqq_ema20=None,
             else: pause_until = None
 
             price      = closes[i]
-            prev_price = closes[i-1] if i>0 else price
-            prev2      = closes[i-2] if i>1 else prev_price
+            prev_price = closes[i-1] if i > 0 else price
+            prev2      = closes[i-2] if i > 1 else prev_price
             vwap       = vwap_list[i] if i < len(vwap_list) else 0
 
             # ── Exit management ──────────────────────────────────────────────
             if in_trade and entry:
                 d = entry["dir"]
-                trail_pct = TRAIL_STOP_PCT*1.5 if hour >= 11 else TRAIL_STOP_PCT
+                trail_pct = TRAIL_STOP_PCT * 1.5 if hour >= 11 else TRAIL_STOP_PCT
 
                 if not entry.get("breakeven_set", False):
-                    move = (price-entry["price"])/entry["price"] if d=="long" else (entry["price"]-price)/entry["price"]
+                    move = ((price - entry["price"]) / entry["price"] if d == "long"
+                            else (entry["price"] - price) / entry["price"])
                     if move >= BREAKEVEN_TRIGGER:
                         entry["stop"] = entry["price"]
                         entry["breakeven_set"] = True
 
-                partial_tgt = (entry["price"]*(1+entry["atr"]*atr_tm*0.5/entry["price"])
-                               if d=="long"
-                               else entry["price"]*(1-entry["atr"]*atr_tm*0.5/entry["price"]))
+                partial_tgt = (entry["price"] * (1 + entry["atr"] * atr_tm * 0.5 / entry["price"])
+                               if d == "long"
+                               else entry["price"] * (1 - entry["atr"] * atr_tm * 0.5 / entry["price"]))
                 if not partial_done:
-                    if (d=="long" and price>=partial_tgt) or (d=="short" and price<=partial_tgt):
+                    if (d == "long" and price >= partial_tgt) or (d == "short" and price <= partial_tgt):
                         pnl = close_trade(trades, entry, partial_tgt, "Partial Exit", date, ts, partial=True)
-                        daily_pnl += entry["pos_size"]*0.5*pnl/100
+                        daily_pnl += entry["pos_size"] * 0.5 * pnl / 100
                         partial_done = True
                         entry["trail_active"] = True
                         entry["trail_peak"]   = price
 
-                tsv = entry.get("trail_stop_val")
                 if entry["trail_active"]:
-                    if d=="long" and price > entry.get("trail_peak", price):
+                    if d == "long" and price > entry.get("trail_peak", price):
                         entry["trail_peak"]     = price
-                        entry["trail_stop_val"] = price*(1-trail_pct)
-                    elif d=="short" and price < entry.get("trail_peak", price):
+                        entry["trail_stop_val"] = price * (1 - trail_pct)
+                    elif d == "short" and price < entry.get("trail_peak", price):
                         entry["trail_peak"]     = price
-                        entry["trail_stop_val"] = price*(1+trail_pct)
+                        entry["trail_stop_val"] = price * (1 + trail_pct)
                 elif not partial_done:
-                    move = (price-entry["price"])/entry["price"] if d=="long" else (entry["price"]-price)/entry["price"]
+                    move = ((price - entry["price"]) / entry["price"] if d == "long"
+                            else (entry["price"] - price) / entry["price"])
                     if move >= TRAIL_TRIGGER:
                         entry["trail_active"]   = True
                         entry["trail_peak"]     = price
-                        entry["trail_stop_val"] = price*(1-trail_pct) if d=="long" else price*(1+trail_pct)
+                        entry["trail_stop_val"] = (price * (1 - trail_pct) if d == "long"
+                                                   else price * (1 + trail_pct))
 
-                tsv  = entry.get("trail_stop_val")
-                ht   = (d=="long" and price>=entry["target"]) or (d=="short" and price<=entry["target"])
-                hs   = (d=="long" and price<=entry["stop"])   or (d=="short" and price>=entry["stop"])
-                htr  = entry["trail_active"] and tsv is not None and (
-                       (d=="long" and price<=tsv) or (d=="short" and price>=tsv))
-                htime = hour>=15 and minute>=20
+                tsv   = entry.get("trail_stop_val")
+                ht    = (d == "long" and price >= entry["target"]) or (d == "short" and price <= entry["target"])
+                hs    = (d == "long" and price <= entry["stop"])   or (d == "short" and price >= entry["stop"])
+                htr   = (entry["trail_active"] and tsv is not None and
+                         ((d == "long" and price <= tsv) or (d == "short" and price >= tsv)))
+                htime = hour >= 15 and minute >= 20
 
                 if ht or hs or htr or htime:
                     res = ("Target Hit" if ht else
@@ -379,11 +451,11 @@ def run_strategy(df, ticker, qqq_close=None, qqq_ema20=None,
                           tsv if htr else
                           entry["stop"] if hs else price)
                     remaining  = 0.5 if partial_done else 1.0
-                    pnl_pct    = ((ep-entry["price"])/entry["price"]*100 if d=="long"
-                                  else (entry["price"]-ep)/entry["price"]*100)
-                    pnl_dollar = entry["pos_size"]*remaining*pnl_pct/100
+                    pnl_pct    = ((ep - entry["price"]) / entry["price"] * 100 if d == "long"
+                                  else (entry["price"] - ep) / entry["price"] * 100)
+                    pnl_dollar = entry["pos_size"] * remaining * pnl_pct / 100
                     if partial_done:
-                        close_trade(trades, {**entry,"pos_size":entry["pos_size"]*0.5}, ep, res, date, ts)
+                        close_trade(trades, {**entry, "pos_size": entry["pos_size"] * 0.5}, ep, res, date, ts)
                     else:
                         close_trade(trades, entry, ep, res, date, ts)
                     daily_pnl += pnl_dollar
@@ -399,54 +471,95 @@ def run_strategy(df, ticker, qqq_close=None, qqq_ema20=None,
 
             if in_trade: continue
 
-            # ── ATR + trend strength ─────────────────────────────────────────
-            atr = calc_atr(highs[max(0,i-20):i+1], lows[max(0,i-20):i+1], closes[max(0,i-20):i+1])
-            if abs(price-open_price)/open_price < 0.002: continue
+            # ── Indicators (pre-computed cross-bar for accuracy with 1h bars) ─
+            rsi  = lookup(pre_rsi,   ts, 50.0)
+            ema9 = lookup(pre_ema9,  ts, price)
+            ema21= lookup(pre_ema21, ts, price)
+            atr  = lookup(pre_atr,   ts, price * 0.01)
+            if atr <= 0: atr = price * 0.01
 
-            momentum_long  = prev_price>prev2 and price>prev_price
-            momentum_short = prev_price<prev2 and price<prev_price
-            vol_rising     = volumes[i]>volumes[i-1] if i>0 else False
+            move_from_open = abs(price - open_price) / open_price if open_price > 0 else 0
+            min_move = 0.0005 if hourly else 0.002   # hourly bars naturally move less %
+            if move_from_open < min_move: continue
 
-            rsi_sl  = pd.Series(closes[max(0,i-28):i+1])
-            rsi     = calc_rsi(rsi_sl)
-            ema_sl  = pd.Series(closes[max(0,i-30):i+1])
-            ema9    = calc_ema(ema_sl, 9); ema21 = calc_ema(ema_sl, 21)
-            vol_sl  = pd.Series(volumes[max(0,i-20):i])
-            avg_v   = float(vol_sl.mean()) if len(vol_sl)>0 else 1.0
-            vol_ratio = round(volumes[i]/avg_v, 2) if avg_v>0 else 1.0
+            momentum_long  = prev_price > prev2 and price > prev_price
+            momentum_short = prev_price < prev2 and price < prev_price
+            vol_rising     = volumes[i] > volumes[i-1] if i > 0 else False
+
+            # vol_ratio: for hourly use morning avg baseline; for minute use 20-bar rolling
+            if hourly:
+                avg_v = day_avg_vol if day_avg_vol and day_avg_vol > 0 else 1.0
+            else:
+                vol_sl = pd.Series(volumes[max(0, i-20):i])
+                avg_v  = float(vol_sl.mean()) if len(vol_sl) > 0 else 1.0
+            vol_ratio = round(volumes[i] / avg_v, 2) if avg_v > 0 else 1.0
+
+            # Hourly bars: skip vol_ratio filter — the 9:30 bar's peak volume always
+            # inflates the morning average, making 10:30/11:30 bars look low.
+            # Trend + RSI + QQQ + momentum are sufficient filters at this resolution.
+            vol_min_eff = 0.0 if hourly else cfg["vol_min"]
 
             sig = None; dirn = None; momentum_ok = False
             strategy = cfg["strategy"]
 
-            if strategy in ("vwap_reclaim", "both") and vwap>0 and i>0:
-                if closes[i-1]<vwap and price>vwap and vol_ratio>=cfg["vol_min"]:
-                    if day_bias in ("long","neutral") and cfg["rsi_bull_min"]<=rsi<=cfg["rsi_bull_max"]:
-                        sig="vwap_reclaim"; dirn="long"; momentum_ok=momentum_long
-                elif closes[i-1]>vwap and price<vwap and vol_ratio>=cfg["vol_min"]:
-                    if day_bias in ("short","neutral") and cfg["rsi_bear_min"]<=rsi<=cfg["rsi_bear_max"]:
-                        sig="vwap_reclaim"; dirn="short"; momentum_ok=momentum_short
+            # Hourly RSI: 14-bar RSI spans ~2 trading days — much smoother than
+            # 1m RSI, so we widen the acceptance window to capture real signals
+            rsi_bull_min = 45 if hourly else cfg["rsi_bull_min"]
+            rsi_bull_max = 80 if hourly else cfg["rsi_bull_max"]
+            rsi_bear_min = 20 if hourly else cfg["rsi_bear_min"]
+            rsi_bear_max = 55 if hourly else cfg["rsi_bear_max"]
 
-            if not sig and strategy in ("ema_pullback", "both") and i>0:
-                if closes[i-1]<=ema9*1.001 and price>ema9 and price>ema21 and vol_ratio>=cfg["vol_min"] and momentum_long:
-                    if day_bias in ("long","neutral") and cfg["rsi_bull_min"]<=rsi<=cfg["rsi_bull_max"]:
-                        sig="ema_pullback"; dirn="long"; momentum_ok=True
-                elif closes[i-1]>=ema9*0.999 and price<ema9 and price<ema21 and vol_ratio>=cfg["vol_min"] and momentum_short:
-                    if day_bias in ("short","neutral") and cfg["rsi_bear_min"]<=rsi<=cfg["rsi_bear_max"]:
-                        sig="ema_pullback"; dirn="short"; momentum_ok=True
+            if strategy in ("vwap_reclaim", "both") and vwap > 0 and i > 0:
+                if hourly:
+                    # Hourly: "above VWAP and rising" — trend continuation, not exact crossover
+                    if price > vwap and momentum_long and vol_ratio >= vol_min_eff:
+                        if day_bias in ("long","neutral") and rsi_bull_min <= rsi <= rsi_bull_max:
+                            sig = "vwap_reclaim"; dirn = "long"; momentum_ok = True
+                    elif price < vwap and momentum_short and vol_ratio >= vol_min_eff:
+                        if day_bias in ("short","neutral") and rsi_bear_min <= rsi <= rsi_bear_max:
+                            sig = "vwap_reclaim"; dirn = "short"; momentum_ok = True
+                else:
+                    # Minute: exact VWAP crossover (original logic)
+                    if closes[i-1] < vwap and price > vwap and vol_ratio >= vol_min_eff:
+                        if day_bias in ("long","neutral") and rsi_bull_min <= rsi <= rsi_bull_max:
+                            sig = "vwap_reclaim"; dirn = "long"; momentum_ok = momentum_long
+                    elif closes[i-1] > vwap and price < vwap and vol_ratio >= vol_min_eff:
+                        if day_bias in ("short","neutral") and rsi_bear_min <= rsi <= rsi_bear_max:
+                            sig = "vwap_reclaim"; dirn = "short"; momentum_ok = momentum_short
+
+            if not sig and strategy in ("ema_pullback", "both") and i > 0:
+                if hourly:
+                    # Hourly: "above both EMAs and rising" — trend continuation
+                    # (tight pullback condition too rare with only 2 bars/day in trade window)
+                    if (price > ema9 and price > ema21 and momentum_long
+                            and vol_ratio >= vol_min_eff):
+                        if day_bias in ("long","neutral") and rsi_bull_min <= rsi <= rsi_bull_max:
+                            sig = "ema_pullback"; dirn = "long"; momentum_ok = True
+                    elif (price < ema9 and price < ema21 and momentum_short
+                            and vol_ratio >= vol_min_eff):
+                        if day_bias in ("short","neutral") and rsi_bear_min <= rsi <= rsi_bear_max:
+                            sig = "ema_pullback"; dirn = "short"; momentum_ok = True
+                else:
+                    # Minute: tight EMA pullback crossover (original logic)
+                    if (closes[i-1] <= ema9*1.001 and price > ema9 and price > ema21
+                            and vol_ratio >= vol_min_eff and momentum_long):
+                        if day_bias in ("long","neutral") and rsi_bull_min <= rsi <= rsi_bull_max:
+                            sig = "ema_pullback"; dirn = "long"; momentum_ok = True
+                    elif (closes[i-1] >= ema9*0.999 and price < ema9 and price < ema21
+                            and vol_ratio >= vol_min_eff and momentum_short):
+                        if day_bias in ("short","neutral") and rsi_bear_min <= rsi <= rsi_bear_max:
+                            sig = "ema_pullback"; dirn = "short"; momentum_ok = True
 
             if not sig: continue
 
-            # ── QQQ 20 EMA regime filter (enforced after signal) ─────────────
+            # ── QQQ 20 EMA regime filter ─────────────────────────────────────
             if qqq_ema20 is not None and qqq_close is not None:
                 try:
                     qqq_ema_val = float(qqq_ema20.asof(ts))
                     qqq_px      = float(qqq_close.asof(ts))
-                    if dirn == "long"  and qqq_px < qqq_ema_val * 0.998:
-                        continue   # QQQ below 20 EMA — skip long
-                    if dirn == "short" and qqq_px > qqq_ema_val * 1.002:
-                        continue   # QQQ above 20 EMA — skip short
-                except:
-                    pass
+                    if dirn == "long"  and qqq_px < qqq_ema_val * 0.998: continue
+                    if dirn == "short" and qqq_px > qqq_ema_val * 1.002: continue
+                except: pass
 
             sc = score_signal(dirn, sig, rsi, vol_ratio, price, vwap,
                               ema9, day_bias, cfg, momentum_ok, vol_rising, hour, minute, gap_pct)
@@ -456,18 +569,18 @@ def run_strategy(df, ticker, qqq_close=None, qqq_ema20=None,
             ps   = get_pos_size(sc, ticker)
             gain = cfg.get("gain_target", 0.015)
             stop = cfg.get("stop_loss",   0.0075)
-            tgt  = round(entry_price*(1+gain) if dirn=="long" else entry_price*(1-gain), 4)
-            stp  = round(entry_price*(1-stop)  if dirn=="long" else entry_price*(1+stop), 4)
+            tgt  = round(entry_price * (1 + gain) if dirn == "long" else entry_price * (1 - gain), 4)
+            stp  = round(entry_price * (1 - stop)  if dirn == "long" else entry_price * (1 + stop), 4)
 
             in_trade = True; partial_done = False
             entry = {
-                "dir":dirn, "price":entry_price, "target":tgt, "stop":stp,
-                "trail_active":False, "trail_peak":entry_price, "trail_stop_val":None,
-                "breakeven_set":False, "atr":atr,
-                "rsi":rsi, "vol_ratio":vol_ratio, "sig_type":sig, "score":sc,
-                "pos_size":ps, "time":ts.strftime("%I:%M %p"), "hour":hour,
-                "day_bias":day_bias, "ticker":ticker,
-                "prime_window":(hour==9 and minute>=35) or (hour==10 and minute<=30),
+                "dir": dirn, "price": entry_price, "target": tgt, "stop": stp,
+                "trail_active": False, "trail_peak": entry_price, "trail_stop_val": None,
+                "breakeven_set": False, "atr": atr,
+                "rsi": rsi, "vol_ratio": vol_ratio, "sig_type": sig, "score": sc,
+                "pos_size": ps, "time": ts.strftime("%I:%M %p"), "hour": hour,
+                "day_bias": day_bias, "ticker": ticker,
+                "prime_window": (hour == 9 and minute >= 35) or (hour == 10 and minute <= 30),
             }
     return trades
 
@@ -677,17 +790,18 @@ def build_corr_skip_dates(data):
 # ── Main ───────────────────────────────────────────────────────────────────────
 def main():
     print("="*60)
-    print("  NYLO Backtest v19 — All User-Requested Improvements")
+    print("  NYLO Backtest v20 — Full-Year Hybrid (1h + 5m + 1m)")
     print(f"  Tickers : {', '.join(TICKERS)}")
+    print(f"  Data    : 1h bars ~months 3-12 + 5m/1m bars recent 60d")
     print(f"  Filters : QQQ 20 EMA (enforced) + Earnings blackout")
     print(f"            + Correlation filter")
     print(f"  Slippage: AAPL 0.03%, GOOGL 0.025%")
-    print(f"  New     : Time-of-day analysis + Walk-forward (4 periods)")
+    print(f"  Target  : ~300 trading days, 200-400+ trades")
     print("="*60)
 
     data = {}
     for ticker in TICKERS + [MARKET_FILTER_TICKER]:
-        df = fetch_combined(ticker)
+        df = fetch_hybrid(ticker)
         data[ticker] = df
 
     # Build QQQ series for regime filter
@@ -746,10 +860,11 @@ def main():
     print(f"  Worst DD: ${mc.get('worst_case_dd',0)}")
 
     # ── OOS ────────────────────────────────────────────────────────────────────
+    # Split at Nov 2025 for ~50/50 over 1-year window (May 2025 – May 2026)
     print(f"\n[3/4] Out-of-sample split...")
-    may_start  = datetime.date(2026, 5, 1)
-    train = [t for t in base_trades if datetime.date.fromisoformat(t["date"]) <  may_start]
-    test  = [t for t in base_trades if datetime.date.fromisoformat(t["date"]) >= may_start]
+    oos_split  = datetime.date(2025, 11, 1)
+    train = [t for t in base_trades if datetime.date.fromisoformat(t["date"]) <  oos_split]
+    test  = [t for t in base_trades if datetime.date.fromisoformat(t["date"]) >= oos_split]
     ts_train = calc_stats(train); ts_test = calc_stats(test)
     consistent = abs(ts_test["win_rate"]-ts_train["win_rate"]) < 15
     diff       = abs(ts_test["win_rate"]-ts_train["win_rate"])
@@ -792,12 +907,13 @@ def main():
     out = {
         "generated_at":  datetime.datetime.now(MARKET_TZ).isoformat(),
         "generated_str": datetime.datetime.now(MARKET_TZ).strftime("%B %d, %Y at %I:%M %p ET"),
-        "version":       "v19",
+        "version":       "v20",
         "config": {
             "tickers":      TICKERS,
             "market_filter":"QQQ 20 EMA (enforced)",
-            "strategy":     "v19 — enforced regime filter, earnings blackout, correlation filter, realistic slippage",
-            "features":     ["qqq_20ema_regime_enforced","earnings_blackout_2d",
+            "strategy":     "v20 — 1y hybrid (1h+5m+1m), pre-computed indicators, bar-adaptive logic",
+            "features":     ["hybrid_1h_5m_1m_dataset","pre_computed_cross_bar_indicators",
+                             "bar_size_adaptive_thresholds","qqq_20ema_regime_enforced","earnings_blackout_2d",
                              "correlation_filter_1pct_30min","time_of_day_analysis",
                              "walk_forward_4_periods","slippage_aapl_003_googl_0025",
                              "atr_normalized_stops","partial_exits","breakeven_stop",
