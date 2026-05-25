@@ -183,7 +183,7 @@ footer{position:relative;z-index:5;padding:2rem 2.5rem;border-top:1px solid rgba
   <p class="hero-sub">
     NYLO watches <strong>AAPL and GOOGL</strong> every 60 seconds during market hours,
     applies 9 confirmation filters, and sends you a signal the moment conditions align.
-    <strong>82% win rate. Sharpe 4.53. Profit factor 1.664. $1.43/trade expectancy. Real data.</strong>
+    <strong>82% win rate in backtesting. Building live track record.</strong>
   </p>
   <div class="hero-actions">
     <a href="join.html" class="btn-primary">Request Access →</a>
@@ -195,8 +195,8 @@ footer{position:relative;z-index:5;padding:2rem 2.5rem;border-top:1px solid rgba
 <div class="stats-bar" style="position:relative;z-index:5;margin:-1rem auto 4rem;max-width:800px;padding:0 2rem;">
   <div class="stat-item">
     <div class="stat-label">Win rate</div>
-    <div class="stat-value green" id="wr-val">82%</div>
-    <div class="stat-sub">39 day backtest</div>
+    <div class="stat-value green" id="wr-val">82%<span style="font-size:.75rem;vertical-align:super;color:var(--muted);">*</span></div>
+    <div class="stat-sub">60-day backtest · 74 trades</div>
   </div>
   <div class="stat-item">
     <div class="stat-label">Sharpe ratio</div>
@@ -327,10 +327,10 @@ footer{position:relative;z-index:5;padding:2rem 2.5rem;border-top:1px solid rgba
   <div class="section-inner">
     <div class="section-label reveal">Performance</div>
     <h2 class="section-title reveal">The numbers <em>speak.</em></h2>
-    <p class="section-body reveal">39-day backtest on real 1-minute data with earnings blackout, QQQ regime filter, and correlation filter. Paper trading $500-$5,000 per signal based on confidence score.</p>
+    <p class="section-body reveal">60-day backtest on real 1-minute data with earnings blackout, QQQ regime filter, and correlation filter. Paper trading $500–$5,000 per signal based on confidence score.</p>
     <div class="perf-grid">
       <div class="perf-card reveal">
-        <div class="perf-card-label">Win rate</div>
+        <div class="perf-card-label">Win rate<span style="font-size:.65rem;vertical-align:super;color:var(--muted);margin-left:1px;">*</span></div>
         <div class="perf-card-val" style="color:var(--green);">82%</div>
         <div class="perf-card-sub">74 trades · AAPL · GOOGL</div>
       </div>
@@ -350,8 +350,45 @@ footer{position:relative;z-index:5;padding:2rem 2.5rem;border-top:1px solid rgba
         <div class="perf-card-sub">37 trades · $1.43/trade expectancy</div>
       </div>
     </div>
-    <p style="font-family:var(--mono);font-size:.62rem;color:var(--muted);margin-top:1.5rem;line-height:1.7;" class="reveal">
+    <p style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:1.5rem;line-height:1.7;" class="reveal">
+      *Based on 74 simulated trades over 60 days of backtesting. Live performance may vary. This is paper trading only.
+    </p>
+    <p style="font-family:var(--mono);font-size:.62rem;color:var(--muted);margin-top:.5rem;line-height:1.7;" class="reveal">
       ⚠️ Past performance does not guarantee future results. NYLO is a paper trading signal service for educational purposes only. Always consult a licensed financial advisor before investing real money.
+    </p>
+  </div>
+</section>
+
+<!-- LIVE TRACK RECORD -->
+<section id="live-track">
+  <div class="section-inner">
+    <div class="section-label reveal">Live Track Record</div>
+    <h2 class="section-title reveal">What the agent has <em>actually done.</em></h2>
+    <p class="section-body reveal">These are real paper trades logged by the live NYLO agent since it went live — not backtested. This number starts at zero and grows every market day.</p>
+    <div class="perf-grid" id="live-stats-grid" style="margin-bottom:1.25rem;">
+      <div class="perf-card reveal">
+        <div class="perf-card-label">Live trades</div>
+        <div class="perf-card-val" id="live-count" style="color:var(--text);">—</div>
+        <div class="perf-card-sub" id="live-count-sub">Loading…</div>
+      </div>
+      <div class="perf-card reveal">
+        <div class="perf-card-label">Live win rate</div>
+        <div class="perf-card-val" id="live-wr" style="color:var(--green);">—</div>
+        <div class="perf-card-sub">paper trading only</div>
+      </div>
+      <div class="perf-card reveal">
+        <div class="perf-card-label">Live P&amp;L</div>
+        <div class="perf-card-val" id="live-pnl" style="color:var(--green);">—</div>
+        <div class="perf-card-sub">cumulative %</div>
+      </div>
+      <div class="perf-card reveal">
+        <div class="perf-card-label">Data source</div>
+        <div class="perf-card-val" style="color:var(--accent3);font-size:1.1rem;">Live</div>
+        <div class="perf-card-sub">agent v14 · AAPL · GOOGL</div>
+      </div>
+    </div>
+    <p style="font-family:var(--mono);font-size:.6rem;color:var(--muted);line-height:1.7;" class="reveal">
+      Live data loads from the NYLO agent's trade log. If the count shows 0 or "—", the agent has not yet logged trades — this is honest. Track record builds in real time.
     </p>
   </div>
 </section>
@@ -451,6 +488,54 @@ setTimeout(()=>{
   if(wr)countUp(wr,82,'%',1200);
   if(tr)countUp(tr,74,'',800);
 },600);
+
+// ── Live track record ──────────────────────────────────────────────────────────
+(async function loadLiveTrack(){
+  const GITHUB_CSV = 'https://raw.githubusercontent.com/dashmover35600/trading-dashboard/main/trade_log.csv';
+  try {
+    const res = await fetch(GITHUB_CSV + '?t=' + Date.now(), {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const lines = text.trim().split('\n');
+    const heads = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
+    const trades = lines.slice(1).map(l => {
+      const v = l.split(',').map(x => x.trim().replace(/"/g,''));
+      const o = {}; heads.forEach((h,i) => o[h] = v[i]||''); return o;
+    }).filter(t => t['Date']);
+
+    const closed = trades.filter(t => t['Result'] && t['Result'] !== '' && t['P&L %'] && t['P&L %'] !== '');
+    const parseNum = s => { const n = parseFloat((s||'').replace('%','').replace('+','')); return isNaN(n) ? null : n; };
+    const wins = closed.filter(t => t['Result'] === 'Target Hit' ||
+      ((['Trailing Stop','Time Exit'].includes(t['Result'])) && parseNum(t['P&L %']) > 0));
+    const pnls = closed.map(t => parseNum(t['P&L %'])).filter(v => v !== null);
+    const total = pnls.reduce((a,b) => a+b, 0);
+    const wrPct = closed.length ? Math.round(wins.length / closed.length * 100) : null;
+
+    const countEl   = document.getElementById('live-count');
+    const countSub  = document.getElementById('live-count-sub');
+    const wrEl      = document.getElementById('live-wr');
+    const pnlEl     = document.getElementById('live-pnl');
+
+    if (countEl)  countEl.textContent  = trades.length > 0 ? trades.length : '0';
+    if (countSub) countSub.textContent = trades.length > 0
+      ? `${closed.length} closed · ${trades.length - closed.length} open`
+      : 'Agent live — no trades logged yet';
+    if (wrEl)     wrEl.textContent     = wrPct !== null ? wrPct + '%' : 'N/A';
+    if (pnlEl) {
+      pnlEl.textContent = closed.length ? (total >= 0 ? '+' : '') + total.toFixed(2) + '%' : '—';
+      if (pnlEl && total >= 0) pnlEl.style.color = 'var(--green)';
+      else if (pnlEl) pnlEl.style.color = 'var(--red)';
+    }
+    if (wrEl && wrPct !== null) wrEl.style.color = wrPct >= 60 ? 'var(--green)' : wrPct >= 40 ? 'var(--accent3)' : 'var(--red)';
+  } catch(e) {
+    ['live-count','live-wr','live-pnl'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = '—';
+    });
+    const sub = document.getElementById('live-count-sub');
+    if (sub) sub.textContent = 'Could not load trade log';
+  }
+})();
 </script>
 </body>
 </html>

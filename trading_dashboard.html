@@ -923,7 +923,7 @@ function _oldCheckDisclaimer() {
   <div style="margin-bottom:2rem;">
     <div style="font-family:var(--mono);font-size:0.68rem;color:var(--accent);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:0.5rem;">NYLO — Precision Trading</div>
     <h1 style="font-family:var(--serif);font-size:2.4rem;font-weight:400;letter-spacing:-0.02em;line-height:1.1;margin-bottom:0.5rem;">Smarter signals. <em style="font-style:italic;color:var(--accent)">Better trades.</em></h1>
-    <p style="font-size:0.85rem;color:var(--muted);max-width:560px;line-height:1.7;">NYLO is an AI-powered trading signal dashboard watching AAPL and GOOGL every 60 seconds during market hours. The v19 strategy applies 9 confirmation filters — Opening Drive bias, VWAP Reclaim, EMA Pullback, RSI, volume direction, momentum, prime window, gap alignment, and signal scoring — achieving 82% win rate with Sharpe 4.53, profit factor 1.664, and $1.43/trade expectancy. Partial exits, breakeven stops, and daily loss limits protect capital automatically.</p>
+    <p style="font-size:0.85rem;color:var(--muted);max-width:560px;line-height:1.7;">NYLO is an AI-powered trading signal dashboard watching AAPL and GOOGL every 60 seconds during market hours. The v19 strategy applies 9 confirmation filters — Opening Drive bias, VWAP Reclaim, EMA Pullback, RSI, volume direction, momentum, prime window, gap alignment, and signal scoring — achieving <strong style="color:var(--text);">82%* win rate in backtesting</strong> with Sharpe 4.53 and profit factor 1.664. Partial exits, breakeven stops, and daily loss limits protect capital automatically. <em style="font-size:.75rem;">*Backtested · Paper trading only · Building live track record.</em></p>
   </div>
 
   <!-- Market mood + hours moved to top -->
@@ -1047,11 +1047,40 @@ function _oldCheckDisclaimer() {
   </div>
   <div class="stats">
     <div class="stat"><div class="sl2">Total Trades</div><div class="sv" id="s0">—</div><div class="ss">all time</div><canvas class="kpi-spark" id="spark-trades"></canvas></div>
-    <div class="stat"><div class="sl2">Win Rate</div><div class="sv g" id="s1">—</div><div class="ss" id="s1b">— / —</div><canvas class="kpi-spark" id="spark-wr"></canvas></div>
+    <div class="stat"><div class="sl2">Win Rate<span style="font-size:.55rem;vertical-align:super;color:var(--muted);margin-left:1px;">*</span></div><div class="sv g" id="s1">—</div><div class="ss" id="s1b">— / —</div><canvas class="kpi-spark" id="spark-wr"></canvas></div>
     <div class="stat"><div class="sl2">Total P&amp;L %</div><div class="sv" id="s2">—</div><div class="ss">cumulative</div><canvas class="kpi-spark" id="spark-pnl"></canvas></div>
     <div class="stat"><div class="sl2">Total P&amp;L $</div><div class="sv" id="s2d">—</div><div class="ss">paper trading $500-$5,000/trade</div><canvas class="kpi-spark" id="spark-dollar"></canvas></div>
     <div class="stat"><div class="sl2">Best Trade</div><div class="sv g" id="s4">—</div><div class="ss" id="s4b">—</div><canvas class="kpi-spark" id="spark-best"></canvas></div>
     <div class="stat"><div class="sl2">Worst Trade</div><div class="sv r" id="s5">—</div><div class="ss" id="s5b">—</div><canvas class="kpi-spark" id="spark-worst"></canvas></div>
+  </div>
+
+  <!-- Backtest footnote -->
+  <p style="font-family:var(--mono);font-size:.58rem;color:var(--muted);margin:.35rem 0 1.5rem;line-height:1.6;">*Based on 74 simulated trades over 60 days of backtesting. Live performance may vary. This is paper trading only.</p>
+
+  <!-- Live Track Record -->
+  <div class="card" id="live-track-card" style="margin-bottom:1.5rem;">
+    <div class="ct" style="margin-bottom:.75rem;display:flex;align-items:center;gap:.6rem;">
+      Live Track Record
+      <span style="font-family:var(--mono);font-size:.55rem;background:rgba(0,217,126,.1);color:var(--green);border:1px solid rgba(0,217,126,.25);border-radius:20px;padding:2px 8px;letter-spacing:.08em;">LIVE</span>
+    </div>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.6;">Actual paper trades logged by the live agent — not backtested. This record starts at zero and grows every market day.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;" id="live-track-grid">
+      <div style="background:var(--faint);border-radius:10px;padding:.85rem .9rem;text-align:center;">
+        <div style="font-family:var(--mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;">Live Trades</div>
+        <div style="font-family:var(--mono);font-size:1.4rem;color:var(--text);" id="ltr-count">—</div>
+        <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.2rem;" id="ltr-count-sub">loading…</div>
+      </div>
+      <div style="background:var(--faint);border-radius:10px;padding:.85rem .9rem;text-align:center;">
+        <div style="font-family:var(--mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;">Live Win Rate</div>
+        <div style="font-family:var(--mono);font-size:1.4rem;color:var(--green);" id="ltr-wr">—</div>
+        <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.2rem;">paper only</div>
+      </div>
+      <div style="background:var(--faint);border-radius:10px;padding:.85rem .9rem;text-align:center;">
+        <div style="font-family:var(--mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;">Live P&amp;L %</div>
+        <div style="font-family:var(--mono);font-size:1.4rem;color:var(--green);" id="ltr-pnl">—</div>
+        <div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:.2rem;">cumulative</div>
+      </div>
+    </div>
   </div>
 
   <!-- Weekly P&L summary -->
@@ -1941,6 +1970,7 @@ function render(trades) {
   renderCalendar();
   renderWeeklyPnl(trades);
   renderDurationStats(trades);
+  updateLiveTrackRecord(trades, closed, wins, pnls);
 
   // New features
   updateStreak(trades);
@@ -2164,6 +2194,31 @@ function renderWeeklyPnl(trades) {
 }
 
 // ── Trade duration tracker ─────────────────────────────────────────────────────
+function updateLiveTrackRecord(trades, closed, wins, pnls) {
+  const countEl  = document.getElementById('ltr-count');
+  const countSub = document.getElementById('ltr-count-sub');
+  const wrEl     = document.getElementById('ltr-wr');
+  const pnlEl    = document.getElementById('ltr-pnl');
+  if (!countEl) return;
+
+  const total = pnls.reduce((a,b) => a+b, 0);
+  const wrPct = closed.length ? Math.round(wins.length / closed.length * 100) : null;
+
+  countEl.textContent  = trades.length > 0 ? trades.length : '0';
+  if (countSub) countSub.textContent = trades.length > 0
+    ? `${closed.length} closed · ${trades.length - closed.length} open`
+    : 'Agent live — no trades yet';
+  if (wrEl) {
+    wrEl.textContent = wrPct !== null ? wrPct + '%' : 'N/A';
+    wrEl.style.color = wrPct === null ? 'var(--muted)'
+      : wrPct >= 60 ? 'var(--green)' : wrPct >= 40 ? 'var(--accent3)' : 'var(--red)';
+  }
+  if (pnlEl) {
+    pnlEl.textContent = closed.length ? (total >= 0 ? '+' : '') + total.toFixed(2) + '%' : '—';
+    pnlEl.style.color = closed.length === 0 ? 'var(--muted)' : total >= 0 ? 'var(--green)' : 'var(--red)';
+  }
+}
+
 function renderDurationStats(trades) {
   function parseMins(timeStr) {
     if (!timeStr) return null;
@@ -3491,7 +3546,7 @@ function openStockPanel(ticker) {
 
     <!-- Backtest disclaimer -->
     <p style="font-family:var(--mono);font-size:.6rem;color:var(--muted);text-align:center;margin-top:1rem;line-height:1.6;">
-      Performance data from 120-day backtest · Paper trading simulation · Past performance does not guarantee future results
+      *82% win rate based on 74 simulated trades over 60 days of backtesting. Live performance may vary. This is paper trading only. Past performance does not guarantee future results.
     </p>
   `;
 
