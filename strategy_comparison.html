@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#050a14">
-<meta name="description" content="NYLO Strategy Comparison — v18 VWAP/EMA vs Gap and Go backtested head-to-head.">
+<meta name="description" content="NYLO Strategy Comparison — 6 strategies backtested head-to-head on AAPL &amp; GOOGL, ranked by profit factor.">
 <title>Strategy Comparison — NYLO</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -31,13 +31,11 @@
 html{scroll-behavior:smooth;}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh;}
 
-/* grid overlay */
 body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background-image:linear-gradient(rgba(61,111,255,.028) 1px,transparent 1px),
     linear-gradient(90deg,rgba(61,111,255,.028) 1px,transparent 1px);
   background-size:40px 40px;}
 
-/* mesh gradient */
 body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
     radial-gradient(ellipse 70% 60% at 80% 10%,rgba(24,71,212,.14) 0%,transparent 60%),
@@ -90,27 +88,81 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;
 .sl::before,.sl::after{content:'';flex:1;height:1px;background:var(--border);}
 
 /* ── STRATEGY OVERVIEW CARDS ── */
-.strategy-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2.5rem;}
-@media(max-width:700px){.strategy-cards{grid-template-columns:1fr;}}
+.strategy-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2.5rem;}
+@media(max-width:900px){.strategy-cards{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:500px){.strategy-cards{grid-template-columns:1fr;}}
 .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
   padding:1.5rem;position:relative;overflow:hidden;transition:border-color .2s;}
 .sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0;}
 .sc.v18::before{background:linear-gradient(90deg,#1847d4,#3d6fff);}
 .sc.gap::before{background:linear-gradient(90deg,#00c878,#3d6fff);}
+.sc.vb::before{background:linear-gradient(90deg,#00d97e,#00b8d4);}
+.sc.mr::before{background:linear-gradient(90deg,#9b59b6,#6b9fff);}
+.sc.fl::before{background:linear-gradient(90deg,#ffb830,#ff6b35);}
+.sc.pt::before{background:linear-gradient(90deg,#5a6a90,#3d6fff);}
 .sc-label{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
   color:var(--muted);margin-bottom:.4rem;}
-.sc-name{font-family:var(--serif);font-size:1.6rem;color:var(--text);letter-spacing:-.02em;margin-bottom:.75rem;}
-.sc-desc{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;}
+.sc-name{font-family:var(--serif);font-size:1.3rem;color:var(--text);letter-spacing:-.02em;margin-bottom:.6rem;}
+.sc-desc{font-size:.76rem;color:var(--muted);line-height:1.6;margin-bottom:.85rem;}
 .sc-tags{display:flex;flex-wrap:wrap;gap:.4rem;}
 .tag{font-family:var(--mono);font-size:.58rem;padding:2px 8px;border-radius:20px;letter-spacing:.05em;}
 .tag-blue{background:rgba(24,71,212,.15);color:var(--accent3);border:1px solid rgba(61,111,255,.2);}
 .tag-green{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
-.tag-amber{background:var(--amber-dim);color:var(--amber);}
-.sc-active-badge{position:absolute;top:1rem;right:1rem;
-  background:var(--green-dim);border:1px solid var(--green-border);
-  border-radius:20px;padding:3px 10px;font-family:var(--mono);font-size:.58rem;color:var(--green);}
+.tag-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,184,48,.2);}
+.tag-muted{background:rgba(90,106,154,.08);color:var(--muted);border:1px solid rgba(90,106,154,.15);}
+.sc-badge{position:absolute;top:1rem;right:1rem;
+  border-radius:20px;padding:3px 10px;font-family:var(--mono);font-size:.58rem;}
+.sc-badge.active{background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);}
+.sc-badge.best{background:rgba(255,184,48,.15);border:1px solid rgba(255,184,48,.3);color:var(--amber);}
 
-/* ── METRICS COMPARISON ── */
+/* ── RANKING TABLE ── */
+.rank-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  overflow:hidden;margin-bottom:2.5rem;}
+.rank-header{display:grid;grid-template-columns:56px 1fr 80px 90px 80px 130px 90px 70px;
+  background:rgba(61,111,255,.06);border-bottom:1px solid var(--border);
+  padding:.75rem 1.25rem;gap:.75rem;align-items:center;}
+@media(max-width:700px){
+  .rank-header{grid-template-columns:44px 1fr 70px 70px 80px;}
+  .rh-sharpe,.rh-expect,.rh-trades{display:none;}
+}
+.rh{font-family:var(--mono);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.rank-row{display:grid;grid-template-columns:56px 1fr 80px 90px 80px 130px 90px 70px;
+  padding:.9rem 1.25rem;gap:.75rem;border-bottom:1px solid var(--border2);
+  align-items:center;transition:background .15s;}
+.rank-row:last-child{border-bottom:none;}
+.rank-row:hover{background:rgba(61,111,255,.04);}
+.rank-row.rank-1{background:rgba(255,184,48,.04);border-left:3px solid rgba(255,184,48,.5);}
+.rank-row.rank-2{background:rgba(61,111,255,.03);border-left:3px solid rgba(61,111,255,.3);}
+@media(max-width:700px){
+  .rank-row{grid-template-columns:44px 1fr 70px 70px 80px;}
+  .rc-sharpe,.rc-expect,.rc-trades{display:none;}
+}
+.rc-rank{font-family:var(--mono);font-size:.85rem;font-weight:600;text-align:center;}
+.rc-rank .medal{font-size:1.1rem;}
+.rc-name{min-width:0;}
+.rc-strat{font-family:var(--mono);font-size:.78rem;color:var(--text);font-weight:500;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rc-sub{font-size:.62rem;color:var(--muted);margin-top:2px;}
+.rc-running{display:inline-flex;align-items:center;gap:4px;margin-top:4px;
+  background:rgba(24,71,212,.12);border:1px solid rgba(61,111,255,.2);
+  border-radius:20px;padding:1px 7px;font-family:var(--mono);font-size:.52rem;color:var(--accent3);}
+.rc-val{font-family:var(--mono);font-size:.88rem;text-align:right;}
+.rc-val.pos{color:var(--green);}
+.rc-val.neg{color:var(--red);}
+.rc-val.neu{color:var(--text);}
+.rc-val.muted{color:var(--muted);}
+.pf-cell{display:flex;flex-direction:column;gap:4px;}
+.pf-val{font-family:var(--mono);font-size:.88rem;}
+.pf-val.pf-good{color:var(--green);}
+.pf-val.pf-mid{color:var(--amber);}
+.pf-val.pf-bad{color:var(--red);}
+.pf-bar-bg{height:4px;background:var(--dim);border-radius:2px;}
+.pf-bar{height:100%;border-radius:2px;transition:width .3s ease;}
+.pf-bar.pf-good{background:var(--green);}
+.pf-bar.pf-mid{background:var(--amber);}
+.pf-bar.pf-bad{background:var(--red);}
+
+/* ── OLD METRICS COMPARISON (v18 vs Gap deep dive) ── */
 .metrics-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
   overflow:hidden;margin-bottom:2.5rem;}
 .metrics-header{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;
@@ -133,7 +185,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;
 .winner-badge{display:inline-block;font-family:var(--mono);font-size:.55rem;
   padding:2px 7px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;}
 .wb-v18{background:rgba(24,71,212,.18);color:var(--accent3);border:1px solid rgba(61,111,255,.25);}
-.wb-gap{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.wb-vb{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.wb-gap{background:rgba(0,200,120,.12);color:#00c878;border:1px solid rgba(0,200,120,.25);}
 .wb-tie{background:rgba(90,106,154,.1);color:var(--muted);border:1px solid rgba(90,106,154,.2);}
 
 /* ── CHARTS ── */
@@ -222,11 +275,8 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
 .fade-up.d1{animation-delay:.1s;}.fade-up.d2{animation-delay:.2s;}
 .fade-up.d3{animation-delay:.3s;}.fade-up.d4{animation-delay:.4s;}
 
-/* scroll reveal */
 .reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
 .reveal.vis{opacity:1;transform:none;}
-
-/* ── TOOLTIP OVERRIDE for Chart.js dark theme ── */
 </style>
 </head>
 <body>
@@ -248,8 +298,8 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
 <!-- HERO -->
 <div class="hero">
   <div class="eyebrow fade-up">NYLO Research Lab</div>
-  <h1 class="fade-up d1">Strategy <em>Comparison</em></h1>
-  <p class="hero-sub fade-up d2">v18 VWAP Reclaim + EMA Pullback vs Gap and Go — backtested head-to-head on AAPL &amp; GOOGL. Same signal scorer, same slippage, same position sizing.</p>
+  <h1 class="fade-up d1">Six <em>Strategies</em> Ranked</h1>
+  <p class="hero-sub fade-up d2">Every strategy backtested on AAPL &amp; GOOGL using the same 60-day intraday dataset. Same slippage model. Same position sizing. Ranked by profit factor — the cleanest single measure of edge.</p>
   <div class="running-badge fade-up d3">
     <span class="running-dot"></span>
     Currently Running: v18 VWAP Reclaim + EMA Pullback
@@ -259,136 +309,220 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
 <div class="wrap">
 
   <!-- STRATEGY OVERVIEW -->
-  <div class="sl reveal">Strategy Overview</div>
+  <div class="sl reveal">All Six Strategies</div>
   <div class="strategy-cards reveal">
 
     <div class="sc v18">
-      <span class="sc-active-badge">▶ Active</span>
-      <div class="sc-label">Strategy A</div>
-      <div class="sc-name">VWAP Reclaim<br>+ EMA Pullback</div>
-      <div class="sc-desc">Monitors AAPL and GOOGL every minute during 9:30–12:00 AM. Triggers on VWAP crossovers and EMA pullback setups. Applies 9 confirmation filters: day bias, RSI bands, volume ratio, VWAP position, EMA alignment, momentum, prime window, gap alignment, and signal scoring.</div>
+      <span class="sc-badge active">▶ Active</span>
+      <div class="sc-label">Strategy 1 · Rank #2</div>
+      <div class="sc-name">VWAP Reclaim + EMA Pullback</div>
+      <div class="sc-desc">Nine confirmation filters: VWAP crossover, EMA pullback, RSI bands, day bias, volume ratio, momentum, and prime window. Runs every minute 9:30–12:00 AM.</div>
       <div class="sc-tags">
-        <span class="tag tag-blue">VWAP Crossover</span>
-        <span class="tag tag-blue">EMA Pullback</span>
-        <span class="tag tag-blue">9:30–12:00 AM</span>
-        <span class="tag tag-blue">Long &amp; Short</span>
-        <span class="tag tag-blue">101 trades · 1yr data</span>
+        <span class="tag tag-blue">VWAP + EMA</span>
+        <span class="tag tag-blue">9:30–12:00</span>
+        <span class="tag tag-blue">101 trades</span>
+      </div>
+    </div>
+
+    <div class="sc vb">
+      <span class="sc-badge best">★ Best PF</span>
+      <div class="sc-label">Strategy 2 · Rank #1</div>
+      <div class="sc-name">VWAP Bounce</div>
+      <div class="sc-desc">Enters on the 3rd touch of VWAP (±0.1% zone) in the direction of the day's bias. RSI confirmation required. Target 0.75%, stop 0.40%, window 9:30–3:00 PM.</div>
+      <div class="sc-tags">
+        <span class="tag tag-green">3rd Touch</span>
+        <span class="tag tag-green">RSI Confirm</span>
+        <span class="tag tag-green">29 trades</span>
       </div>
     </div>
 
     <div class="sc gap">
-      <div class="sc-label">Strategy B</div>
+      <div class="sc-label">Strategy 3 · Rank #3</div>
       <div class="sc-name">Gap and Go</div>
-      <div class="sc-desc">Fires once per day at 9:35 AM when a stock gaps ≥ 0.5% from prior close with first-5-minute volume ≥ 2× average. Enters in the gap direction with a fixed 2:1 reward-to-risk structure: target = 1× gap size, stop = 0.5× gap size. Exits by 10:30 AM.</div>
+      <div class="sc-desc">Gap ≥ 0.5% from prior close + first-5-min volume ≥ 2× average. Enter at 9:35 AM in gap direction. Fixed 2:1 R:R (target = 1× gap, stop = 0.5× gap).</div>
       <div class="sc-tags">
         <span class="tag tag-green">Gap ≥ 0.5%</span>
-        <span class="tag tag-green">Vol 2× Average</span>
-        <span class="tag tag-green">Entry 9:35 AM</span>
-        <span class="tag tag-green">2:1 R:R Fixed</span>
-        <span class="tag tag-green">34 trades · 60d data</span>
+        <span class="tag tag-green">2:1 Fixed R:R</span>
+        <span class="tag tag-green">34 trades</span>
+      </div>
+    </div>
+
+    <div class="sc mr">
+      <div class="sc-label">Strategy 4 · Rank #4</div>
+      <div class="sc-name">Mean Reversion</div>
+      <div class="sc-desc">Fades extremes: enter when price deviates ≥ 1.5% from VWAP AND RSI is extreme (&gt;72 short / &lt;28 long). Target: return to VWAP. Stop: 0.5% beyond entry.</div>
+      <div class="sc-tags">
+        <span class="tag tag-amber">Fade Move</span>
+        <span class="tag tag-amber">RSI Extreme</span>
+        <span class="tag tag-muted">5 trades</span>
+      </div>
+    </div>
+
+    <div class="sc fl">
+      <div class="sc-label">Strategy 5 · Rank #5</div>
+      <div class="sc-name">Bull / Bear Flag</div>
+      <div class="sc-desc">Detects flagpole ≥ 0.5% in 15 min, consolidation ≤ 0.5% range for 5 bars, breakout close with 1.2× volume. Target = pole height. Only 9:30–12:00 PM.</div>
+      <div class="sc-tags">
+        <span class="tag tag-amber">Flag Pattern</span>
+        <span class="tag tag-amber">Vol Breakout</span>
+        <span class="tag tag-muted">11 trades</span>
+      </div>
+    </div>
+
+    <div class="sc pt">
+      <div class="sc-label">Strategy 6 · Rank #6</div>
+      <div class="sc-name">Pairs Trading</div>
+      <div class="sc-desc">AAPL/GOOGL ratio z-score ±1.5 std (20-bar rolling). Long the laggard, short the leader. Exit when z-score returns to ±0.25 or stop at ±2.5.</div>
+      <div class="sc-tags">
+        <span class="tag tag-muted">Market Neutral</span>
+        <span class="tag tag-muted">Z-Score ±1.5</span>
+        <span class="tag tag-muted">401 trades</span>
       </div>
     </div>
 
   </div>
 
-  <!-- METRICS COMPARISON -->
-  <div class="sl reveal">Head-to-Head Metrics</div>
-  <div class="metrics-wrap reveal">
-    <div class="metrics-header">
-      <div class="mh" style="text-align:left;">Metric</div>
-      <div class="mh" style="color:var(--accent3);">v18 VWAP/EMA</div>
-      <div class="mh">Winner</div>
-      <div class="mh" style="color:var(--green);">Gap &amp; Go</div>
+  <!-- RANKING TABLE -->
+  <div class="sl reveal">Ranked by Profit Factor</div>
+  <div class="rank-wrap reveal">
+    <div class="rank-header">
+      <div class="rh">Rank</div>
+      <div class="rh">Strategy</div>
+      <div class="rh" style="text-align:right;">Win Rate</div>
+      <div class="rh rh-sharpe" style="text-align:right;">Sharpe</div>
+      <div class="rh" style="text-align:right;">Total P&amp;L</div>
+      <div class="rh">Profit Factor</div>
+      <div class="rh rh-expect" style="text-align:right;">Expectancy</div>
+      <div class="rh rh-trades" style="text-align:right;">Trades</div>
     </div>
 
-    <!-- Win Rate -->
-    <div class="metric-row">
-      <div class="metric-name">Win Rate<small>Target hits / total trades</small></div>
-      <div class="metric-val" style="color:var(--green);">73.3%</div>
-      <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
-      <div class="metric-val">20.6%</div>
+    <!-- Rank 1: VWAP Bounce -->
+    <div class="rank-row rank-1">
+      <div class="rc-rank"><span class="medal">🥇</span></div>
+      <div class="rc-name">
+        <div class="rc-strat">VWAP Bounce</div>
+        <div class="rc-sub">3rd touch + RSI · 9:30–3:00 PM · $1,000 / trade</div>
+      </div>
+      <div class="rc-val pos">55.2%</div>
+      <div class="rc-val neu rc-sharpe">2.76</div>
+      <div class="rc-val pos">+$20.94</div>
+      <div class="pf-cell">
+        <span class="pf-val pf-good">1.519</span>
+        <div class="pf-bar-bg"><div class="pf-bar pf-good" style="width:100%;"></div></div>
+      </div>
+      <div class="rc-val pos rc-expect">+$0.72</div>
+      <div class="rc-val muted rc-trades">29</div>
     </div>
 
-    <!-- Total P&L -->
-    <div class="metric-row">
-      <div class="metric-name">Total P&amp;L<small>Dollar profit over test period</small></div>
-      <div class="metric-val neg">−$10.15</div>
-      <div class="metric-winner"><span class="winner-badge wb-gap">G&amp;G</span></div>
-      <div class="metric-val pos">+$111.01</div>
+    <!-- Rank 2: v18 -->
+    <div class="rank-row rank-2">
+      <div class="rc-rank"><span class="medal">🥈</span></div>
+      <div class="rc-name">
+        <div class="rc-strat">v18 VWAP/EMA Reclaim</div>
+        <div class="rc-sub">9 filters · 9:30–12:00 · score-scaled sizing</div>
+        <div class="rc-running"><span class="running-dot" style="width:5px;height:5px;"></span>Running</div>
+      </div>
+      <div class="rc-val pos">73.3%</div>
+      <div class="rc-val neu rc-sharpe">2.05</div>
+      <div class="rc-val neg">−$10.15</div>
+      <div class="pf-cell">
+        <span class="pf-val pf-mid">0.971</span>
+        <div class="pf-bar-bg"><div class="pf-bar pf-mid" style="width:63.9%;"></div></div>
+      </div>
+      <div class="rc-val neg rc-expect">−$0.10</div>
+      <div class="rc-val muted rc-trades">101</div>
     </div>
 
-    <!-- Sharpe -->
-    <div class="metric-row">
-      <div class="metric-name">Sharpe Ratio<small>Risk-adjusted return (annualized)</small></div>
-      <div class="metric-val" style="color:var(--accent3);">2.05</div>
-      <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
-      <div class="metric-val">1.87</div>
+    <!-- Rank 3: Gap & Go -->
+    <div class="rank-row">
+      <div class="rc-rank" style="color:var(--muted);">🥉</div>
+      <div class="rc-name">
+        <div class="rc-strat">Gap and Go</div>
+        <div class="rc-sub">Gap ≥ 0.5% · entry 9:35 AM · fixed 2:1 R:R</div>
+      </div>
+      <div class="rc-val" style="color:var(--red);">20.6%</div>
+      <div class="rc-val neu rc-sharpe">1.87</div>
+      <div class="rc-val pos">+$111.01</div>
+      <div class="pf-cell">
+        <span class="pf-val pf-mid">0.723</span>
+        <div class="pf-bar-bg"><div class="pf-bar pf-mid" style="width:47.6%;"></div></div>
+      </div>
+      <div class="rc-val neg rc-expect">−$6.94</div>
+      <div class="rc-val muted rc-trades">34</div>
     </div>
 
-    <!-- Profit Factor -->
-    <div class="metric-row">
-      <div class="metric-name">Profit Factor<small>Gross wins ÷ gross losses</small></div>
-      <div class="metric-val" style="color:var(--accent3);">0.971</div>
-      <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
-      <div class="metric-val neg">0.723</div>
+    <!-- Rank 4: Mean Reversion -->
+    <div class="rank-row">
+      <div class="rc-rank" style="color:var(--muted);font-size:.75rem;">4</div>
+      <div class="rc-name">
+        <div class="rc-strat">Mean Reversion</div>
+        <div class="rc-sub">VWAP dev ≥ 1.5% + RSI extreme · fade · 5 signals</div>
+      </div>
+      <div class="rc-val" style="color:var(--amber);">40.0%</div>
+      <div class="rc-val neg rc-sharpe">−1.98</div>
+      <div class="rc-val neg">−$1.94</div>
+      <div class="pf-cell">
+        <span class="pf-val pf-bad">0.699</span>
+        <div class="pf-bar-bg"><div class="pf-bar pf-bad" style="width:46.0%;"></div></div>
+      </div>
+      <div class="rc-val neg rc-expect">−$0.39</div>
+      <div class="rc-val muted rc-trades">5</div>
     </div>
 
-    <!-- Expectancy -->
-    <div class="metric-row">
-      <div class="metric-name">Expectancy<small>Expected $ per trade</small></div>
-      <div class="metric-val neg">−$0.10</div>
-      <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
-      <div class="metric-val neg">−$6.94</div>
+    <!-- Rank 5: Bull/Bear Flag -->
+    <div class="rank-row">
+      <div class="rc-rank" style="color:var(--muted);font-size:.75rem;">5</div>
+      <div class="rc-name">
+        <div class="rc-strat">Bull / Bear Flag</div>
+        <div class="rc-sub">Pole ≥ 0.5% · consol 5 bars · 1.2× vol breakout</div>
+      </div>
+      <div class="rc-val" style="color:var(--amber);">36.4%</div>
+      <div class="rc-val neg rc-sharpe">−2.99</div>
+      <div class="rc-val neg">−$10.63</div>
+      <div class="pf-cell">
+        <span class="pf-val pf-bad">0.633</span>
+        <div class="pf-bar-bg"><div class="pf-bar pf-bad" style="width:41.7%;"></div></div>
+      </div>
+      <div class="rc-val neg rc-expect">−$0.97</div>
+      <div class="rc-val muted rc-trades">11</div>
     </div>
 
-    <!-- Avg Win -->
-    <div class="metric-row">
-      <div class="metric-name">Avg Win<small>Mean dollar gain on winners</small></div>
-      <div class="metric-val">$4.65</div>
-      <div class="metric-winner"><span class="winner-badge wb-gap">G&amp;G</span></div>
-      <div class="metric-val" style="color:var(--green);">$34.90</div>
-    </div>
-
-    <!-- Avg Loss -->
-    <div class="metric-row">
-      <div class="metric-name">Avg Loss<small>Mean dollar loss on losers</small></div>
-      <div class="metric-val" style="color:var(--green);">$13.12</div>
-      <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
-      <div class="metric-val neg">$17.79</div>
-    </div>
-
-    <!-- Max Drawdown -->
-    <div class="metric-row">
-      <div class="metric-name">Max Drawdown<small>Largest peak-to-trough loss (%)</small></div>
-      <div class="metric-val neg">−3.38%</div>
-      <div class="metric-winner"><span class="winner-badge wb-gap">G&amp;G</span></div>
-      <div class="metric-val" style="color:var(--green);">−1.91%</div>
-    </div>
-
-    <!-- Trade Count -->
-    <div class="metric-row">
-      <div class="metric-name">Trade Count<small>Sample size (more = more reliable)</small></div>
-      <div class="metric-val" style="color:var(--accent3);">101</div>
-      <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
-      <div class="metric-val">34</div>
+    <!-- Rank 6: Pairs Trading -->
+    <div class="rank-row">
+      <div class="rc-rank" style="color:var(--muted);font-size:.75rem;">6</div>
+      <div class="rc-name">
+        <div class="rc-strat">Pairs Trading</div>
+        <div class="rc-sub">AAPL/GOOGL ratio · z-score ±1.5 · $1,000 per leg</div>
+      </div>
+      <div class="rc-val neg">29.4%</div>
+      <div class="rc-val neg rc-sharpe">−5.71</div>
+      <div class="rc-val neg">−$551.16</div>
+      <div class="pf-cell">
+        <span class="pf-val pf-bad">0.294</span>
+        <div class="pf-bar-bg"><div class="pf-bar pf-bad" style="width:19.4%;"></div></div>
+      </div>
+      <div class="rc-val neg rc-expect">−$1.37</div>
+      <div class="rc-val muted rc-trades">401</div>
     </div>
 
   </div>
 
   <!-- EQUITY CURVES -->
-  <div class="sl reveal">Equity Curves</div>
+  <div class="sl reveal">Equity Curves — Top 3 Strategies</div>
   <div class="chart-card reveal">
-    <div class="ct">Cumulative P&amp;L by Trade</div>
-    <div class="ct-sub">v18 spans ~1 year (101 trades) · Gap &amp; Go spans 60 days (34 trades) · Plotted on trade index axis</div>
+    <div class="ct">Cumulative P&amp;L by Trade Number</div>
+    <div class="ct-sub">VWAP Bounce (29 trades) · v18 (101 trades) · Gap &amp; Go (34 trades) · Shorter series aligned to right edge</div>
     <div class="chart-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#00d97e;"></div>VWAP Bounce</div>
       <div class="legend-item"><div class="legend-dot" style="background:#3d6fff;"></div>v18 VWAP/EMA</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#00d97e;"></div>Gap &amp; Go</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#00c878;"></div>Gap &amp; Go</div>
       <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,.15);border:1px dashed rgba(255,255,255,.2);height:1px;width:20px;"></div>Break-even $0</div>
     </div>
-    <div class="cw" style="height:280px;"><canvas id="equityChart"></canvas></div>
+    <div class="cw" style="height:300px;"><canvas id="equityChart"></canvas></div>
   </div>
 
-  <!-- TIME-OF-DAY + GAP BUCKETS -->
+  <!-- v18 DEEP DIVE -->
+  <div class="sl reveal">v18 VWAP/EMA — Deep Dive</div>
   <div class="charts-2 reveal">
 
     <div class="chart-card">
@@ -398,7 +532,68 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
     </div>
 
     <div class="chart-card">
-      <div class="ct">Gap &amp; Go — Gap Size Buckets</div>
+      <div class="ct">v18 vs VWAP Bounce — Head-to-Head</div>
+      <div class="ct-sub">Top two strategies by profit factor compared directly</div>
+      <div style="margin-top:.75rem;" class="metrics-wrap" style="margin-bottom:0;">
+        <div class="metrics-header">
+          <div class="mh" style="text-align:left;">Metric</div>
+          <div class="mh" style="color:#00d97e;">VWAP Bounce</div>
+          <div class="mh">Winner</div>
+          <div class="mh" style="color:var(--accent3);">v18</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-name">Win Rate</div>
+          <div class="metric-val pos">55.2%</div>
+          <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
+          <div class="metric-val pos">73.3%</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-name">Total P&amp;L</div>
+          <div class="metric-val pos">+$20.94</div>
+          <div class="metric-winner"><span class="winner-badge wb-vb">VB</span></div>
+          <div class="metric-val neg">−$10.15</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-name">Sharpe</div>
+          <div class="metric-val pos">2.76</div>
+          <div class="metric-winner"><span class="winner-badge wb-vb">VB</span></div>
+          <div class="metric-val" style="color:var(--accent3);">2.05</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-name">Profit Factor</div>
+          <div class="metric-val pos">1.519</div>
+          <div class="metric-winner"><span class="winner-badge wb-vb">VB</span></div>
+          <div class="metric-val" style="color:var(--amber);">0.971</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-name">Expectancy</div>
+          <div class="metric-val pos">+$0.72</div>
+          <div class="metric-winner"><span class="winner-badge wb-vb">VB</span></div>
+          <div class="metric-val neg">−$0.10</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-name">Max Drawdown</div>
+          <div class="metric-val" style="color:var(--green);">−1.26%</div>
+          <div class="metric-winner"><span class="winner-badge wb-vb">VB</span></div>
+          <div class="metric-val neg">−3.38%</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-name">Trade Count</div>
+          <div class="metric-val muted">29</div>
+          <div class="metric-winner"><span class="winner-badge wb-v18">v18</span></div>
+          <div class="metric-val" style="color:var(--accent3);">101</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- GAP & GO BREAKDOWN -->
+  <div class="sl reveal">Gap &amp; Go — Breakdown</div>
+  <div class="charts-2 reveal">
+
+    <div class="chart-card">
+      <div class="ct">Gap Size Buckets</div>
       <div class="ct-sub">1.0–2.0% gaps drove most profits despite lowest WR</div>
       <div style="margin-top:1rem;" class="bucket-grid">
         <div class="bucket-card">
@@ -428,14 +623,9 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
       </div>
     </div>
 
-  </div>
-
-  <!-- GAP DIRECTION + MONTE CARLO -->
-  <div class="charts-2 reveal">
-
     <div class="chart-card">
-      <div class="ct">Gap &amp; Go — Direction Breakdown</div>
-      <div class="ct-sub">Short gaps edge out long gaps on win rate (27.3% vs 17.4%)</div>
+      <div class="ct">Direction Breakdown</div>
+      <div class="ct-sub">Short gaps edge out long gaps (27.3% vs 17.4% WR)</div>
       <div class="dir-grid">
         <div class="dir-card">
           <div class="dir-label">Long Gap ↑</div>
@@ -449,7 +639,7 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
         </div>
       </div>
       <div style="margin-top:1.25rem;">
-        <div class="ct" style="margin-bottom:.75rem;">Per-Ticker Performance</div>
+        <div class="ct" style="margin-bottom:.75rem;">Per-Ticker</div>
         <div class="dir-grid">
           <div class="dir-card">
             <div class="dir-label">AAPL</div>
@@ -465,45 +655,6 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
       </div>
     </div>
 
-    <div class="chart-card">
-      <div class="ct">Gap &amp; Go — Monte Carlo (1,000 sims)</div>
-      <div class="ct-sub">Bootstrap resampling of the 34-trade distribution</div>
-      <div class="mc-grid">
-        <div class="mc-card">
-          <div class="mc-label">Median P&amp;L</div>
-          <div class="mc-val" style="color:var(--green);">+$110.77</div>
-        </div>
-        <div class="mc-card">
-          <div class="mc-label">% Profitable</div>
-          <div class="mc-val" style="color:var(--accent3);">76.5%</div>
-        </div>
-        <div class="mc-card">
-          <div class="mc-label">10th Pct</div>
-          <div class="mc-val" style="color:var(--red);">−$92.76</div>
-        </div>
-        <div class="mc-card">
-          <div class="mc-label">90th Pct</div>
-          <div class="mc-val" style="color:var(--green);">+$319.06</div>
-        </div>
-        <div class="mc-card">
-          <div class="mc-label">Best Case</div>
-          <div class="mc-val">+$698.59</div>
-        </div>
-        <div class="mc-card">
-          <div class="mc-label">Worst Case</div>
-          <div class="mc-val" style="color:var(--red);">−$351.45</div>
-        </div>
-        <div class="mc-card">
-          <div class="mc-label">Worst DD</div>
-          <div class="mc-val" style="color:var(--red);">−$394.42</div>
-        </div>
-        <div class="mc-card">
-          <div class="mc-label">Simulations</div>
-          <div class="mc-val" style="color:var(--muted);">1,000</div>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- STRATEGY VERDICT -->
@@ -511,30 +662,31 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
   <div class="verdict reveal">
     <div class="ct" style="margin-bottom:.25rem;">What the data tells us</div>
     <p style="font-size:.82rem;color:var(--muted);line-height:1.7;max-width:720px;">
-      Across five key metrics — win rate, Sharpe, profit factor, expectancy, and avg loss — <strong style="color:var(--text);">v18 is the stronger strategy</strong>. Gap &amp; Go shows a structural edge in one area: when gaps do resolve in direction, the dollar payoff is <strong style="color:var(--text);">7.5× larger per winner</strong> than v18 ($34.90 vs $4.65). But with only a 20.6% win rate, the math doesn't close — negative expectancy means the strategy loses ground on average each trade.
+      Across six strategies tested on the same 60-day dataset, <strong style="color:var(--text);">VWAP Bounce ranks #1 by profit factor (1.519)</strong> — the only strategy with positive expectancy (+$0.72/trade), the lowest drawdown (−1.26%), and a higher Sharpe than v18. Gap &amp; Go shows the largest per-winner dollar size ($34.90 avg) but loses on expectancy. Pairs Trading and Flag are bottom-two — no consistent edge in this data window.
     </p>
 
     <div class="verdict-grid">
-      <div class="verdict-card vc-blue">
+      <div class="verdict-card vc-green">
         <div class="verdict-icon">🎯</div>
-        <div class="verdict-title">v18 wins on consistency</div>
+        <div class="verdict-title">VWAP Bounce: clearest edge</div>
         <div class="verdict-body">
-          <strong>73.3% win rate</strong> across 101 trades over a full year of hybrid data. Nine confirmation filters (VWAP, EMA, RSI, day bias, volume, momentum, prime window) work together to select only high-probability setups. Low average loss ($13.12) limits damage on losers.
+          <strong>PF 1.519</strong> — the only strategy above 1.0. Positive expectancy ($0.72/trade), lowest max drawdown (1.26%), Sharpe 2.76. The 3rd-touch rule filters out noise; RSI confirmation reduces false signals. Best suited for rangy, mean-reverting sessions.
         </div>
       </div>
-      <div class="verdict-card vc-green">
+      <div class="verdict-card vc-blue">
         <div class="verdict-icon">⚡</div>
-        <div class="verdict-title">Gap &amp; Go wins on size</div>
+        <div class="verdict-title">v18: highest win rate, most data</div>
         <div class="verdict-body">
-          Average winner of <strong>$34.90</strong> — 7.5× larger than v18 — because the 2:1 fixed R:R means wins are always twice the gap size. Smaller drawdown (1.91% vs 3.38%) and positive total P&amp;L ($111.01) in a volatile 60-day window including the April 2026 market dislocation.
+          <strong>73.3% win rate</strong> across 101 trades — the strongest sample size by far. PF 0.971 is just below breakeven, suggesting the current market regime favors smaller wins. The nine-filter system selects high-probability entries; the gap to PF 1.0 is closeable with tighter exits.
         </div>
       </div>
       <div class="verdict-card vc-amber">
         <div class="verdict-icon">🔬</div>
         <div class="verdict-title">Best use case for each</div>
         <div class="verdict-body">
-          <strong>v18</strong>: High-frequency intraday trading, daily income generation, pairs well with tight risk controls. Proven over 300 trading days.<br><br>
-          <strong>Gap &amp; Go</strong>: High-volatility event days (earnings reactions, macro shocks) where gaps tend to continue. Consider pairing with a gap-fill filter for better selectivity.
+          <strong>VWAP Bounce</strong>: rangy sessions, clear intraday trend. Needs defined day bias and at least 2 clean VWAP tests before entry.<br><br>
+          <strong>v18</strong>: directional trend days with clear momentum. Proven over 300 trading days; best in high-volatility opens.<br><br>
+          <strong>Gap &amp; Go</strong>: earnings-reaction days, macro shock gaps — when gaps tend to continue rather than fade.
         </div>
       </div>
     </div>
@@ -560,16 +712,17 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
     </div>
     <div class="footer-right">
       <div style="margin-bottom:.3rem;">Generated May 25, 2026</div>
-      <div>v18 data: v20 backtest engine · Gap &amp; Go: v1</div>
+      <div>6 strategies · 60-day dataset · AAPL + GOOGL</div>
       <div style="margin-top:.4rem;"><a href="trading_dashboard.html">Dashboard</a> · <a href="backtest.html">Backtest</a> · <a href="about.html">About</a></div>
     </div>
   </div>
 </footer>
 
 <script>
-// ── Equity curve data ───────────────────────────────────────────────────────
+// ── Strategy equity curve data ──────────────────────────────────────────────
 const V18_CUM = [-9.88,-23.06,-42.82,-49.41,-47.21,-44.38,-42.54,-39.99,-34.98,-33.29,-56.68,-72.28,-68.85,-57.82,-65.62,-73.42,-83.3,-106.69,-101.55,-100.87,-110.75,-107.03,-116.91,-112.68,-107.17,-103.18,-116.19,-114.18,-95.38,-103.67,-103.24,-101.67,-100.04,-99.61,-138.62,-138.06,-138.72,-136.44,-114.96,-113.33,-119.38,-116.78,-113.56,-111.98,-109.24,-108.84,-102.16,-101.51,-100.2,-97.77,-91.31,-90.02,-92.06,-90.99,-67.16,-66.39,-61.58,-81.34,-79.91,-99.4,-97.62,-91.37,-117.71,-115.57,-115.29,-113.22,-81.88,-80.44,-49.1,-47.93,-25.63,-23.74,-22.64,-21.99,-17.95,-16.56,-18.72,-17.63,-3.16,-1.77,-1.22,0.89,6.9,9.68,12.64,-7.12,-5.87,-10.36,-9.06,1.43,2.79,0.26,1.69,17.83,-15.12,-14.57,-12.95,-10.97,-11.66,-11.16,-10.15];
 const GAP_CUM = [-5.81,46.01,64.03,47.25,-1.79,-22.97,46.35,30.18,29.8,18.43,2.45,31.6,19.6,44.72,70.89,53.54,67.13,52.64,84.72,63.65,49.86,10.6,42.06,76.7,55.32,52.42,79.45,68.67,81.19,100.07,78.13,110.43,84.04,111.01];
+const VB_CUM  = [-1.13,-3.32,-7.62,-2.66,-6.96,-3.75,-3.39,1.0,3.5,2.86,3.11,-1.14,-0.18,0.59,7.84,15.09,22.29,18.04,20.43,27.63,23.38,19.13,21.94,21.02,23.62,19.32,15.07,22.27,20.94];
 
 // ── Particle canvas ─────────────────────────────────────────────────────────
 (function(){
@@ -613,32 +766,45 @@ Chart.defaults.font.family = "'DM Mono', monospace";
 // ── Equity Curve ────────────────────────────────────────────────────────────
 (function(){
   const ctx = document.getElementById('equityChart').getContext('2d');
+  const N = V18_CUM.length; // 101
+  const labels = V18_CUM.map((_,i)=>`T${i+1}`);
 
-  // Pad shorter array with nulls at start so legends align right
-  const v18Labels = V18_CUM.map((_,i)=>`T${i+1}`);
+  // Pad shorter arrays with nulls at start so all end at the same right edge
+  const padded_gap = Array(N - GAP_CUM.length).fill(null).concat(GAP_CUM);
+  const padded_vb  = Array(N - VB_CUM.length).fill(null).concat(VB_CUM);
 
-  // Gap data: offset by (101-34)=67 so both end at same right edge — plotted on separate scale
-  // Actually plot both on same x index (1..N) for each strategy independently
-  const v18Data = V18_CUM;
-  const gapData = GAP_CUM;
+  const vbGrad = ctx.createLinearGradient(0,0,0,300);
+  vbGrad.addColorStop(0,'rgba(0,217,126,.28)');
+  vbGrad.addColorStop(1,'rgba(0,217,126,.02)');
 
-  // Create gradient fills
-  const v18Grad = ctx.createLinearGradient(0,0,0,280);
-  v18Grad.addColorStop(0,'rgba(61,111,255,.25)');
+  const v18Grad = ctx.createLinearGradient(0,0,0,300);
+  v18Grad.addColorStop(0,'rgba(61,111,255,.22)');
   v18Grad.addColorStop(1,'rgba(61,111,255,.02)');
 
-  const gapGrad = ctx.createLinearGradient(0,0,0,280);
-  gapGrad.addColorStop(0,'rgba(0,217,126,.2)');
-  gapGrad.addColorStop(1,'rgba(0,217,126,.02)');
+  const gapGrad = ctx.createLinearGradient(0,0,0,300);
+  gapGrad.addColorStop(0,'rgba(0,200,120,.18)');
+  gapGrad.addColorStop(1,'rgba(0,200,120,.02)');
 
   new Chart(ctx, {
     type: 'line',
     data: {
-      labels: v18Labels,
+      labels,
       datasets: [
         {
+          label: 'VWAP Bounce (29 trades)',
+          data: padded_vb,
+          borderColor: '#00d97e',
+          backgroundColor: vbGrad,
+          borderWidth: 2.5,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.3,
+          fill: true,
+          spanGaps: false,
+        },
+        {
           label: 'v18 VWAP/EMA (101 trades)',
-          data: v18Data,
+          data: V18_CUM,
           borderColor: '#3d6fff',
           backgroundColor: v18Grad,
           borderWidth: 2,
@@ -646,19 +812,18 @@ Chart.defaults.font.family = "'DM Mono', monospace";
           pointHoverRadius: 4,
           tension: 0.3,
           fill: true,
-          yAxisID: 'y',
         },
         {
           label: 'Gap & Go (34 trades)',
-          data: Array(67).fill(null).concat(gapData),
-          borderColor: '#00d97e',
+          data: padded_gap,
+          borderColor: '#00c878',
           backgroundColor: gapGrad,
-          borderWidth: 2,
+          borderWidth: 1.5,
+          borderDash: [4, 3],
           pointRadius: 0,
           pointHoverRadius: 4,
           tension: 0.3,
-          fill: true,
-          yAxisID: 'y',
+          fill: false,
           spanGaps: false,
         },
       ]
@@ -668,9 +833,7 @@ Chart.defaults.font.family = "'DM Mono', monospace";
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: {
-          display: false,
-        },
+        legend: { display: false },
         tooltip: {
           backgroundColor: 'rgba(10,18,32,.95)',
           borderColor: 'rgba(61,111,255,.3)',
@@ -690,11 +853,7 @@ Chart.defaults.font.family = "'DM Mono', monospace";
       scales: {
         x: {
           grid: { color: 'rgba(61,111,255,.07)' },
-          ticks: {
-            maxTicksLimit: 10,
-            callback: (v,i) => `T${i+1}`,
-            font: { size: 10 },
-          }
+          ticks: { maxTicksLimit: 10, callback: (v,i) => `T${i+1}`, font: { size: 10 } }
         },
         y: {
           grid: { color: 'rgba(61,111,255,.07)' },
@@ -702,7 +861,6 @@ Chart.defaults.font.family = "'DM Mono', monospace";
             callback: v => `$${v >= 0 ? '+' : ''}${v.toFixed(0)}`,
             font: { size: 10 },
           },
-          // Draw zero line
           afterDataLimits: scale => {
             scale.max = Math.max(scale.max, 20);
             scale.min = Math.min(scale.min, -20);
@@ -711,7 +869,6 @@ Chart.defaults.font.family = "'DM Mono', monospace";
       }
     },
     plugins: [{
-      // Draw break-even line
       id: 'zeroLine',
       beforeDraw(chart) {
         const { ctx, chartArea, scales } = chart;

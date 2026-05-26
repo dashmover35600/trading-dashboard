@@ -1,0 +1,201 @@
+{
+  "generated_at": "2026-05-25T08:21:59.626746-04:00",
+  "generated_str": "May 25, 2026 at 08:21 AM ET",
+  "version": "mean_reversion_v1",
+  "config": {
+    "strategy": "Mean Reversion",
+    "vwap_dev_min_pct": 1.5,
+    "rsi_overbought": 72,
+    "rsi_oversold": 28,
+    "stop_pct": 0.5,
+    "target": "VWAP at entry"
+  },
+  "stats": {
+    "trades": 5,
+    "wins": 2,
+    "losses": 3,
+    "win_rate": 40.0,
+    "total_pnl_pct": -0.194,
+    "total_pnl_dollar": -1.94,
+    "best": 0.265,
+    "worst": -0.525,
+    "max_drawdown": -0.64,
+    "sharpe": -1.982,
+    "avg_score": 0,
+    "profit_factor": 0.699,
+    "expectancy": -0.39,
+    "avg_win": 2.25,
+    "avg_loss": 2.15,
+    "by_ticker": {
+      "AAPL": {
+        "trades": 1,
+        "pnl": -1.15,
+        "wins": 0
+      },
+      "GOOGL": {
+        "trades": 4,
+        "pnl": -0.7899999999999998,
+        "wins": 2
+      }
+    }
+  },
+  "trades": [
+    {
+      "date": "2026-03-31",
+      "ticker": "AAPL",
+      "direction": "Short",
+      "entry": 253.5839,
+      "exit": 253.8761,
+      "result": "Time Exit",
+      "pnl_pct": -0.115,
+      "pnl_dollar": -1.15,
+      "rsi": 83.0,
+      "vwap_dev_pct": 1.649,
+      "vwap_target": 249.5438,
+      "signal_score": 7,
+      "pos_size": 1000,
+      "entry_time": "01:00 PM",
+      "hour": 13,
+      "day_bias": "short",
+      "signal_type": "mean_reversion"
+    },
+    {
+      "date": "2026-03-31",
+      "ticker": "GOOGL",
+      "direction": "Short",
+      "entry": 286.2234,
+      "exit": 287.7264,
+      "result": "Stop Loss Hit",
+      "pnl_pct": -0.525,
+      "pnl_dollar": -5.25,
+      "rsi": 81.7,
+      "vwap_dev_pct": 1.782,
+      "vwap_target": 281.2824,
+      "signal_score": 7,
+      "pos_size": 1000,
+      "entry_time": "01:00 PM",
+      "hour": 13,
+      "day_bias": "short",
+      "signal_type": "mean_reversion"
+    },
+    {
+      "date": "2026-03-31",
+      "ticker": "GOOGL",
+      "direction": "Short",
+      "entry": 287.7531,
+      "exit": 286.9917,
+      "result": "Time Exit",
+      "pnl_pct": 0.265,
+      "pnl_dollar": 2.65,
+      "rsi": 75.6,
+      "vwap_dev_pct": 2.077,
+      "vwap_target": 281.9682,
+      "signal_score": 7,
+      "pos_size": 1000,
+      "entry_time": "01:30 PM",
+      "hour": 13,
+      "day_bias": "short",
+      "signal_type": "mean_reversion"
+    },
+    {
+      "date": "2026-04-14",
+      "ticker": "GOOGL",
+      "direction": "Short",
+      "entry": 332.2369,
+      "exit": 332.2531,
+      "result": "Time Exit",
+      "pnl_pct": -0.005,
+      "pnl_dollar": -0.05,
+      "rsi": 86.9,
+      "vwap_dev_pct": 1.52,
+      "vwap_target": 327.346,
+      "signal_score": 7,
+      "pos_size": 1000,
+      "entry_time": "11:40 AM",
+      "hour": 11,
+      "day_bias": "short",
+      "signal_type": "mean_reversion"
+    },
+    {
+      "date": "2026-04-24",
+      "ticker": "GOOGL",
+      "direction": "Short",
+      "entry": 344.9465,
+      "exit": 344.306,
+      "result": "Time Exit",
+      "pnl_pct": 0.186,
+      "pnl_dollar": 1.86,
+      "rsi": 81.1,
+      "vwap_dev_pct": 1.625,
+      "vwap_target": 339.517,
+      "signal_score": 7,
+      "pos_size": 1000,
+      "entry_time": "12:00 PM",
+      "hour": 12,
+      "day_bias": "short",
+      "signal_type": "mean_reversion"
+    }
+  ],
+  "monte_carlo": {},
+  "comparison": {
+    "mean_reversion": {
+      "trades": 5,
+      "wins": 2,
+      "losses": 3,
+      "win_rate": 40.0,
+      "total_pnl_pct": -0.194,
+      "total_pnl_dollar": -1.94,
+      "best": 0.265,
+      "worst": -0.525,
+      "max_drawdown": -0.64,
+      "sharpe": -1.982,
+      "avg_score": 0,
+      "profit_factor": 0.699,
+      "expectancy": -0.39,
+      "avg_win": 2.25,
+      "avg_loss": 2.15,
+      "by_ticker": {
+        "AAPL": {
+          "trades": 1,
+          "pnl": -1.15,
+          "wins": 0
+        },
+        "GOOGL": {
+          "trades": 4,
+          "pnl": -0.7899999999999998,
+          "wins": 2
+        }
+      }
+    },
+    "v18": {
+      "trades": 101,
+      "wins": 74,
+      "losses": 27,
+      "win_rate": 73.27,
+      "total_pnl_pct": 6.971,
+      "total_pnl_dollar": -10.15,
+      "best": 1.475,
+      "worst": -0.78,
+      "max_drawdown": -3.378,
+      "sharpe": 2.05,
+      "avg_score": 8.3,
+      "profit_factor": 0.971,
+      "expectancy": -0.1,
+      "prime_win_rate": 83.8,
+      "avg_win": 4.65,
+      "avg_loss": 13.12,
+      "by_ticker": {
+        "GOOGL": {
+          "trades": 51,
+          "pnl": -42.38000000000003,
+          "wins": 35
+        },
+        "AAPL": {
+          "trades": 50,
+          "pnl": 32.23000000000001,
+          "wins": 39
+        }
+      }
+    }
+  }
+}
