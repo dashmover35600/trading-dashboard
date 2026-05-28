@@ -535,13 +535,17 @@ function renderResults(trades, stats, data){
   const oosEl = document.getElementById('r-oos');
   if(oosEl && data && data.out_of_sample){
     const oos=data.out_of_sample;
-    const trainWR = oos.train?.stats?.win_rate||0;
-    const testWR  = oos.test?.stats?.win_rate||0;
-    const improving = !oos.consistent && testWR > trainWR;
-    oosEl.textContent = oos.consistent ? '✅ Consistent' : improving ? '📈 Improving' : '⚠️ Diverged';
-    oosEl.className   = 'kpi-val ' + (oos.consistent || improving ? 'g' : 'r');
-    document.getElementById('r-oos').parentElement.querySelector('.kpi-sub').textContent=
-      oos.test?.stats?.win_rate?.toFixed(0)+'% WR on unseen data';
+    const trainWR     = oos.train?.stats?.win_rate  || 0;
+    const testWR      = oos.test?.stats?.win_rate   || 0;
+    const trainSharpe = oos.train?.stats?.sharpe    || 0;
+    const testSharpe  = oos.test?.stats?.sharpe     || 0;
+    // "Improving" when test beats train on WR or Sharpe directly
+    const improving   = testWR > trainWR || testSharpe > trainSharpe;
+    const label = improving ? '📈 Improving' : oos.consistent ? '✅ Consistent' : '⚠️ Diverged';
+    oosEl.textContent = label;
+    oosEl.className   = 'kpi-val ' + (improving || oos.consistent ? 'g' : 'r');
+    const sub = oosEl.parentElement.querySelector('.kpi-sub');
+    if(sub) sub.textContent = testWR.toFixed(0)+'% WR · '+(testSharpe>0?'+':'')+testSharpe.toFixed(2)+' Sharpe on unseen data';
   }
 
   buildCharts(trades);
