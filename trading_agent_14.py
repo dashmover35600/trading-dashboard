@@ -488,6 +488,24 @@ def calc_atr(df: pd.DataFrame, window=14) -> float:
     except Exception:
         return 0.0
 
+def get_correlation(window: int = 20) -> float:
+    """Rolling 20-bar return correlation between AAPL and GOOGL.
+    Returns 0.0 on failure so the check fails open (trading allowed)."""
+    try:
+        dfa = fetch_data("AAPL", period="2d", interval="1m")
+        dfg = fetch_data("GOOGL", period="2d", interval="1m")
+        if dfa.empty or dfg.empty:
+            return 0.0
+        ra = dfa["Close"].squeeze().pct_change().dropna()
+        rg = dfg["Close"].squeeze().pct_change().dropna()
+        aligned = pd.concat([ra, rg], axis=1, join="inner").dropna()
+        if len(aligned) < window:
+            return 0.0
+        corr = aligned.iloc[-window:, 0].corr(aligned.iloc[-window:, 1])
+        return round(float(corr), 4) if not pd.isna(corr) else 0.0
+    except Exception:
+        return 0.0
+
 # ── VIX filter ───────────────────────────────────────────────────────────────
 def get_vix() -> float:
     """
@@ -695,6 +713,12 @@ def check_signals(df):
         print(f"[{TICKER}] Earnings blackout today — skipping all signals")
         return
 
+    # Correlation filter — skip when AAPL/GOOGL move too in-sync (reduced alpha)
+    corr = get_correlation(window=20)
+    if corr > 0.85:
+        print(f"[{TICKER}] Correlation {corr:.3f} > 0.85 — skipping signal (AAPL/GOOGL too correlated)")
+        return
+
     price     = round(float(df["Close"].iloc[-1]), 4)
     prev_price= round(float(df["Close"].iloc[-2]), 4)
     vwap      = calc_vwap(df)
@@ -777,6 +801,7 @@ def check_signals(df):
 
     state.update({
         "in_trade":     True,
+        "ticker":       TICKER,
         "trade_dir":    direction,
         "entry_price":  price,
         "entry_time":   now,
@@ -841,7 +866,7 @@ def check_exit(df):
             print(f"[Exit] Breakeven stop set at ${entry}")
 
     # Partial exit at +0.75%
-    ticker_key = s.get("signal_type", "default")
+    ticker_key = s.get("ticker", TICKER)
     if not partial_done.get(ticker_key, False):
         partial_target = entry*(1+PARTIAL_EXIT_PCT) if direction=="long" else entry*(1-PARTIAL_EXIT_PCT)
         if (direction=="long" and price>=partial_target) or (direction=="short" and price<=partial_target):
@@ -952,7 +977,7 @@ def check_exit(df):
         f"P&L     : {pnl_str} ({dollar_str})\n"
         f"Size    : ${pos_size:.0f} · {s['shares']} shares\n"
         f"Trail   : {'✅ Used' if trail_used else '—'}\n"
-        f"Daily P&L: {'+' if daily_pnl >= 0 else ''}${daily_pnl:.2f}\n"
+        f"Daily P&L: {'+' if daily_pnl >= 0 else '-'}${abs(daily_pnl):.2f}\n"
         f"Trades today: {trades_today}\n"
         f"Time    : {now.strftime('%I:%M %p ET')}\n"
         f"— NYLO Elite v{AGENT_VERSION}",
@@ -1024,7 +1049,7 @@ def send_daily_summary():
     lines = [
         f"📋 Daily Summary — {today}",
         f"Trades : {len(trades)} total | ✅ {wins}W 🛑 {losses}L ⏰ {timed} timed",
-        f"Daily P&L : {'+' if daily_pnl >= 0 else ''}${daily_pnl:.2f}",
+        f"Daily P&L : {'+' if daily_pnl >= 0 else '-'}${abs(daily_pnl):.2f}",
         f"Day bias : {state['day_bias'] or '—'}",
         f"Errors   : {_health['errors_today']}",
         ""
