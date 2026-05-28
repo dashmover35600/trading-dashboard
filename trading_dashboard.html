@@ -24,24 +24,7 @@
   <link rel="manifest" href="/manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}</script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js">
-function checkDisclaimer() {
-  if (localStorage.getItem('nylo-disclaimer-accepted')) return;
-  const tryShow = () => {
-    const ov = document.getElementById('disclaimer-overlay');
-    if (ov) { ov.style.display='flex'; ov.style.zIndex='99999'; }
-    else setTimeout(tryShow, 300);
-  };
-  setTimeout(tryShow, 1000);
-}
-function _oldCheckDisclaimer() {
-  if (localStorage.getItem('nylo-disclaimer-accepted')) return;
-  setTimeout(function(){
-    var ov = document.getElementById('disclaimer-overlay');
-    if (ov) { ov.style.display='flex'; ov.style.zIndex='99999'; }
-  }, 1000);
-}
-</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -3154,22 +3137,22 @@ setTimeout(() => {
 // ── Disclaimer Modal ────────────────────────────────────────────────────────
 function showDisclaimer() {
   const overlay = document.getElementById('disclaimer-overlay');
-  if (overlay) {
-    overlay.style.display = 'flex';
-    overlay.style.opacity = '1';
-    overlay.style.zIndex = '99999';
-    console.log('[NYLO] Disclaimer shown');
-  } else {
-    console.log('[NYLO] Disclaimer overlay NOT FOUND');
-  }
+  if (!overlay) return;
+  // Reset state each time it's shown
+  const cb  = document.getElementById('disclaimer-checkbox');
+  const btn = document.getElementById('disclaimer-btn');
+  if (cb)  cb.checked = false;
+  if (btn) btn.classList.remove('ready');
+  overlay.style.opacity   = '1';
+  overlay.style.transition = '';
+  overlay.style.display   = 'flex';
+  overlay.style.zIndex    = '99999';
 }
 
 function toggleDisclaimerBtn() {
   const cb  = document.getElementById('disclaimer-checkbox');
   const btn = document.getElementById('disclaimer-btn');
-  if (cb && btn) {
-    btn.classList.toggle('ready', cb.checked);
-  }
+  if (cb && btn) btn.classList.toggle('ready', cb.checked);
 }
 
 function acceptDisclaimer() {
@@ -3178,16 +3161,16 @@ function acceptDisclaimer() {
   localStorage.setItem('nylo-disclaimer-accepted', '1');
   const overlay = document.getElementById('disclaimer-overlay');
   if (overlay) {
-    overlay.style.opacity = '0';
     overlay.style.transition = 'opacity .3s';
-    setTimeout(() => overlay.style.display = 'none', 300);
+    overlay.style.opacity    = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 320);
   }
 }
 
 function checkDisclaimer() {
-  const accepted = localStorage.getItem('nylo-disclaimer-accepted');
-  if (!accepted) {
-    setTimeout(showDisclaimer, 1500);
+  // Only show on first visit — localStorage persists across reloads
+  if (!localStorage.getItem('nylo-disclaimer-accepted')) {
+    setTimeout(showDisclaimer, 1200);
   }
 }
 
