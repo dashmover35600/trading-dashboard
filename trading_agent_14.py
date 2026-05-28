@@ -689,7 +689,7 @@ def set_opening_drive(df):
     )
 
 # ── Signal detection ──────────────────────────────────────────────────────────
-def check_signals(df):
+def check_signals(df, ticker):
     s = state
     if s["in_trade"] or not s["drive_set"]:
         return
@@ -705,18 +705,18 @@ def check_signals(df):
     # VIX filter — skip if market too volatile
     vix = get_vix()
     if vix > VIX_MAX:
-        print(f"[{TICKER}] VIX {vix} > {VIX_MAX} — skipping (too volatile)")
+        print(f"[{ticker}] VIX {vix} > {VIX_MAX} — skipping (too volatile)")
         return
 
     # Earnings blackout
     if is_earnings_blackout():
-        print(f"[{TICKER}] Earnings blackout today — skipping all signals")
+        print(f"[{ticker}] Earnings blackout today — skipping all signals")
         return
 
     # Correlation filter — skip when AAPL/GOOGL move too in-sync (reduced alpha)
     corr = get_correlation(window=20)
     if corr > 0.85:
-        print(f"[{TICKER}] Correlation {corr:.3f} > 0.85 — skipping signal (AAPL/GOOGL too correlated)")
+        print(f"[{ticker}] Correlation {corr:.3f} > 0.85 — skipping signal (AAPL/GOOGL too correlated)")
         return
 
     price     = round(float(df["Close"].iloc[-1]), 4)
@@ -728,7 +728,7 @@ def check_signals(df):
     vol_ratio = calc_vol_ratio(df)
     bias      = s["day_bias"]
 
-    print(f"[{TICKER}] ${price} VWAP:{vwap} RSI:{rsi} EMA9:{ema9} EMA21:{ema21} "
+    print(f"[{ticker}] ${price} VWAP:{vwap} RSI:{rsi} EMA9:{ema9} EMA21:{ema21} "
           f"Vol:{vol_ratio}x Bias:{bias}")
 
     signal_type = None
@@ -746,13 +746,13 @@ def check_signals(df):
             if bias in ("long", "neutral") and RSI_BULL_MIN <= rsi <= RSI_BULL_MAX:
                 signal_type = "vwap_reclaim"
                 direction   = "long"
-                print(f"[{TICKER}] 🎯 VWAP RECLAIM LONG — price crossed above VWAP")
+                print(f"[{ticker}] 🎯 VWAP RECLAIM LONG — price crossed above VWAP")
 
         elif was_above_vwap and now_below_vwap and vol_ratio >= VOLUME_MIN:
             if bias in ("short", "neutral") and RSI_BEAR_MIN <= rsi <= RSI_BEAR_MAX:
                 signal_type = "vwap_reclaim"
                 direction   = "short"
-                print(f"[{TICKER}] 🎯 VWAP RECLAIM SHORT — price crossed below VWAP")
+                print(f"[{ticker}] 🎯 VWAP RECLAIM SHORT — price crossed below VWAP")
 
     # ── SIGNAL 2: EMA Pullback ──────────────────────────────────────────────
     # Price pulled back to 9 EMA and is bouncing, in trend direction
@@ -765,23 +765,23 @@ def check_signals(df):
         if ema_touch_long and bias in ("long", "neutral") and RSI_BULL_MIN <= rsi <= RSI_BULL_MAX:
             signal_type = "ema_pullback"
             direction   = "long"
-            print(f"[{TICKER}] 📈 EMA PULLBACK LONG — bounce off 9 EMA")
+            print(f"[{ticker}] 📈 EMA PULLBACK LONG — bounce off 9 EMA")
 
         elif ema_touch_short and bias in ("short", "neutral") and RSI_BEAR_MIN <= rsi <= RSI_BEAR_MAX:
             signal_type = "ema_pullback"
             direction   = "short"
-            print(f"[{TICKER}] 📉 EMA PULLBACK SHORT — rejection at 9 EMA")
+            print(f"[{ticker}] 📉 EMA PULLBACK SHORT — rejection at 9 EMA")
 
     if not signal_type:
         return
 
     # ── Score the signal ────────────────────────────────────────────────────
     score = score_signal(df, direction, signal_type, rsi, vol_ratio, price, vwap, ema9)
-    print(f"[{TICKER}] Signal score: {score}/10 (min {MIN_SCORE} to trade)")
+    print(f"[{ticker}] Signal score: {score}/10 (min {MIN_SCORE} to trade)")
 
     if score < MIN_SCORE:
         send_imessage(
-            f"⚡ SIGNAL SKIPPED — {TICKER}\n"
+            f"⚡ SIGNAL SKIPPED — {ticker}\n"
             f"Type  : {signal_type.replace('_', ' ').title()}\n"
             f"Dir   : {'Long' if direction=='long' else 'Short'}\n"
             f"Score : {score}/10 (need {MIN_SCORE}+)\n"
@@ -791,7 +791,7 @@ def check_signals(df):
         return
 
     # ── Enter trade ─────────────────────────────────────────────────────────
-    pos_size = get_position_size(score)
+    pos_size = get_position_size(score, ticker, vix)
     target   = round(price * (1 + GAIN_TARGET_PCT), 4) if direction == "long" \
                else round(price * (1 - GAIN_TARGET_PCT), 4)
     stop     = round(price * (1 - STOP_LOSS_PCT), 4) if direction == "long" \
@@ -801,7 +801,7 @@ def check_signals(df):
 
     state.update({
         "in_trade":     True,
-        "ticker":       TICKER,
+        "ticker":       ticker,
         "trade_dir":    direction,
         "entry_price":  price,
         "entry_time":   now,
@@ -823,10 +823,10 @@ def check_signals(df):
 
     score_stars = "⭐" * min(score - 5, 5)
     emoji = "🟢" if direction == "long" else "🔴"
-    size_label = "HIGH" if pos_size == POS_HIGH else "MEDIUM" if pos_size == POS_MEDIUM else "BASE"
+    size_label = f"${pos_size/1000:.1f}K" if pos_size >= 1000 else f"${int(pos_size)}"
 
-    send_push("NYLO Signal", 
-        f"{emoji} TRADE SIGNAL — {TICKER}\n"
+    send_push("NYLO Signal",
+        f"{emoji} TRADE SIGNAL — {ticker}\n"
         f"Type    : {signal_type.replace('_', ' ').title()} {score_stars}\n"
         f"Score   : {score}/10\n"
         f"Dir     : {'BUY (Long)' if direction=='long' else 'SELL (Short)'}\n"
@@ -842,17 +842,16 @@ def check_signals(df):
     )
 
 # ── Exit management ───────────────────────────────────────────────────────────
-def check_exit(df):
+def check_exit(df, ticker):
     global trades_today, daily_pnl, consec_losses, pause_until
     s   = state
-    if not s["in_trade"]:
+    if not s["in_trade"] or s.get("ticker") != ticker:
         return
 
     price     = round(float(df["Close"].iloc[-1]), 4)
     now       = now_et()
     direction = s["trade_dir"]
     entry     = s["entry_price"]
-    ticker    = s.get("signal_type", TICKER)
 
     # Use tighter trail after 11 AM
     trail_pct = TRAIL_STOP_LATE if is_late_session() else TRAIL_STOP_PCT
@@ -970,8 +969,8 @@ def check_exit(df):
     pnl_str = f"{'+' if pnl_pct >= 0 else ''}{pnl_pct:.2f}%"
     dollar_str = f"+${pnl_dollar:.2f}" if pnl_dollar >= 0 else f"-${abs(pnl_dollar):.2f}"
 
-    send_push("NYLO Exit", 
-        f"{emoji} {result.upper()} — {TICKER}\n"
+    send_push("NYLO Exit",
+        f"{emoji} {result.upper()} — {ticker}\n"
         f"Type    : {signal_type.replace('_', ' ').title() if signal_type else '—'} (score {signal_score}/10)\n"
         f"Entry   : ${entry} → Exit: ${exit_price}\n"
         f"P&L     : {pnl_str} ({dollar_str})\n"
@@ -985,9 +984,9 @@ def check_exit(df):
     )
 
     if pnl_dollar > 0:
-        print(f"[{TICKER}] ✅ {result} | {pnl_str} ({dollar_str}) | Daily: +${daily_pnl:.2f}")
+        print(f"[{ticker}] ✅ {result} | {pnl_str} ({dollar_str}) | Daily: +${daily_pnl:.2f}")
     else:
-        print(f"[{TICKER}] 🛑 {result} | {pnl_str} ({dollar_str}) | Daily: ${daily_pnl:.2f}")
+        print(f"[{ticker}] 🛑 {result} | {pnl_str} ({dollar_str}) | Daily: ${daily_pnl:.2f}")
 
 # ── Main loop ─────────────────────────────────────────────────────────────────
 def run_agent():
@@ -1000,14 +999,23 @@ def run_agent():
     cycle_ok = True
 
     try:
-        df = fetch_data(TICKER)
-        if df.empty:
+        # Fetch data for all tickers
+        data = {}
+        for ticker in TICKERS:
+            df = fetch_data(ticker)
+            if not df.empty:
+                data[ticker] = df
+
+        if not data:
             write_heartbeat("running")
             return
 
-        set_opening_drive(df)
-        check_signals(df)
-        check_exit(df)
+        # Opening drive uses the first successfully fetched ticker
+        set_opening_drive(next(iter(data.values())))
+
+        for ticker, df in data.items():
+            check_signals(df, ticker)
+            check_exit(df, ticker)
 
     except Exception as exc:
         cycle_ok = False
@@ -1145,10 +1153,10 @@ if __name__ == "__main__":
 
     print("=" * 60)
     print(f"  NYLO Elite Trading Agent v{AGENT_VERSION}")
-    print(f"  Ticker      : {TICKER} only")
+    print(f"  Tickers     : {', '.join(TICKERS)}")
     print(f"  Signals     : VWAP Reclaim + EMA Pullback")
     print(f"  Scoring     : Min {MIN_SCORE}/10 to trade")
-    print(f"  Sizes       : ${POS_BASE:.0f} / ${POS_MEDIUM:.0f} / ${POS_HIGH:.0f} (score 6/7/9+)")
+    print(f"  Sizes       : $500–$5,000 (score 3–10, VIX-adjusted)")
     print(f"  Target      : {GAIN_TARGET_PCT*100:.1f}% | Stop: {STOP_LOSS_PCT*100:.2f}%")
     print(f"  Trail       : Activates at +{TRAIL_TRIGGER_PCT*100:.1f}%")
     print(f"  Hard cutoff : 12:00 PM ET")
@@ -1156,7 +1164,7 @@ if __name__ == "__main__":
     print(f"  Trade log   : {LOG_FILE}")
     print("=" * 60)
 
-    print("[Agent] Startup complete. Monitoring QQQ.")
+    print(f"[Agent] Startup complete. Monitoring {', '.join(TICKERS)}.")
     try:
         send_push("NYLO Started", f"NYLO Elite v{AGENT_VERSION} started.\nWatching: {', '.join(TICKERS)}\nBias sets at 9:35 AM ET")
     except Exception:
