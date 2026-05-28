@@ -115,6 +115,22 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;
 .sc-badge.active{background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);}
 .sc-badge.best{background:rgba(255,184,48,.15);border:1px solid rgba(255,184,48,.3);color:var(--amber);}
 
+/* ── SPARKLINES in strategy cards ── */
+.sc-footer{display:flex;align-items:flex-end;justify-content:space-between;gap:.75rem;margin-top:.85rem;}
+.sc-stats{display:flex;flex-direction:column;gap:3px;}
+.sc-stat{font-family:var(--mono);font-size:.6rem;color:var(--muted);}
+.sc-stat strong{color:var(--text);}
+.sc-sparkline{flex:0 0 80px;height:36px;}
+
+/* ── SORT CONTROLS ── */
+.sort-bar{display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;}
+.sort-label{font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.sort-btn{font-family:var(--mono);font-size:.6rem;padding:3px 10px;border-radius:20px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;letter-spacing:.04em;}
+.sort-btn:hover{border-color:var(--accent2);color:var(--text);}
+.sort-btn.active{background:rgba(61,111,255,.15);border-color:var(--accent2);color:var(--accent3);}
+.sort-btn .sort-arrow{display:inline-block;margin-left:3px;font-size:.55rem;opacity:.6;}
+
 /* ── RANKING TABLE ── */
 .rank-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
   overflow:hidden;margin-bottom:2.5rem;}
@@ -320,7 +336,13 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
       <div class="sc-tags">
         <span class="tag tag-blue">VWAP + EMA</span>
         <span class="tag tag-blue">9:30–12:00</span>
-        <span class="tag tag-blue">101 trades</span>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-stats">
+          <div class="sc-stat"><strong>73.3%</strong> WR · <strong>PF 0.971</strong></div>
+          <div class="sc-stat"><strong>Sharpe 2.05</strong> · 101 trades</div>
+        </div>
+        <canvas class="sc-sparkline" id="sp-v18"></canvas>
       </div>
     </div>
 
@@ -332,7 +354,13 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
       <div class="sc-tags">
         <span class="tag tag-green">3rd Touch</span>
         <span class="tag tag-green">RSI Confirm</span>
-        <span class="tag tag-green">29 trades</span>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-stats">
+          <div class="sc-stat"><strong>55.2%</strong> WR · <strong>PF 1.519</strong></div>
+          <div class="sc-stat"><strong>Sharpe 2.76</strong> · 29 trades</div>
+        </div>
+        <canvas class="sc-sparkline" id="sp-vb"></canvas>
       </div>
     </div>
 
@@ -342,8 +370,14 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
       <div class="sc-desc">Gap ≥ 0.5% from prior close + first-5-min volume ≥ 2× average. Enter at 9:35 AM in gap direction. Fixed 2:1 R:R (target = 1× gap, stop = 0.5× gap).</div>
       <div class="sc-tags">
         <span class="tag tag-green">Gap ≥ 0.5%</span>
-        <span class="tag tag-green">2:1 Fixed R:R</span>
-        <span class="tag tag-green">34 trades</span>
+        <span class="tag tag-green">2:1 R:R</span>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-stats">
+          <div class="sc-stat"><strong>20.6%</strong> WR · <strong>PF 0.723</strong></div>
+          <div class="sc-stat"><strong>Sharpe 1.87</strong> · 34 trades</div>
+        </div>
+        <canvas class="sc-sparkline" id="sp-gap"></canvas>
       </div>
     </div>
 
@@ -354,7 +388,13 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
       <div class="sc-tags">
         <span class="tag tag-amber">Fade Move</span>
         <span class="tag tag-amber">RSI Extreme</span>
-        <span class="tag tag-muted">5 trades</span>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-stats">
+          <div class="sc-stat"><strong>40.0%</strong> WR · <strong>PF 0.699</strong></div>
+          <div class="sc-stat"><strong>Sharpe −1.98</strong> · 5 trades</div>
+        </div>
+        <canvas class="sc-sparkline" id="sp-mr"></canvas>
       </div>
     </div>
 
@@ -365,7 +405,13 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
       <div class="sc-tags">
         <span class="tag tag-amber">Flag Pattern</span>
         <span class="tag tag-amber">Vol Breakout</span>
-        <span class="tag tag-muted">11 trades</span>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-stats">
+          <div class="sc-stat"><strong>36.4%</strong> WR · <strong>PF 0.633</strong></div>
+          <div class="sc-stat"><strong>Sharpe −2.99</strong> · 11 trades</div>
+        </div>
+        <canvas class="sc-sparkline" id="sp-fl"></canvas>
       </div>
     </div>
 
@@ -376,135 +422,30 @@ footer{position:relative;z-index:5;padding:2rem 1.5rem;
       <div class="sc-tags">
         <span class="tag tag-muted">Market Neutral</span>
         <span class="tag tag-muted">Z-Score ±1.5</span>
-        <span class="tag tag-muted">401 trades</span>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-stats">
+          <div class="sc-stat"><strong>29.4%</strong> WR · <strong>PF 0.294</strong></div>
+          <div class="sc-stat"><strong>Sharpe −5.71</strong> · 401 trades</div>
+        </div>
+        <canvas class="sc-sparkline" id="sp-pt"></canvas>
       </div>
     </div>
 
   </div>
 
   <!-- RANKING TABLE -->
-  <div class="sl reveal">Ranked by Profit Factor</div>
-  <div class="rank-wrap reveal">
-    <div class="rank-header">
-      <div class="rh">Rank</div>
-      <div class="rh">Strategy</div>
-      <div class="rh" style="text-align:right;">Win Rate</div>
-      <div class="rh rh-sharpe" style="text-align:right;">Sharpe</div>
-      <div class="rh" style="text-align:right;">Total P&amp;L</div>
-      <div class="rh">Profit Factor</div>
-      <div class="rh rh-expect" style="text-align:right;">Expectancy</div>
-      <div class="rh rh-trades" style="text-align:right;">Trades</div>
-    </div>
-
-    <!-- Rank 1: VWAP Bounce -->
-    <div class="rank-row rank-1">
-      <div class="rc-rank"><span class="medal">🥇</span></div>
-      <div class="rc-name">
-        <div class="rc-strat">VWAP Bounce</div>
-        <div class="rc-sub">3rd touch + RSI · 9:30–3:00 PM · $1,000 / trade</div>
-      </div>
-      <div class="rc-val pos">55.2%</div>
-      <div class="rc-val neu rc-sharpe">2.76</div>
-      <div class="rc-val pos">+$20.94</div>
-      <div class="pf-cell">
-        <span class="pf-val pf-good">1.519</span>
-        <div class="pf-bar-bg"><div class="pf-bar pf-good" style="width:100%;"></div></div>
-      </div>
-      <div class="rc-val pos rc-expect">+$0.72</div>
-      <div class="rc-val muted rc-trades">29</div>
-    </div>
-
-    <!-- Rank 2: v18 -->
-    <div class="rank-row rank-2">
-      <div class="rc-rank"><span class="medal">🥈</span></div>
-      <div class="rc-name">
-        <div class="rc-strat">v18 VWAP/EMA Reclaim</div>
-        <div class="rc-sub">9 filters · 9:30–12:00 · score-scaled sizing</div>
-        <div class="rc-running"><span class="running-dot" style="width:5px;height:5px;"></span>Running</div>
-      </div>
-      <div class="rc-val pos">73.3%</div>
-      <div class="rc-val neu rc-sharpe">2.05</div>
-      <div class="rc-val neg">−$10.15</div>
-      <div class="pf-cell">
-        <span class="pf-val pf-mid">0.971</span>
-        <div class="pf-bar-bg"><div class="pf-bar pf-mid" style="width:63.9%;"></div></div>
-      </div>
-      <div class="rc-val neg rc-expect">−$0.10</div>
-      <div class="rc-val muted rc-trades">101</div>
-    </div>
-
-    <!-- Rank 3: Gap & Go -->
-    <div class="rank-row">
-      <div class="rc-rank" style="color:var(--muted);">🥉</div>
-      <div class="rc-name">
-        <div class="rc-strat">Gap and Go</div>
-        <div class="rc-sub">Gap ≥ 0.5% · entry 9:35 AM · fixed 2:1 R:R</div>
-      </div>
-      <div class="rc-val" style="color:var(--red);">20.6%</div>
-      <div class="rc-val neu rc-sharpe">1.87</div>
-      <div class="rc-val pos">+$111.01</div>
-      <div class="pf-cell">
-        <span class="pf-val pf-mid">0.723</span>
-        <div class="pf-bar-bg"><div class="pf-bar pf-mid" style="width:47.6%;"></div></div>
-      </div>
-      <div class="rc-val neg rc-expect">−$6.94</div>
-      <div class="rc-val muted rc-trades">34</div>
-    </div>
-
-    <!-- Rank 4: Mean Reversion -->
-    <div class="rank-row">
-      <div class="rc-rank" style="color:var(--muted);font-size:.75rem;">4</div>
-      <div class="rc-name">
-        <div class="rc-strat">Mean Reversion</div>
-        <div class="rc-sub">VWAP dev ≥ 1.5% + RSI extreme · fade · 5 signals</div>
-      </div>
-      <div class="rc-val" style="color:var(--amber);">40.0%</div>
-      <div class="rc-val neg rc-sharpe">−1.98</div>
-      <div class="rc-val neg">−$1.94</div>
-      <div class="pf-cell">
-        <span class="pf-val pf-bad">0.699</span>
-        <div class="pf-bar-bg"><div class="pf-bar pf-bad" style="width:46.0%;"></div></div>
-      </div>
-      <div class="rc-val neg rc-expect">−$0.39</div>
-      <div class="rc-val muted rc-trades">5</div>
-    </div>
-
-    <!-- Rank 5: Bull/Bear Flag -->
-    <div class="rank-row">
-      <div class="rc-rank" style="color:var(--muted);font-size:.75rem;">5</div>
-      <div class="rc-name">
-        <div class="rc-strat">Bull / Bear Flag</div>
-        <div class="rc-sub">Pole ≥ 0.5% · consol 5 bars · 1.2× vol breakout</div>
-      </div>
-      <div class="rc-val" style="color:var(--amber);">36.4%</div>
-      <div class="rc-val neg rc-sharpe">−2.99</div>
-      <div class="rc-val neg">−$10.63</div>
-      <div class="pf-cell">
-        <span class="pf-val pf-bad">0.633</span>
-        <div class="pf-bar-bg"><div class="pf-bar pf-bad" style="width:41.7%;"></div></div>
-      </div>
-      <div class="rc-val neg rc-expect">−$0.97</div>
-      <div class="rc-val muted rc-trades">11</div>
-    </div>
-
-    <!-- Rank 6: Pairs Trading -->
-    <div class="rank-row">
-      <div class="rc-rank" style="color:var(--muted);font-size:.75rem;">6</div>
-      <div class="rc-name">
-        <div class="rc-strat">Pairs Trading</div>
-        <div class="rc-sub">AAPL/GOOGL ratio · z-score ±1.5 · $1,000 per leg</div>
-      </div>
-      <div class="rc-val neg">29.4%</div>
-      <div class="rc-val neg rc-sharpe">−5.71</div>
-      <div class="rc-val neg">−$551.16</div>
-      <div class="pf-cell">
-        <span class="pf-val pf-bad">0.294</span>
-        <div class="pf-bar-bg"><div class="pf-bar pf-bad" style="width:19.4%;"></div></div>
-      </div>
-      <div class="rc-val neg rc-expect">−$1.37</div>
-      <div class="rc-val muted rc-trades">401</div>
-    </div>
-
+  <div class="sl reveal">Strategy Ranking</div>
+  <div class="sort-bar reveal">
+    <span class="sort-label">Sort by:</span>
+    <button class="sort-btn active" onclick="sortTable('pf',this)" data-col="pf">Profit Factor <span class="sort-arrow">↓</span></button>
+    <button class="sort-btn" onclick="sortTable('wr',this)" data-col="wr">Win Rate <span class="sort-arrow">↕</span></button>
+    <button class="sort-btn" onclick="sortTable('sharpe',this)" data-col="sharpe">Sharpe <span class="sort-arrow">↕</span></button>
+    <button class="sort-btn" onclick="sortTable('pnl',this)" data-col="pnl">Total P&amp;L <span class="sort-arrow">↕</span></button>
+    <button class="sort-btn" onclick="sortTable('expect',this)" data-col="expect">Expectancy <span class="sort-arrow">↕</span></button>
+    <button class="sort-btn" onclick="sortTable('trades',this)" data-col="trades">Trades <span class="sort-arrow">↕</span></button>
+  </div>
+  <div class="rank-wrap reveal" id="rank-table-wrap">
   </div>
 
   <!-- EQUITY CURVES -->
@@ -958,6 +899,148 @@ Chart.defaults.font.family = "'DM Mono', monospace";
     }]
   });
 })();
+
+// ── Sparklines ──────────────────────────────────────────────────────────────
+function drawSparkline(canvasId, data, color) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 80;
+  const H = canvas.offsetHeight || 36;
+  canvas.width  = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  const min = Math.min(...data, 0);
+  const max = Math.max(...data, 0);
+  const range = max - min || 1;
+  const pad = 4;
+
+  const x = i => pad + (i / (data.length - 1)) * (W - pad * 2);
+  const y = v => H - pad - ((v - min) / range) * (H - pad * 2);
+
+  // Zero line
+  const y0 = y(0);
+  ctx.beginPath();
+  ctx.moveTo(pad, y0); ctx.lineTo(W - pad, y0);
+  ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.lineWidth = 1;
+  ctx.setLineDash([2, 2]); ctx.stroke(); ctx.setLineDash([]);
+
+  // Fill
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, color.replace(')', ', .3)').replace('rgb', 'rgba'));
+  grad.addColorStop(1, color.replace(')', ', .0)').replace('rgb', 'rgba'));
+  ctx.beginPath();
+  data.forEach((v, i) => { i === 0 ? ctx.moveTo(x(i), y(v)) : ctx.lineTo(x(i), y(v)); });
+  ctx.lineTo(x(data.length - 1), y0); ctx.lineTo(x(0), y0); ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  data.forEach((v, i) => { i === 0 ? ctx.moveTo(x(i), y(v)) : ctx.lineTo(x(i), y(v)); });
+  ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.lineJoin = 'round'; ctx.stroke();
+}
+
+// Subsample data so sparklines aren't too dense
+function subsample(arr, n) {
+  if (arr.length <= n) return arr;
+  const step = arr.length / n;
+  return Array.from({length: n}, (_, i) => arr[Math.round(i * step)]);
+}
+
+window.addEventListener('load', () => {
+  drawSparkline('sp-v18', subsample(V18_CUM, 30), '#3d6fff');
+  drawSparkline('sp-vb',  subsample(VB_CUM, 20),  '#00d97e');
+  drawSparkline('sp-gap', subsample(GAP_CUM, 20),  '#00c878');
+  drawSparkline('sp-mr',  [-1.15,-6.4,-3.75,-3.8,-1.94], '#9b59b6');
+  drawSparkline('sp-fl',  [5.08,4.78,0.94,-3.61,-6.32,3.34,-3.05,-1.96,-8.14,-5.6,-10.63], '#ffb830');
+  // Pairs: subsample the 401-trade series to 30 pts
+  const PAIRS_SAMPLE = [-1.8,-15.56,-27.7,-52.76,-57.33,-72.21,-83.98,-86.94,-77.79,-88.43,-113.9,-112.05,-130,-145,-155,-178,-198,-215,-240,-270,-300,-330,-360,-400,-440,-480,-510,-535,-548,-551.16];
+  drawSparkline('sp-pt', PAIRS_SAMPLE, '#5a6a90');
+});
+
+// ── Sortable ranking table ───────────────────────────────────────────────────
+const STRATEGIES = [
+  { name:'VWAP Bounce',             sub:'3rd touch + RSI · 9:30–3:00 PM',  running:false, wr:55.17, sharpe:2.76,  pnl:20.94,   pf:1.519, expect:0.72,  trades:29,  rank:1 },
+  { name:'v18 VWAP/EMA Reclaim',    sub:'9 filters · 9:30–12:00',          running:true,  wr:73.27, sharpe:2.05,  pnl:-10.15,  pf:0.971, expect:-0.10, trades:101, rank:2 },
+  { name:'Gap and Go',              sub:'Gap ≥ 0.5% · entry 9:35 AM',      running:false, wr:20.59, sharpe:1.87,  pnl:111.01,  pf:0.723, expect:-6.94, trades:34,  rank:3 },
+  { name:'Mean Reversion',          sub:'VWAP dev ≥ 1.5% + RSI extreme',   running:false, wr:40.00, sharpe:-1.98, pnl:-1.94,   pf:0.699, expect:-0.39, trades:5,   rank:4 },
+  { name:'Bull / Bear Flag',        sub:'Pole ≥ 0.5% · 1.2× vol breakout', running:false, wr:36.36, sharpe:-2.99, pnl:-10.63,  pf:0.633, expect:-0.97, trades:11,  rank:5 },
+  { name:'Pairs Trading',           sub:'AAPL/GOOGL ratio · z-score ±1.5', running:false, wr:29.43, sharpe:-5.71, pnl:-551.16, pf:0.294, expect:-1.37, trades:401, rank:6 },
+];
+
+let sortCol = 'pf', sortAsc = false;
+
+function sortTable(col, btn) {
+  if (sortCol === col) { sortAsc = !sortAsc; }
+  else { sortCol = col; sortAsc = col === 'trades'; }
+
+  document.querySelectorAll('.sort-btn').forEach(b => {
+    b.classList.remove('active');
+    b.querySelector('.sort-arrow').textContent = '↕';
+  });
+  btn.classList.add('active');
+  btn.querySelector('.sort-arrow').textContent = sortAsc ? '↑' : '↓';
+
+  renderRankTable();
+}
+
+function pfClass(pf) { return pf >= 1 ? 'pf-good' : pf >= 0.65 ? 'pf-mid' : 'pf-bad'; }
+function pfBarWidth(pf) { return Math.round((pf / 1.519) * 100); }
+function valClass(v) { return v >= 0 ? 'pos' : 'neg'; }
+function fmtPnl(v) { return (v >= 0 ? '+$' : '-$') + Math.abs(v).toFixed(2); }
+
+function renderRankTable() {
+  const wrap = document.getElementById('rank-table-wrap');
+  if (!wrap) return;
+
+  const sorted = [...STRATEGIES].sort((a, b) => {
+    const va = a[sortCol], vb = b[sortCol];
+    return sortAsc ? va - vb : vb - va;
+  });
+
+  const medals = ['🥇','🥈','🥉'];
+
+  const rows = sorted.map((s, i) => {
+    const pfCls = pfClass(s.pf);
+    const medal = i < 3 ? `<span class="medal">${medals[i]}</span>` : `<span style="font-family:var(--mono);font-size:.75rem;color:var(--muted);">${i+1}</span>`;
+    const rowCls = i === 0 ? 'rank-row rank-1' : i === 1 ? 'rank-row rank-2' : 'rank-row';
+    const runBadge = s.running ? `<div class="rc-running"><span class="running-dot" style="width:5px;height:5px;"></span>Running</div>` : '';
+    return `<div class="${rowCls}">
+      <div class="rc-rank">${medal}</div>
+      <div class="rc-name">
+        <div class="rc-strat">${s.name}</div>
+        <div class="rc-sub">${s.sub}</div>
+        ${runBadge}
+      </div>
+      <div class="rc-val ${s.wr >= 50 ? 'pos' : s.wr >= 35 ? 'neu' : 'neg'}">${s.wr.toFixed(1)}%</div>
+      <div class="rc-val ${s.sharpe >= 0 ? 'neu' : 'neg'} rc-sharpe">${s.sharpe.toFixed(2)}</div>
+      <div class="rc-val ${valClass(s.pnl)}">${fmtPnl(s.pnl)}</div>
+      <div class="pf-cell">
+        <span class="pf-val ${pfCls}">${s.pf.toFixed(3)}</span>
+        <div class="pf-bar-bg"><div class="pf-bar ${pfCls}" style="width:${pfBarWidth(s.pf)}%;"></div></div>
+      </div>
+      <div class="rc-val ${valClass(s.expect)} rc-expect">${s.expect >= 0 ? '+' : ''}$${s.expect.toFixed(2)}</div>
+      <div class="rc-val muted rc-trades">${s.trades}</div>
+    </div>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <div class="rank-header">
+      <div class="rh">Rank</div>
+      <div class="rh">Strategy</div>
+      <div class="rh" style="text-align:right;">Win Rate</div>
+      <div class="rh rh-sharpe" style="text-align:right;">Sharpe</div>
+      <div class="rh" style="text-align:right;">Total P&amp;L</div>
+      <div class="rh">Profit Factor</div>
+      <div class="rh rh-expect" style="text-align:right;">Expectancy</div>
+      <div class="rh rh-trades" style="text-align:right;">Trades</div>
+    </div>
+    ${rows}`;
+}
+
+// Initial render
+renderRankTable();
 
 // ── Scroll reveal ───────────────────────────────────────────────────────────
 const observer = new IntersectionObserver(entries => {
