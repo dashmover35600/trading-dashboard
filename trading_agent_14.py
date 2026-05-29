@@ -70,12 +70,11 @@ POS_MEDIUM        = 2000.0   # increased from $1000   # medium confidence
 POS_HIGH          = 3000.0   # increased from $1500   # high confidence
 
 # Strategy parameters
-GAIN_TARGET_PCT   = 0.015    # 1.5% target
-STOP_LOSS_PCT     = 0.0075   # 0.75% stop → 2:1 ratio
-TRAIL_TRIGGER_PCT = 0.0075   # activate trailing stop after +0.75% move
-TRAIL_STOP_PCT    = 0.003    # trail by 0.3% from peak
-TRAIL_STOP_LATE   = 0.002    # tighter trail after 11 AM
-PARTIAL_EXIT_PCT  = 0.0075   # take 50% profit at +0.75%
+GAIN_TARGET_PCT   = 0.020    # 2.0% target
+STOP_LOSS_PCT     = 0.005    # 0.50% stop → 4:1 ratio
+TRAIL_TRIGGER_PCT = 0.010    # activate trailing stop after +1.0% move
+TRAIL_STOP_PCT    = 0.005    # trail by 0.5% from peak
+PARTIAL_EXIT_PCT  = 0.010    # take 50% profit at +1.0%
 BREAKEVEN_TRIGGER = 0.005    # move stop to breakeven at +0.5%
 SLIPPAGE_PCT      = 0.0002   # 0.02% slippage per trade
 DAILY_LOSS_LIMIT  = -500.0   # stop trading if down $500/day
@@ -863,8 +862,7 @@ def check_exit(df, ticker):
     direction = s["trade_dir"]
     entry     = s["entry_price"]
 
-    # Use tighter trail after 11 AM
-    trail_pct = TRAIL_STOP_LATE if is_late_session() else TRAIL_STOP_PCT
+    trail_pct = TRAIL_STOP_PCT
 
     # Breakeven stop — move stop to entry at +0.5%
     if not s.get("breakeven_set", False):

@@ -42,9 +42,11 @@ TICKER_CONFIGS = {
         "atr_stop_mult": 1.0,
         "atr_target_mult": 1.5,
         "pos_mult":      1.0,
-        "slippage":      0.0003,   # 0.03% — increased from 0.02%
+        "slippage":      0.0003,
         "vol_min":       1.2,
         "min_atr_pct":   0.001,
+        "gain_target":   0.020,   # 2.0%
+        "stop_loss":     0.005,   # 0.50%
     },
     "GOOGL": {
         "strategy":      "both",
@@ -53,9 +55,11 @@ TICKER_CONFIGS = {
         "atr_stop_mult": 1.0,
         "atr_target_mult": 1.5,
         "pos_mult":      0.85,
-        "slippage":      0.00025,  # 0.025% — increased from 0.02%
+        "slippage":      0.00025,
         "vol_min":       1.2,
         "min_atr_pct":   0.001,
+        "gain_target":   0.020,   # 2.0%
+        "stop_loss":     0.005,   # 0.50%
     },
 }
 
@@ -97,12 +101,13 @@ def get_pos_size(score, ticker, vix=15):
 MIN_SCORE         = 3
 DAILY_LOSS_LIMIT  = -500.0
 CONSEC_LOSS_PAUSE = 3
-TRAIL_TRIGGER     = 0.005
-TRAIL_STOP_PCT    = 0.003
+TRAIL_TRIGGER     = 0.010
+TRAIL_STOP_PCT    = 0.005
 BREAKEVEN_TRIGGER = 0.005
+PARTIAL_PCT       = 0.010    # fixed +1.0% partial exit
 
 TRADE_START = datetime.time(9, 30)
-TRADE_END   = datetime.time(12, 0)
+TRADE_END   = datetime.time(10, 30)
 
 SWEEP_MIN_SCORE  = [3, 4, 5]
 SWEEP_ATR_STOP   = [0.8, 1.0, 1.2]
@@ -400,7 +405,7 @@ def run_strategy(df, ticker, qqq_close=None, qqq_ema20=None,
             # ── Exit management ──────────────────────────────────────────────
             if in_trade and entry:
                 d = entry["dir"]
-                trail_pct = TRAIL_STOP_PCT * 1.5 if hour >= 11 else TRAIL_STOP_PCT
+                trail_pct = TRAIL_STOP_PCT
 
                 if not entry.get("breakeven_set", False):
                     move = ((price - entry["price"]) / entry["price"] if d == "long"
@@ -409,9 +414,9 @@ def run_strategy(df, ticker, qqq_close=None, qqq_ema20=None,
                         entry["stop"] = entry["price"]
                         entry["breakeven_set"] = True
 
-                partial_tgt = (entry["price"] * (1 + entry["atr"] * atr_tm * 0.5 / entry["price"])
+                partial_tgt = (entry["price"] * (1 + PARTIAL_PCT)
                                if d == "long"
-                               else entry["price"] * (1 - entry["atr"] * atr_tm * 0.5 / entry["price"]))
+                               else entry["price"] * (1 - PARTIAL_PCT))
                 if not partial_done:
                     if (d == "long" and price >= partial_tgt) or (d == "short" and price <= partial_tgt):
                         pnl = close_trade(trades, entry, partial_tgt, "Partial Exit", date, ts, partial=True)
