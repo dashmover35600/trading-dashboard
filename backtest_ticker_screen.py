@@ -49,7 +49,7 @@ TRAIL_TRIGGER_PCT = 0.0125   # activate trail at +1.25%
 TRAIL_STOP_PCT    = 0.005    # trail 0.50% from peak
 BREAKEVEN_TRIGGER = 0.00625  # move stop to BE at +0.625%
 
-MIN_SCORE        = 3
+MIN_SCORE        = 2
 DAILY_LOSS_LIMIT = -500.0
 CONSEC_LOSS_PAUSE = 3
 TRADE_START      = datetime.time(9, 30)
@@ -330,6 +330,7 @@ def run_strategy(df: pd.DataFrame, ticker: str) -> list[dict]:
 
         daily_pnl = 0.0; consec_losses = 0; pause_until = None
         in_trade  = False; entry = None; partial_done = False
+        last_exit_ts = None  # 15-min cooldown between trades
 
         for i, ts in enumerate(day_idx):
             if i < skip_bars:
@@ -432,10 +433,15 @@ def run_strategy(df: pd.DataFrame, ticker: str) -> list[dict]:
                             consec_losses = 0
                     else:
                         consec_losses = 0
+                    last_exit_ts = ts
                     in_trade = False; entry = None; partial_done = False
                     continue
 
             if in_trade:
+                continue
+
+            # 15-min cooldown between trades on the same ticker
+            if last_exit_ts and (ts - last_exit_ts).total_seconds() < 900:
                 continue
 
             # ── Signal detection ──────────────────────────────────────────
