@@ -47,14 +47,14 @@ import traceback
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 # ── Config ────────────────────────────────────────────────────────────────────
-TICKERS           = ["AAPL", "GOOGL"]  # v17: filtered winners — NVDA/QQQ dropped
-VOLATILE_TICKERS  = []  # no volatile tickers — AAPL/GOOGL both stable
+TICKERS           = ["AAPL", "GOOGL", "AMD", "NVDA"]
+VOLATILE_TICKERS  = ["AMD", "NVDA"]  # wider spreads — reduced position sizing
 TICKER            = "QQQ"  # kept for compatibility
 IMESSAGE_TO       = os.environ.get("TRADING_PHONE", "+1XXXXXXXXXX")
 MARKET_TZ         = pytz.timezone("America/New_York")
 MARKET_OPEN       = datetime.time(9, 30)
 DRIVE_END         = datetime.time(9, 35)   # opening drive window
-CUTOFF            = datetime.time(12, 0)   # hard close — no new entries after noon
+CUTOFF            = datetime.time(10, 30)  # hard close — no new entries after 10:30 AM
 DEAD_ZONE_START   = datetime.time(11, 30)
 DEAD_ZONE_END     = datetime.time(12, 0)   # shorter dead zone
 SERVER_PORT       = 8765
@@ -364,7 +364,7 @@ def send_imessage(message: str, broadcast: bool = False):
         u"🤦-🤷𐀀-􏿿"
         u"♀-♂☀-⭕‍⏏"
         u"⏩⌚️〰]+", flags=re.UNICODE)
-    safe = emoji_re.sub("", message).replace("\\", "\\\\").replace('"', '\\"').replace("'", "\\'").strip()
+    safe = emoji_re.sub("", message).replace("\\", "\\\\").replace('"', '\\"').replace("'", "\\'").replace("\n", " ").strip()
     recipients = [IMESSAGE_TO]
     if broadcast and SUBSCRIBERS:
         recipients += [phone for _, phone in SUBSCRIBERS]
@@ -414,12 +414,15 @@ def maybe_crash_alert(context: str, exc: Exception):
 
 # ── Data fetch with retry ─────────────────────────────────────────────────────
 def fetch_data(ticker, period="2d", interval="1m"):
+    import io, contextlib
     last_exc = None
     for attempt in range(1, FETCH_RETRIES + 1):
         try:
-            df = yf.download(ticker, period=period, interval=interval,
-                             progress=False, auto_adjust=True)
-            if df.empty:
+            buf = io.StringIO()
+            with contextlib.redirect_stderr(buf):
+                df = yf.download(ticker, period=period, interval=interval,
+                                 progress=False, auto_adjust=True)
+            if df is None or df.empty:
                 raise ValueError("empty DataFrame")
             df.index = df.index.tz_convert(MARKET_TZ)
             return df
@@ -513,8 +516,11 @@ def get_vix() -> float:
     Returns 0.0 on failure (fail open — don't block trading).
     """
     try:
-        df = yf.download("^VIX", period="1d", interval="1m", progress=False, auto_adjust=True)
-        if df.empty:
+        import io, contextlib
+        buf = io.StringIO()
+        with contextlib.redirect_stderr(buf):
+            df = yf.download("^VIX", period="1d", interval="1m", progress=False, auto_adjust=True)
+        if df is None or df.empty:
             return 0.0
         return round(float(df["Close"].iloc[-1]), 2)
     except Exception:
@@ -530,8 +536,10 @@ EARNINGS_BLACKOUT = [
     # Q1 2026 earnings season
     "2026-04-23", "2026-04-24",  # MSFT/GOOGL
     "2026-04-24", "2026-04-25",  # META
+    "2026-04-29", "2026-04-30",  # AMD
     "2026-04-30", "2026-05-01",  # AAPL/AMZN
-    # Add more as needed
+    # NVDA Q1 2026 — typically late May
+    "2026-05-27", "2026-05-28",  # NVDA
 ]
 
 def is_earnings_blackout() -> bool:
@@ -615,8 +623,10 @@ def score_signal(df, direction, signal_type, rsi, vol_ratio, price, vwap, ema9) 
 # ── Position sizing ───────────────────────────────────────────────────────────
 # Per-ticker configs for v17
 TICKER_CONFIGS = {
-    "AAPL":  {"strategy":"ema_pullback","gain_target":0.010,"stop_loss":0.005,"pos_mult":1.0,"slippage":0.0002},
-    "GOOGL": {"strategy":"both","gain_target":0.015,"stop_loss":0.0075,"pos_mult":0.85,"slippage":0.0002},
+    "AAPL":  {"strategy":"ema_pullback","gain_target":0.010,"stop_loss":0.005, "pos_mult":1.0,  "slippage":0.0002},
+    "GOOGL": {"strategy":"both",        "gain_target":0.015,"stop_loss":0.0075,"pos_mult":0.85, "slippage":0.0002},
+    "AMD":   {"strategy":"both",        "gain_target":0.015,"stop_loss":0.0075,"pos_mult":0.70, "slippage":0.0003},
+    "NVDA":  {"strategy":"both",        "gain_target":0.015,"stop_loss":0.0075,"pos_mult":0.75, "slippage":0.00025},
 }
 
 def get_position_size(score: int, ticker: str = "AAPL", vix: float = 15.0) -> float:
@@ -696,8 +706,8 @@ def check_signals(df, ticker):
     t_now = now_et().time()
     if t_now > CUTOFF:
         return
-    # Time filter — best signals fire 9:30 AM - 12:00 PM
-    if t_now < datetime.time(9, 30) or t_now > datetime.time(12, 0):
+    # Time filter — best signals fire 9:30 AM - 10:30 AM
+    if t_now < datetime.time(9, 30) or t_now > datetime.time(10, 30):
         if not state["in_trade"]:  # still monitor exits outside window
             return
     # Dead zone removed in v15 — trade all hours
@@ -1159,7 +1169,7 @@ if __name__ == "__main__":
     print(f"  Sizes       : $500–$5,000 (score 3–10, VIX-adjusted)")
     print(f"  Target      : {GAIN_TARGET_PCT*100:.1f}% | Stop: {STOP_LOSS_PCT*100:.2f}%")
     print(f"  Trail       : Activates at +{TRAIL_TRIGGER_PCT*100:.1f}%")
-    print(f"  Hard cutoff : 12:00 PM ET")
+    print(f"  Hard cutoff : 10:30 AM ET")
     print(f"  Dashboard   : http://localhost:{SERVER_PORT}")
     print(f"  Trade log   : {LOG_FILE}")
     print("=" * 60)
