@@ -107,7 +107,7 @@ BREAKEVEN_TRIGGER = 0.005
 PARTIAL_PCT       = 0.0125   # fixed +1.25% partial exit
 
 TRADE_START = datetime.time(9, 30)
-TRADE_END   = datetime.time(10, 30)
+TRADE_END   = datetime.time(10, 0)
 
 SWEEP_MIN_SCORE  = [3, 4, 5]
 SWEEP_ATR_STOP   = [0.8, 1.0, 1.2]
