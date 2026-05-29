@@ -71,10 +71,10 @@ POS_HIGH          = 3000.0   # increased from $1500   # high confidence
 
 # Strategy parameters
 GAIN_TARGET_PCT   = 0.020    # 2.0% target
-STOP_LOSS_PCT     = 0.005    # 0.50% stop → 4:1 ratio
-TRAIL_TRIGGER_PCT = 0.010    # activate trailing stop after +1.0% move
+STOP_LOSS_PCT     = 0.010    # 1.0% stop → 2:1 ratio
+TRAIL_TRIGGER_PCT = 0.0125   # activate trailing stop after +1.25% move
 TRAIL_STOP_PCT    = 0.005    # trail by 0.5% from peak
-PARTIAL_EXIT_PCT  = 0.010    # take 50% profit at +1.0%
+PARTIAL_EXIT_PCT  = 0.0125   # take 50% profit at +1.25%
 BREAKEVEN_TRIGGER = 0.005    # move stop to breakeven at +0.5%
 SLIPPAGE_PCT      = 0.0002   # 0.02% slippage per trade
 DAILY_LOSS_LIMIT  = -500.0   # stop trading if down $500/day

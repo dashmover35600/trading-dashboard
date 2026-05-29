@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-29T17:46:32.653023-04:00",
-  "generated_str": "May 29, 2026 at 05:46 PM ET",
+  "generated_at": "2026-05-29T17:54:25.921183-04:00",
+  "generated_str": "May 29, 2026 at 05:54 PM ET",
   "version": "v20",
   "config": {
     "tickers": [
@@ -57,32 +57,32 @@
   },
   "baseline": {
     "stats": {
-      "trades": 29,
-      "wins": 9,
-      "losses": 20,
-      "win_rate": 31.03,
-      "total_pnl_pct": 1.254,
-      "total_pnl_dollar": -107.72,
+      "trades": 27,
+      "wins": 10,
+      "losses": 17,
+      "win_rate": 37.04,
+      "total_pnl_pct": 3.539,
+      "total_pnl_dollar": -19.35,
       "best": 1.974,
-      "worst": -0.53,
-      "max_drawdown": -4.215,
-      "sharpe": 0.998,
+      "worst": -1.03,
+      "max_drawdown": -3.699,
+      "sharpe": 2.671,
       "avg_score": 9.4,
-      "profit_factor": 0.628,
-      "expectancy": -3.71,
-      "prime_win_rate": 31.0,
-      "avg_win": 20.19,
-      "avg_loss": 14.47,
+      "profit_factor": 0.923,
+      "expectancy": -0.72,
+      "prime_win_rate": 37.0,
+      "avg_win": 23.15,
+      "avg_loss": 14.76,
       "by_ticker": {
         "GOOGL": {
-          "trades": 14,
-          "pnl": -57.61,
+          "trades": 12,
+          "pnl": -21.340000000000003,
           "wins": 3
         },
         "AAPL": {
           "trades": 15,
-          "pnl": -50.11,
-          "wins": 6
+          "pnl": 1.9899999999999984,
+          "wins": 7
         }
       }
     },
@@ -115,10 +115,10 @@
         "ticker": "AAPL",
         "direction": "Short",
         "entry": 274.9675,
-        "exit": 276.4252,
+        "exit": 277.8005,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.53,
-        "pnl_dollar": -26.51,
+        "pnl_pct": -1.03,
+        "pnl_dollar": -51.52,
         "rsi": 32.2,
         "vol_ratio": 1.46,
         "entry_time": "10:04 AM",
@@ -138,10 +138,10 @@
         "ticker": "AAPL",
         "direction": "Long",
         "entry": 279.6539,
-        "exit": 282.3657,
+        "exit": 283.0646,
         "result": "Partial Exit (partial)",
-        "pnl_pct": 0.97,
-        "pnl_dollar": 24.24,
+        "pnl_pct": 1.22,
+        "pnl_dollar": 30.49,
         "rsi": 62.0,
         "vol_ratio": 1.7,
         "entry_time": "09:59 AM",
@@ -161,10 +161,10 @@
         "ticker": "AAPL",
         "direction": "Long",
         "entry": 279.6539,
-        "exit": 281.4906,
+        "exit": 282.4952,
         "result": "Trailing Stop",
-        "pnl_pct": 0.657,
-        "pnl_dollar": 16.42,
+        "pnl_pct": 1.016,
+        "pnl_dollar": 25.4,
         "rsi": 62.0,
         "vol_ratio": 1.7,
         "entry_time": "09:59 AM",
@@ -184,10 +184,10 @@
         "ticker": "GOOGL",
         "direction": "Long",
         "entry": 395.6889,
-        "exit": 393.6121,
+        "exit": 395.59,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.525,
-        "pnl_dollar": -22.31,
+        "pnl_pct": -0.025,
+        "pnl_dollar": -1.06,
         "rsi": 63.3,
         "vol_ratio": 1.32,
         "entry_time": "10:11 AM",
@@ -253,42 +253,19 @@
         "ticker": "GOOGL",
         "direction": "Short",
         "entry": 396.7908,
-        "exit": 392.9211,
-        "result": "Partial Exit (partial)",
-        "pnl_pct": 0.975,
-        "pnl_dollar": 16.58,
-        "rsi": 46.0,
-        "vol_ratio": 1.27,
-        "entry_time": "10:09 AM",
-        "hour": 10,
-        "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 1700.0,
-        "day_bias": "short",
-        "trail_used": false,
-        "prime_window": true,
-        "atr_at_entry": 0.5335840665138655,
-        "earnings_skip": false,
-        "corr_skip": false
-      },
-      {
-        "date": "2026-05-07",
-        "ticker": "GOOGL",
-        "direction": "Short",
-        "entry": 396.7908,
         "exit": 396.89,
         "result": "Stop Loss Hit",
         "pnl_pct": -0.025,
-        "pnl_dollar": -0.43,
+        "pnl_dollar": -0.85,
         "rsi": 46.0,
         "vol_ratio": 1.27,
         "entry_time": "10:09 AM",
         "hour": 10,
         "signal_type": "ema_pullback",
         "signal_score": 9,
-        "pos_size": 1700.0,
+        "pos_size": 3400.0,
         "day_bias": "short",
-        "trail_used": true,
+        "trail_used": false,
         "prime_window": true,
         "atr_at_entry": 0.5335840665138655,
         "earnings_skip": false,
@@ -299,10 +276,10 @@
         "ticker": "GOOGL",
         "direction": "Long",
         "entry": 400.9802,
-        "exit": 398.8756,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.525,
-        "pnl_dollar": -13.38,
+        "exit": 399.2002,
+        "result": "Time Exit",
+        "pnl_pct": -0.444,
+        "pnl_dollar": -11.32,
         "rsi": 71.0,
         "vol_ratio": 1.21,
         "entry_time": "10:09 AM",
@@ -368,10 +345,10 @@
         "ticker": "GOOGL",
         "direction": "Long",
         "entry": 388.4871,
-        "exit": 392.2739,
+        "exit": 393.2449,
         "result": "Partial Exit (partial)",
-        "pnl_pct": 0.975,
-        "pnl_dollar": 20.71,
+        "pnl_pct": 1.225,
+        "pnl_dollar": 26.02,
         "rsi": 69.0,
         "vol_ratio": 1.2,
         "entry_time": "09:41 AM",
@@ -414,10 +391,10 @@
         "ticker": "AAPL",
         "direction": "Short",
         "entry": 297.3008,
-        "exit": 298.8769,
+        "exit": 297.39,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.53,
-        "pnl_dollar": -26.51,
+        "pnl_pct": -0.03,
+        "pnl_dollar": -1.5,
         "rsi": 36.9,
         "vol_ratio": 1.27,
         "entry_time": "09:59 AM",
@@ -437,10 +414,10 @@
         "ticker": "AAPL",
         "direction": "Long",
         "entry": 298.0994,
-        "exit": 300.9901,
+        "exit": 301.7351,
         "result": "Partial Exit (partial)",
-        "pnl_pct": 0.97,
-        "pnl_dollar": 14.55,
+        "pnl_pct": 1.22,
+        "pnl_dollar": 18.29,
         "rsi": 54.7,
         "vol_ratio": 1.25,
         "entry_time": "09:52 AM",
@@ -529,10 +506,10 @@
         "ticker": "AAPL",
         "direction": "Long",
         "entry": 300.2901,
-        "exit": 298.699,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.53,
-        "pnl_dollar": -21.19,
+        "exit": 301.8644,
+        "result": "Time Exit",
+        "pnl_pct": 0.524,
+        "pnl_dollar": 20.97,
         "rsi": 55.9,
         "vol_ratio": 1.28,
         "entry_time": "10:16 AM",
@@ -575,10 +552,10 @@
         "ticker": "GOOGL",
         "direction": "Short",
         "entry": 383.5041,
-        "exit": 385.518,
+        "exit": 387.4359,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.525,
-        "pnl_dollar": -22.32,
+        "pnl_pct": -1.025,
+        "pnl_dollar": -43.57,
         "rsi": 28.1,
         "vol_ratio": 1.67,
         "entry_time": "10:04 AM",
@@ -598,10 +575,10 @@
         "ticker": "GOOGL",
         "direction": "Short",
         "entry": 385.1537,
-        "exit": 387.1763,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.525,
-        "pnl_dollar": -22.32,
+        "exit": 383.2358,
+        "result": "Time Exit",
+        "pnl_pct": 0.498,
+        "pnl_dollar": 21.16,
         "rsi": 41.1,
         "vol_ratio": 1.9,
         "entry_time": "10:00 AM",
@@ -621,10 +598,10 @@
         "ticker": "AAPL",
         "direction": "Long",
         "entry": 311.2133,
-        "exit": 309.5643,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.53,
-        "pnl_dollar": -21.19,
+        "exit": 308.3175,
+        "result": "Time Exit",
+        "pnl_pct": -0.93,
+        "pnl_dollar": -37.22,
         "rsi": 67.7,
         "vol_ratio": 1.21,
         "entry_time": "10:00 AM",
@@ -644,10 +621,10 @@
         "ticker": "AAPL",
         "direction": "Long",
         "entry": 311.7735,
-        "exit": 310.1215,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.53,
-        "pnl_dollar": -26.49,
+        "exit": 310.3019,
+        "result": "Time Exit",
+        "pnl_pct": -0.472,
+        "pnl_dollar": -23.6,
         "rsi": 65.1,
         "vol_ratio": 1.71,
         "entry_time": "09:56 AM",
@@ -667,10 +644,10 @@
         "ticker": "GOOGL",
         "direction": "Long",
         "entry": 392.028,
-        "exit": 389.9704,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.525,
-        "pnl_dollar": -13.38,
+        "exit": 390.8653,
+        "result": "Time Exit",
+        "pnl_pct": -0.297,
+        "pnl_dollar": -7.56,
         "rsi": 72.3,
         "vol_ratio": 1.37,
         "entry_time": "10:01 AM",
@@ -686,37 +663,14 @@
         "corr_skip": false
       },
       {
-        "date": "2026-05-27",
-        "ticker": "GOOGL",
-        "direction": "Long",
-        "entry": 392.4731,
-        "exit": 390.4131,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.525,
-        "pnl_dollar": -17.85,
-        "rsi": 65.1,
-        "vol_ratio": 1.47,
-        "entry_time": "10:18 AM",
-        "hour": 10,
-        "signal_type": "ema_pullback",
-        "signal_score": 9,
-        "pos_size": 3400.0,
-        "day_bias": "neutral",
-        "trail_used": false,
-        "prime_window": true,
-        "atr_at_entry": 0.7144240988851599,
-        "earnings_skip": false,
-        "corr_skip": false
-      },
-      {
         "date": "2026-05-28",
         "ticker": "GOOGL",
         "direction": "Short",
         "entry": 386.4134,
-        "exit": 388.4426,
+        "exit": 390.3751,
         "result": "Stop Loss Hit",
-        "pnl_pct": -0.525,
-        "pnl_dollar": -22.32,
+        "pnl_pct": -1.025,
+        "pnl_dollar": -43.57,
         "rsi": 40.3,
         "vol_ratio": 1.57,
         "entry_time": "10:02 AM",
@@ -736,10 +690,10 @@
         "ticker": "AAPL",
         "direction": "Long",
         "entry": 312.0436,
-        "exit": 310.3903,
-        "result": "Stop Loss Hit",
-        "pnl_pct": -0.53,
-        "pnl_dollar": -26.49,
+        "exit": 310.6468,
+        "result": "Time Exit",
+        "pnl_pct": -0.448,
+        "pnl_dollar": -22.38,
         "rsi": 56.7,
         "vol_ratio": 1.98,
         "entry_time": "10:26 AM",
@@ -758,13 +712,13 @@
   },
   "monte_carlo": {
     "simulations": 1000,
-    "median_pnl": -110.88,
-    "pct_profitable": 14.5,
-    "worst_case_dd": -440.49,
-    "best_case": 233.94,
-    "worst_case": -440.49,
-    "pct_10": -238.41,
-    "pct_90": 21.4
+    "median_pnl": -17.27,
+    "pct_profitable": 42.7,
+    "worst_case_dd": -483.6,
+    "best_case": 324.37,
+    "worst_case": -483.6,
+    "pct_10": -174.36,
+    "pct_90": 137.44
   },
   "out_of_sample": {
     "train": {
@@ -790,32 +744,32 @@
     },
     "test": {
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       }
@@ -828,16 +782,16 @@
       "wins": 7,
       "losses": 3,
       "win_rate": 70.0,
-      "pnl_dollar": 110.07,
-      "avg_pnl": 11.01
+      "pnl_dollar": 162.25,
+      "avg_pnl": 16.23
     },
     "10:00-11:00": {
-      "trades": 19,
-      "wins": 2,
-      "losses": 17,
-      "win_rate": 10.5,
-      "pnl_dollar": -217.79,
-      "avg_pnl": -11.46
+      "trades": 17,
+      "wins": 3,
+      "losses": 14,
+      "win_rate": 17.6,
+      "pnl_dollar": -181.6,
+      "avg_pnl": -10.68
     },
     "11:00-12:00": {
       "trades": 0,
@@ -938,36 +892,36 @@
         "start": "2026-02-26",
         "end": "2026-05-27",
         "stats": {
-          "trades": 27,
-          "wins": 9,
-          "losses": 18,
-          "win_rate": 33.33,
-          "total_pnl_pct": 2.309,
-          "total_pnl_dollar": -58.91,
+          "trades": 25,
+          "wins": 10,
+          "losses": 15,
+          "win_rate": 40.0,
+          "total_pnl_pct": 5.012,
+          "total_pnl_dollar": 46.6,
           "best": 1.974,
-          "worst": -0.53,
-          "max_drawdown": -3.16,
-          "sharpe": 1.954,
-          "avg_score": 9.3,
-          "profit_factor": 0.755,
-          "expectancy": -2.18,
-          "prime_win_rate": 33.3,
-          "avg_win": 20.19,
-          "avg_loss": 13.37,
+          "worst": -1.03,
+          "max_drawdown": -2.226,
+          "sharpe": 4.169,
+          "avg_score": 9.4,
+          "profit_factor": 1.252,
+          "expectancy": 1.86,
+          "prime_win_rate": 40.0,
+          "avg_win": 23.15,
+          "avg_loss": 12.33,
           "by_ticker": {
             "GOOGL": {
-              "trades": 13,
-              "pnl": -35.29,
+              "trades": 11,
+              "pnl": 22.229999999999997,
               "wins": 3
             },
             "AAPL": {
               "trades": 14,
-              "pnl": -23.620000000000005,
-              "wins": 6
+              "pnl": 24.369999999999997,
+              "wins": 7
             }
           }
         },
-        "trade_count": 27
+        "trade_count": 25
       }
     ],
     "consistent": false,
@@ -979,864 +933,864 @@
       "atr_stop": 0.8,
       "atr_target": 1.2,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 3,
       "atr_stop": 0.8,
       "atr_target": 1.5,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 3,
       "atr_stop": 0.8,
       "atr_target": 2.0,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 3,
       "atr_stop": 1.0,
       "atr_target": 1.2,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 3,
       "atr_stop": 1.0,
       "atr_target": 1.5,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 3,
       "atr_stop": 1.0,
       "atr_target": 2.0,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 3,
       "atr_stop": 1.2,
       "atr_target": 1.5,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 3,
       "atr_stop": 1.2,
       "atr_target": 2.0,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 4,
       "atr_stop": 0.8,
       "atr_target": 1.2,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 4,
       "atr_stop": 0.8,
       "atr_target": 1.5,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 4,
       "atr_stop": 0.8,
       "atr_target": 2.0,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 4,
       "atr_stop": 1.0,
       "atr_target": 1.2,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 4,
       "atr_stop": 1.0,
       "atr_target": 1.5,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 4,
       "atr_stop": 1.0,
       "atr_target": 2.0,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 4,
       "atr_stop": 1.2,
       "atr_target": 1.5,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 4,
       "atr_stop": 1.2,
       "atr_target": 2.0,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 5,
       "atr_stop": 0.8,
       "atr_target": 1.2,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 5,
       "atr_stop": 0.8,
       "atr_target": 1.5,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 5,
       "atr_stop": 0.8,
       "atr_target": 2.0,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 5,
       "atr_stop": 1.0,
       "atr_target": 1.2,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 5,
       "atr_stop": 1.0,
       "atr_target": 1.5,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 5,
       "atr_stop": 1.0,
       "atr_target": 2.0,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 5,
       "atr_stop": 1.2,
       "atr_target": 1.5,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     },
     {
       "min_score": 5,
       "atr_stop": 1.2,
       "atr_target": 2.0,
       "stats": {
-        "trades": 29,
-        "wins": 9,
-        "losses": 20,
-        "win_rate": 31.03,
-        "total_pnl_pct": 1.254,
-        "total_pnl_dollar": -107.72,
+        "trades": 27,
+        "wins": 10,
+        "losses": 17,
+        "win_rate": 37.04,
+        "total_pnl_pct": 3.539,
+        "total_pnl_dollar": -19.35,
         "best": 1.974,
-        "worst": -0.53,
-        "max_drawdown": -4.215,
-        "sharpe": 0.998,
+        "worst": -1.03,
+        "max_drawdown": -3.699,
+        "sharpe": 2.671,
         "avg_score": 9.4,
-        "profit_factor": 0.628,
-        "expectancy": -3.71,
-        "prime_win_rate": 31.0,
-        "avg_win": 20.19,
-        "avg_loss": 14.47,
+        "profit_factor": 0.923,
+        "expectancy": -0.72,
+        "prime_win_rate": 37.0,
+        "avg_win": 23.15,
+        "avg_loss": 14.76,
         "by_ticker": {
           "GOOGL": {
-            "trades": 14,
-            "pnl": -57.61,
+            "trades": 12,
+            "pnl": -21.340000000000003,
             "wins": 3
           },
           "AAPL": {
             "trades": 15,
-            "pnl": -50.11,
-            "wins": 6
+            "pnl": 1.9899999999999984,
+            "wins": 7
           }
         }
       },
-      "score": 19.977
+      "score": 28.301
     }
   ]
 }

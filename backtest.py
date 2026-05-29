@@ -46,7 +46,7 @@ TICKER_CONFIGS = {
         "vol_min":       1.2,
         "min_atr_pct":   0.001,
         "gain_target":   0.020,   # 2.0%
-        "stop_loss":     0.005,   # 0.50%
+        "stop_loss":     0.010,   # 1.0%
     },
     "GOOGL": {
         "strategy":      "both",
@@ -59,7 +59,7 @@ TICKER_CONFIGS = {
         "vol_min":       1.2,
         "min_atr_pct":   0.001,
         "gain_target":   0.020,   # 2.0%
-        "stop_loss":     0.005,   # 0.50%
+        "stop_loss":     0.010,   # 1.0%
     },
 }
 
@@ -101,10 +101,10 @@ def get_pos_size(score, ticker, vix=15):
 MIN_SCORE         = 3
 DAILY_LOSS_LIMIT  = -500.0
 CONSEC_LOSS_PAUSE = 3
-TRAIL_TRIGGER     = 0.010
+TRAIL_TRIGGER     = 0.0125
 TRAIL_STOP_PCT    = 0.005
 BREAKEVEN_TRIGGER = 0.005
-PARTIAL_PCT       = 0.010    # fixed +1.0% partial exit
+PARTIAL_PCT       = 0.0125   # fixed +1.25% partial exit
 
 TRADE_START = datetime.time(9, 30)
 TRADE_END   = datetime.time(10, 30)
