@@ -248,6 +248,9 @@ tr.best-row td{background:rgba(26,122,74,.07)!important;font-weight:500;}
       <div class="sl">Walk-forward test — 4 independent periods</div>
       <div class="card" style="margin-bottom:2rem;" id="wf-section">
         <div class="ct" style="margin-bottom:.75rem;">Data split into 4 equal time periods — each tested independently to verify consistency across different market conditions</div>
+        <div style="font-family:var(--mono);font-size:.65rem;color:var(--amber);background:var(--amber-bg);border:1px solid rgba(146,96,10,.2);border-radius:8px;padding:8px 12px;margin-bottom:.75rem;line-height:1.6;">
+          ⚠️ <strong>Data resolution note:</strong> Periods 1–3 show 0 trades because they fall outside Yahoo Finance's 30-day 1-minute bar window. Only Period 4 uses true 1-minute intraday data — the window where the strategy actually fires signals. The overall baseline result (66.7% WR · PF 3.29 · Sharpe 11.81) reflects all available 1-minute data.
+        </div>
         <div id="wf-consistency" style="font-family:var(--mono);font-size:.72rem;margin-bottom:.75rem;"></div>
         <div style="overflow-x:auto;">
           <table id="wf-table">
@@ -612,7 +615,12 @@ function renderWalkForward(wf){
   if(cons){
     const ok = wf.consistent;
     const spread = wf.wr_spread !== undefined ? wf.wr_spread : '?';
-    cons.innerHTML = `Walk-forward WR spread: <strong>${spread}%</strong> — <span class="${ok?'wf-consistent':'wf-diverged'}">${ok?'✅ Consistent across periods':'⚠️ High variance — market regime shifts'}</span>`;
+    const zeroTradePeriods = (wf.periods||[]).filter(p => (p.trade_count || p.stats?.trades || 0) === 0).length;
+    const dataLimitNote = !ok && zeroTradePeriods >= 3
+      ? '⚠️ Spread driven by 1-min data limit (Periods 1–3 have 0 trades) — not market regime shifts'
+      : ok ? '✅ Consistent across periods' : '⚠️ High variance — review market regime shifts';
+    const cls = !ok && zeroTradePeriods >= 3 ? 'wf-diverged' : ok ? 'wf-consistent' : 'wf-diverged';
+    cons.innerHTML = `Walk-forward WR spread: <strong>${spread}%</strong> — <span class="${cls}">${dataLimitNote}</span>`;
   }
   if(!tbody) return;
   tbody.innerHTML = wf.periods.map((p,i)=>{
