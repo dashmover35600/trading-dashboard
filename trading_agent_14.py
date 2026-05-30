@@ -70,7 +70,7 @@ POS_MEDIUM        = 2000.0   # increased from $1000   # medium confidence
 POS_HIGH          = 3000.0   # increased from $1500   # high confidence
 
 # Strategy parameters
-GAIN_TARGET_PCT   = 0.020    # 2.0% target
+GAIN_TARGET_PCT   = 0.025    # 2.5% target
 STOP_LOSS_PCT     = 0.010    # 1.0% stop → 2:1 ratio
 TRAIL_TRIGGER_PCT = 0.0125   # activate trailing stop after +1.25% move
 TRAIL_STOP_PCT    = 0.005    # trail by 0.5% from peak
@@ -622,10 +622,10 @@ def score_signal(df, direction, signal_type, rsi, vol_ratio, price, vwap, ema9) 
 # ── Position sizing ───────────────────────────────────────────────────────────
 # Per-ticker configs for v17
 TICKER_CONFIGS = {
-    "AAPL":  {"strategy":"ema_pullback","gain_target":0.010,"stop_loss":0.005, "pos_mult":1.0,  "slippage":0.0002},
-    "GOOGL": {"strategy":"both",        "gain_target":0.015,"stop_loss":0.0075,"pos_mult":0.85, "slippage":0.0002},
-    "AMD":   {"strategy":"both",        "gain_target":0.015,"stop_loss":0.0075,"pos_mult":0.70, "slippage":0.0003},
-    "NVDA":  {"strategy":"both",        "gain_target":0.015,"stop_loss":0.0075,"pos_mult":0.75, "slippage":0.00025},
+    "AAPL":  {"strategy":"ema_pullback","gain_target":0.025,"stop_loss":0.010, "pos_mult":1.0,  "slippage":0.0002},
+    "GOOGL": {"strategy":"both",        "gain_target":0.025,"stop_loss":0.010, "pos_mult":0.85, "slippage":0.0002},
+    "AMD":   {"strategy":"both",        "gain_target":0.025,"stop_loss":0.010, "pos_mult":0.70, "slippage":0.0003},
+    "NVDA":  {"strategy":"both",        "gain_target":0.025,"stop_loss":0.010, "pos_mult":0.75, "slippage":0.00025},
 }
 
 def get_position_size(score: int, ticker: str = "AAPL", vix: float = 15.0) -> float:
