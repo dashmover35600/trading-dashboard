@@ -1,7 +1,7 @@
 # NYLO Trading Dashboard
 
 ## Project Overview
-NYLO is a paper trading signal dashboard for AAPL and GOOGL built by Giovanni Flores.
+NYLO is a paper trading signal dashboard for AAPL, GOOGL, AMD, and NVDA built by Giovanni Flores.
 
 ## Stack
 - Trading agent: trading_agent_14.py (Python, runs locally on Mac)
@@ -13,23 +13,28 @@ NYLO is a paper trading signal dashboard for AAPL and GOOGL built by Giovanni Fl
 - Pushover: token=apuf7f5knj2yxnsnxvtk63adchuvkf / user=u7t4a7ybuwsyhbazjzhazy2611hrhz
 
 ## Agent Details
-- Version: 17.1
-- Tickers: AAPL, GOOGL
+- Version: 18
+- Tickers: AAPL, GOOGL, AMD, NVDA
 - Strategy: VWAP Reclaim + EMA Pullback + Opening Drive
+- Entry window: 9:30–10:00 AM ET (hard cutoff)
 - Min score: 3/10
 - RSI Bull: 52-72, RSI Bear: 28-48
 - Position sizing: score 3=$500 up to score 10=$5000
-- Partial exit at +0.75%, breakeven stop at +0.5%
+- Exit params: 2% target | 1% stop | 1.25% partial | 0.5% trail
+- Breakeven stop triggers at +0.5%
 - Daily loss limit: -$500
 - Morning brief Pushover: 8:30 AM ET
 - Agent health: localhost:8765/health
 
-## Backtest Results (v18)
+## Backtest Results (v18 — current)
 - Tickers: AAPL + GOOGL
-- Win rate: 79.7% (118 trades, 120 days)
-- Sharpe: 3.19
-- Profit factor: 1.254
-- Expectancy: $0.63/trade
+- Entry window: 9:30–10:00 AM ET
+- Win rate: 66.7% (12 trades, 137 days)
+- Sharpe: 11.806
+- Profit factor: 3.291
+- Expectancy: $12.18/trade
+- PnL: +$146
+- Monte Carlo: 95.5% profitable (1000 sims)
 - OOS: CONSISTENT
 
 ## Key Files

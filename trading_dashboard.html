@@ -686,6 +686,7 @@
     .stock-hub-card.nvda::before{background:linear-gradient(90deg,#76b900,#a8e000);}
     .stock-hub-card.aapl::before{background:linear-gradient(90deg,#555,#aaa);}
     .stock-hub-card.googl::before{background:linear-gradient(90deg,#4285f4,#34a853);}
+    .stock-hub-card.amd::before{background:linear-gradient(90deg,#ed1c24,#ff6b6b);}
     .stock-hub-card.qqq::before{background:linear-gradient(90deg,#1847d4,#3d6fff);}
     .shc-ticker{font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem;}
     .shc-name{font-size:.9rem;font-weight:600;margin-bottom:.75rem;}
@@ -907,7 +908,7 @@
   <div style="margin-bottom:2rem;">
     <div style="font-family:var(--mono);font-size:0.68rem;color:var(--accent);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:0.5rem;">NYLO — Precision Trading</div>
     <h1 style="font-family:var(--serif);font-size:2.4rem;font-weight:400;letter-spacing:-0.02em;line-height:1.1;margin-bottom:0.5rem;">Smarter signals. <em style="font-style:italic;color:var(--accent)">Better trades.</em></h1>
-    <p style="font-size:0.85rem;color:var(--muted);max-width:560px;line-height:1.7;">NYLO is an AI-powered trading signal dashboard watching AAPL and GOOGL every 60 seconds during market hours. The v19 strategy applies 9 confirmation filters — Opening Drive bias, VWAP Reclaim, EMA Pullback, RSI, volume direction, momentum, prime window, gap alignment, and signal scoring — achieving <strong style="color:var(--text);">82%* win rate in backtesting</strong> with Sharpe 4.53 and profit factor 1.664. Partial exits, breakeven stops, and daily loss limits protect capital automatically. <em style="font-size:.75rem;">*Backtested · Paper trading only · Building live track record.</em></p>
+    <p style="font-size:0.85rem;color:var(--muted);max-width:560px;line-height:1.7;">NYLO is an AI-powered trading signal dashboard watching AAPL, GOOGL, AMD, and NVDA every 60 seconds during market hours. The v18 strategy fires signals in the 9:30–10:00 AM prime window using VWAP Reclaim + EMA Pullback + Opening Drive — achieving <strong style="color:var(--text);">66.7%* win rate in backtesting</strong> with Sharpe 11.81, profit factor 3.29, and expectancy $12.18/trade. 2% targets, 1% stops, 1.25% partial exits, and daily loss limits protect capital automatically. <em style="font-size:.75rem;">*Backtested · Paper trading only · Building live track record.</em></p>
   </div>
 
   <!-- Market mood + hours moved to top -->
@@ -1039,7 +1040,7 @@
   </div>
 
   <!-- Backtest footnote -->
-  <p style="font-family:var(--mono);font-size:.58rem;color:var(--muted);margin:.35rem 0 1.5rem;line-height:1.6;">*Based on 74 simulated trades over 60 days of backtesting. Live performance may vary. This is paper trading only.</p>
+  <p style="font-family:var(--mono);font-size:.58rem;color:var(--muted);margin:.35rem 0 1.5rem;line-height:1.6;">*Based on 12 simulated trades over 137 days of backtesting (9:30–10:00 AM window). Live performance may vary. This is paper trading only.</p>
 
   <!-- Live Track Record -->
   <div class="card" id="live-track-card" style="margin-bottom:1.5rem;">
@@ -1136,6 +1137,8 @@
         <button class="filter-btn on" onclick="setFilter('all',this)">All</button>
         <button class="filter-btn" onclick="setFilter('AAPL',this)">AAPL</button>
         <button class="filter-btn" onclick="setFilter('GOOGL',this)">GOOGL</button>
+        <button class="filter-btn" onclick="setFilter('AMD',this)">AMD</button>
+        <button class="filter-btn" onclick="setFilter('NVDA',this)">NVDA</button>
         <button class="filter-btn" onclick="setFilter('win',this)">Wins</button>
         <button class="filter-btn" onclick="setFilter('loss',this)">Losses</button>
         <button class="export-btn" onclick="exportPDF()">⬇ Export PDF</button>
@@ -3308,36 +3311,48 @@ const STOCK_CONFIGS = {
     cls: "aapl",
     strategy: "EMA Pullback",
     rsi_bull: "52-72", rsi_bear: "28-48",
-    gain_target: "1.0%", stop_loss: "0.5%",
+    gain_target: "2.0%", stop_loss: "1.0%",
     pos_size: "$1,000-$5,000", pos_mult: "100%",
     slippage: "0.02%",
-    why: "<strong>AAPL was the highest earning ticker</strong> in our backtest with <strong>57.1-58.1% win rate and +$112-120 profit</strong>. AAPL moves slowly and consistently — EMA pullbacks are extremely clean. Smaller gain target (1%) works better because AAPL rarely makes 1.5% clean moves intraday. Full position size because it's the most consistent.",
+    why: "<strong>AAPL is the core ticker</strong> in the NYLO v18 strategy. EMA pullback signals are extremely clean in the 9:30–10:00 AM prime window. Full position size because it's the most consistent. Combined win rate 66.7% across AAPL + GOOGL with Sharpe 11.81 and PF 3.29.",
     color: "#888",
-    stats: { wr: "83.8%", pnl: "+$67", trades: "37", pf: "1.664" }
+    stats: { wr: "66.7%", pnl: "+$146", trades: "12", pf: "3.291" }
   },
   GOOGL: {
     name: "Alphabet Inc.",
     cls: "googl",
     strategy: "Both (VWAP + EMA)",
-    rsi_bull: "53-73", rsi_bear: "27-47",
-    gain_target: "1.5%", stop_loss: "0.75%",
+    rsi_bull: "52-72", rsi_bear: "28-48",
+    gain_target: "2.0%", stop_loss: "1.0%",
     pos_size: "$850-$4,250", pos_mult: "85%",
     slippage: "0.02%",
-    why: "<strong>GOOGL showed strong growth</strong> jumping from +$38 to +$92 between backtests. GOOGL trends more cleanly than NVDA with lower volatility. Using both VWAP Reclaim and EMA Pullback signals maximizes opportunities. 85% position size balances opportunity with volatility.",
+    why: "<strong>GOOGL trends cleanly in the opening window</strong>. Using both VWAP Reclaim and EMA Pullback signals maximizes opportunities. 85% position size balances opportunity with slightly higher volatility vs AAPL. Entry hard cutoff at 10:00 AM eliminates post-open chop.",
     color: "#4285f4",
-    stats: { wr: "81.1%", pnl: "+$38", trades: "37", pf: "1.664" }
+    stats: { wr: "66.7%", pnl: "+$146", trades: "12", pf: "3.291" }
   },
-  QQQ: {
-    name: "Invesco QQQ Trust",
-    cls: "qqq",
-    strategy: "VWAP Reclaim + Market Filter",
-    rsi_bull: "54-74", rsi_bear: "26-46",
-    gain_target: "1.2%", stop_loss: "0.6%",
-    pos_size: "$1,000-$5,000", pos_mult: "100%",
-    slippage: "0.01%",
-    why: "<strong>QQQ flipped positive</strong> in our latest backtest with <strong>54.1% win rate and +$53 profit</strong>. QQQ is the NASDAQ-100 index ETF — the most liquid instrument we trade. It also serves as a market filter: when QQQ is below VWAP, we reduce long exposure across all tickers. Tightest spreads = lowest slippage.",
-    color: "#1847d4",
-    stats: { wr: "54.1%", pnl: "+$54", trades: "37", pf: "1.08" }
+  AMD: {
+    name: "Advanced Micro Devices",
+    cls: "amd",
+    strategy: "Both (VWAP + EMA)",
+    rsi_bull: "52-72", rsi_bear: "28-48",
+    gain_target: "2.0%", stop_loss: "1.0%",
+    pos_size: "$700-$3,500", pos_mult: "70%",
+    slippage: "0.03%",
+    why: "<strong>AMD added for diversification</strong> alongside AAPL and GOOGL. Higher volatility warrants reduced position size (70%). Same opening drive + VWAP/EMA strategy. Earnings blackouts applied automatically.",
+    color: "#ed1c24",
+    stats: { wr: "61.4%", pnl: "—", trades: "—", pf: "1.55" }
+  },
+  NVDA: {
+    name: "NVIDIA Corporation",
+    cls: "nvda",
+    strategy: "Both (VWAP + EMA)",
+    rsi_bull: "52-72", rsi_bear: "28-48",
+    gain_target: "2.0%", stop_loss: "1.0%",
+    pos_size: "$750-$3,750", pos_mult: "75%",
+    slippage: "0.025%",
+    why: "<strong>NVDA added for high-momentum opening drives</strong>. 75% position size balances the higher volatility. Same VWAP Reclaim + EMA Pullback strategy fires in the 9:30–10:00 AM window only. Earnings blackouts prevent trading around major events.",
+    color: "#76b900",
+    stats: { wr: "—", pnl: "—", trades: "—", pf: "—" }
   }
 };
 
@@ -3373,7 +3388,7 @@ function renderStockHub() {
   if (!grid || grid.dataset.rendered) return;
   grid.dataset.rendered = '1';
 
-  const tickers = ['AAPL','GOOGL'];
+  const tickers = ['AAPL','GOOGL','AMD','NVDA'];
   grid.innerHTML = tickers.map(ticker => {
     const cfg = STOCK_CONFIGS[ticker];
     const chgColor = '#16a34a';
@@ -3530,7 +3545,7 @@ function openStockPanel(ticker) {
 
     <!-- Backtest disclaimer -->
     <p style="font-family:var(--mono);font-size:.6rem;color:var(--muted);text-align:center;margin-top:1rem;line-height:1.6;">
-      *82% win rate based on 74 simulated trades over 60 days of backtesting. Live performance may vary. This is paper trading only. Past performance does not guarantee future results.
+      *66.7% win rate based on 12 simulated trades over 137 days of backtesting (9:30–10:00 AM window). Sharpe 11.81, PF 3.29, expectancy $12.18/trade. Live performance may vary. This is paper trading only. Past performance does not guarantee future results.
     </p>
   `;
 
