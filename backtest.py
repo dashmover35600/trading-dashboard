@@ -109,9 +109,9 @@ PARTIAL_PCT       = 0.0125   # fixed +1.25% partial exit
 TRADE_START = datetime.time(9, 30)
 TRADE_END   = datetime.time(10, 0)
 
-SWEEP_MIN_SCORE  = [3, 4, 5]
-SWEEP_ATR_STOP   = [0.8, 1.0, 1.2]
-SWEEP_ATR_TARGET = [1.2, 1.5, 2.0]
+SWEEP_MIN_SCORE   = [3, 4, 5]
+SWEEP_GAIN_TARGET = [0.015, 0.020, 0.025]   # 1.5%, 2.0%, 2.5%
+SWEEP_STOP_LOSS   = [0.0075, 0.010, 0.0125] # 0.75%, 1.0%, 1.25%
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 OUT  = os.path.join(BASE, "backtest_results.json")
@@ -300,10 +300,8 @@ def close_trade(trades, entry, exit_price, result, date, ts, partial=False):
 # ── Core strategy ──────────────────────────────────────────────────────────────
 def run_strategy(df, ticker, qqq_close=None, qqq_ema20=None,
                  corr_skip_dates=None, min_score=MIN_SCORE,
-                 atr_stop_mult=None, atr_target_mult=None):
+                 gain_target_override=None, stop_loss_override=None):
     cfg    = TICKER_CONFIGS[ticker]
-    atr_sm = atr_stop_mult   or cfg["atr_stop_mult"]
-    atr_tm = atr_target_mult or cfg["atr_target_mult"]
     trades = []
     dates  = sorted(df.index.normalize().unique())
     corr_skip_dates = corr_skip_dates or set()
@@ -572,8 +570,8 @@ def run_strategy(df, ticker, qqq_close=None, qqq_ema20=None,
 
             entry_price = apply_slippage(price, dirn, cfg["slippage"])
             ps   = get_pos_size(sc, ticker)
-            gain = cfg.get("gain_target", 0.015)
-            stop = cfg.get("stop_loss",   0.0075)
+            gain = gain_target_override if gain_target_override is not None else cfg.get("gain_target", 0.015)
+            stop = stop_loss_override   if stop_loss_override   is not None else cfg.get("stop_loss",   0.0075)
             tgt  = round(entry_price * (1 + gain) if dirn == "long" else entry_price * (1 - gain), 4)
             stp  = round(entry_price * (1 - stop)  if dirn == "long" else entry_price * (1 + stop), 4)
 
@@ -885,28 +883,30 @@ def main():
 
     # ── Parameter sweep ────────────────────────────────────────────────────────
     print(f"\n  Parameter sweep...")
-    combos = [(ms,asm,atm) for ms in SWEEP_MIN_SCORE
-              for asm in SWEEP_ATR_STOP for atm in SWEEP_ATR_TARGET if atm>asm]
+    combos = [(ms,gt,sl) for ms in SWEEP_MIN_SCORE
+              for gt in SWEEP_GAIN_TARGET for sl in SWEEP_STOP_LOSS]
     sweep  = []
-    for done,(ms,asm,atm) in enumerate(combos):
+    for done,(ms,gt,sl) in enumerate(combos):
         t = []
         for ticker in TICKERS:
             if not data[ticker].empty:
                 t.extend(run_strategy(data[ticker], ticker,
                                       qqq_close=qqq_close, qqq_ema20=qqq_ema20,
                                       corr_skip_dates=corr_skip,
-                                      min_score=ms, atr_stop_mult=asm, atr_target_mult=atm))
+                                      min_score=ms,
+                                      gain_target_override=gt,
+                                      stop_loss_override=sl))
         t.sort(key=lambda x:(x["date"],x["entry_time"]))
         st = calc_stats(t)
         sc = st["win_rate"]*0.4 + st["profit_factor"]*15 + st["expectancy"]*0.5
-        sweep.append({"min_score":ms,"atr_stop":asm,"atr_target":atm,"stats":st,"score":round(sc,3)})
+        sweep.append({"min_score":ms,"gain_target":gt,"stop_loss":sl,"stats":st,"score":round(sc,3)})
         sys.stdout.write(f"\r  Progress: {done+1}/{len(combos)}")
         sys.stdout.flush()
     sweep.sort(key=lambda r:r["score"], reverse=True)
     best = sweep[0]
-    print(f"\n  Best: score={best['min_score']} ATR stop={best['atr_stop']}x "
-          f"target={best['atr_target']}x → {best['stats']['win_rate']:.0f}% WR | "
-          f"PF={best['stats']['profit_factor']} | E=${best['stats']['expectancy']:.2f}/trade")
+    print(f"\n  Best: min_score={best['min_score']} gain={best['gain_target']*100:.1f}% "
+          f"stop={best['stop_loss']*100:.2f}% → {best['stats']['win_rate']:.0f}% WR | "
+          f"PF={best['stats']['profit_factor']:.3f} | E=${best['stats']['expectancy']:.2f}/trade")
 
     # ── Save results ───────────────────────────────────────────────────────────
     out = {

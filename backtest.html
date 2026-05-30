@@ -261,14 +261,14 @@ tr.best-row td{background:rgba(26,122,74,.07)!important;font-weight:500;}
       </div>
 
       <!-- PARAMETER SWEEP -->
-      <div class="sl">Parameter sweep — RSI thresholds</div>
+      <div class="sl">Parameter sweep — exit parameters</div>
       <div class="card" style="margin-bottom:2rem;">
-        <div class="ct" style="margin-bottom:.5rem;">Testing RSI buy thresholds 50–65 vs sell thresholds 35–50 · best configuration highlighted</div>
+        <div class="ct" style="margin-bottom:.5rem;">Testing gain target (1.5–2.5%) × stop loss (0.75–1.25%) × min score (3–5) · 27 combinations · best highlighted ⭐</div>
         <div class="sweep-wrap">
           <table id="sweep-table">
             <thead>
               <tr>
-                <th>RSI Buy</th><th>RSI Sell</th><th>Score</th>
+                <th>Gain Target</th><th>Stop Loss</th><th>Min Score</th>
                 <th>Trades</th><th>Wins</th><th>Losses</th>
                 <th>Win Rate</th><th>P&L $</th>
                 <th>Profit Factor</th><th>Expectancy</th><th>Max DD</th><th>Rating</th>
@@ -665,8 +665,10 @@ const rating=effectiveWR>=60&&s.total_pnl_pct>0?'<span class="badge bg">Excellen
     const exp = s.expectancy||0;
     const pfColor = pf>=1?'var(--green)':'var(--red)';
     const expColor = exp>=0?'var(--green)':'var(--red)';
+    const gainLabel = r.gain_target != null ? (r.gain_target*100).toFixed(1)+'%' : (r.rsi_buy||'base');
+    const stopLabel = r.stop_loss   != null ? (r.stop_loss  *100).toFixed(2)+'%' : (r.rsi_sell||'base');
     return `<tr class="${isBest?'best-row':''}">
-      <td>${r.rsi_adj?('adj '+r.rsi_adj[0]):(r.rsi_buy||'base')}${isBest?' ⭐':''}</td><td>${r.rsi_adj?('adj '+r.rsi_adj[1]):(r.rsi_sell||'base')}</td>
+      <td style="color:var(--green)">${gainLabel}${isBest?' ⭐':''}</td><td style="color:var(--red)">${stopLabel}</td>
       <td>${r.min_score||'—'}</td>
       <td>${s.trades}</td><td>${s.wins}</td><td>${s.losses}</td>
       <td><span class="badge ${wrBadge}">${s.win_rate.toFixed(0)}%</span></td>
